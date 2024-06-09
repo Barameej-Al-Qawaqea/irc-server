@@ -6,31 +6,7 @@ yrhiba.github.io (c). 2022-2024
 /* rghouzra task */
 void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr, std::string &cmnd, s_server_data &serverData)
 {
-	/*
-		to rghouzra: don't update alread serverData members
-		it's only for information purpos, or if you need 
-		some global variables you can add yours;
-	*/
-
-	(void)serverSocket;
-	(void)clientSocket;
-	(void)clientAddr;
-	(void)serverData;
-	(void)cmnd;
-
-	std::cout << "new-cmnd: <" << cmnd << "> " << std::endl;
-
-	/* some temp~example command */
-	if (cmnd == "server-status")
-	{
-		std::stringstream S;
-		S << "current-active-clients: " << (serverData.clients.size() - 1) << "." << std::endl;
-		sendMsg(clientSocket, S.str());
-	}
-	else if (cmnd == "server-shutdown")
-	{
-		serverData.serverStatus = OFF;
-	}
+	
 }
 /* end rghouzra task */
 
