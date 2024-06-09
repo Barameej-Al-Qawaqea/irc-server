@@ -4,3 +4,4 @@
         INVITE  - Invite a client to an invite-only channel (mode +i)
         TOPIC   - Change the channel topic in a mode +t channel
 */
+#include "Client.hpp"
