@@ -1,46 +1,33 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: yrhiba <yrhiba@student.1337.ma>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/06/07 18:15:39 by yrhiba            #+#    #+#              #
-#    Updated: 2024/06/08 22:22:20 by yrhiba           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-####### yrhiba ##########
-#########################
-
 NAME = server
 
-SRCS =	server.cpp \
-		utils.cpp \
-		signals.cpp \
-		sockets.cpp \
-		communication.cpp \
-		steps.cpp \
-		parsing.cpp
 
-INCS = header.hpp
+SRCS =  srcs/server.cpp \
+		srcs/utils.cpp \
+		srcs/signals.cpp \
+		srcs/sockets.cpp \
+		srcs/communication.cpp \
+		srcs/steps.cpp \
+		srcs/parsing.cpp
+
+
+INCS = include
 
 ODIR = objs/
 
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
-
+# FULL_SRCS_PATH = $(addprefix $(SRCSDIR), $(SRCS))
 CC = c++
 
-FLAGS = -Wall -Wextra -std=c++17 #-Werror 
+FLAGS = -Wall -Wextra -std=c++98 #-Werror
+
+all : $(NAME)
 
 $(NAME) : $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 
 $(ODIR)%.o : %.cpp $(INCS)
 	mkdir -p $(dir $@)
-	$(CC) $(FLAGS) -c $< -o $@
-
-all : $(NAME)
+	$(CC) $(FLAGS) -c $< -o $@ -I$(INCS)
 
 clean :
 	rm -rf $(ODIR)
@@ -49,5 +36,3 @@ fclean : clean
 	rm -rf $(NAME)
 
 re : fclean all
-
-.PHONY : all clean fclean re

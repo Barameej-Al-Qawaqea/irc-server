@@ -58,7 +58,7 @@ void closeSocket(int sockfd)
 
 std::pair<int, sockaddr_in> accpetNewConnection(s_server_data &serverData)
 {
-	sockaddr_in clientAddr {};
+	sockaddr_in clientAddr;
 	socklen_t size = sizeof(clientAddr);
 	int clienSocket = accept(serverData.sockfd, (sockaddr *)&(clientAddr), &size);
 	return (std::make_pair(clienSocket, clientAddr));
