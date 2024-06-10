@@ -7,6 +7,7 @@ SRCS =  srcs/server.cpp \
 		srcs/sockets.cpp \
 		srcs/communication.cpp \
 		srcs/steps.cpp \
+		srcs/ClientCommand.cpp \
 		srcs/parsing.cpp
 
 
@@ -15,7 +16,7 @@ INCS = include
 ODIR = objs/
 
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
-# FULL_SRCS_PATH = $(addprefix $(SRCSDIR), $(SRCS))
+
 CC = c++
 
 FLAGS = -Wall -Wextra -std=c++98 #-Werror
