@@ -5,7 +5,9 @@ yrhiba.github.io (c). 2022-2024
 
 void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr, std::string &cmnd, s_server_data &serverData)
 {
-	
+	if(CorrectPass(cmnd, serverData.password)){
+		
+	}
 }
 
 /* main funciton */
