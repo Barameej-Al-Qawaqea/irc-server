@@ -13,7 +13,7 @@ SRCS =  srcs/server.cpp \
 
 INCS = include
 
-ODIR = objs/
+ODIR = .objs/
 
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
 

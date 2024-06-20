@@ -25,6 +25,9 @@
 *.la
 *.a
 *.lib
+#code studio
+*.vscode
+
 
 # Executables
 *.exe
