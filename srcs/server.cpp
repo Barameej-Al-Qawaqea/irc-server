@@ -1,14 +1,9 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
-# include "header.hpp"
+#include "header.hpp"
 
-/* rghouzra task */
-void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr, std::string &cmnd, s_server_data &serverData)
-{
-	
+void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr,\
+ std::string &cmnd, s_server_data &serverData){
+
 }
-/* end rghouzra task */
 
 /* main funciton */
 int main(int ac, char **av)

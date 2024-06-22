@@ -1,0 +1,112 @@
+<message>      ::= <prefix> <command> <params> <crlf>
+                 | <command> <params> <crlf>
+
+/* Example:
+NICK newnick
+*/
+
+<prefix>       ::= ':' <servername> <space>
+                 | ':' <nick> [ '!' <user> ] [ '@' <host> ] <space>
+
+/* Example:
+:nickname!username@hostname PRIVMSG #channel :Hello!
+*/
+
+<command>      ::= 'NICK' | 'USER' | 'JOIN' | 'PART' | 'MODE' | 'TOPIC'
+                 | 'PRIVMSG' | 'NOTICE' | 'PING' | 'PONG' | 'QUIT'
+                 | 'KICK' | 'KILL' | 'OPER'
+
+/* Examples:
+NICK newnick
+USER guest tolmoon tolsun :Ronnie Reagan
+JOIN #channel
+PART #channel
+MODE #channel +im
+MODE nickname +i
+TOPIC #channel :New topic here
+PRIVMSG #channel :Hello everyone!
+NOTICE nickname :You have a new message
+PING servername
+PONG servername
+QUIT :Goodbye!
+KICK #channel user :You are being kicked out
+KILL nickname :Spamming is not allowed
+OPER opername operpassword
+*/
+
+<params>       ::= <space> [':' <trailing>]
+                 | <space> <middle> [ <params> ]
+
+<middle>       ::= <Any *non-empty* sequence of octets not including SPACE or NUL or CR or LF, the first of which may not be ':'>
+<trailing>     ::= <Any, possibly *empty*, sequence of octets not including NUL or CR or LF>
+
+<crlf>         ::= CR LF
+
+<space>        ::= ' ' [ ' ' ]
+
+<nick>         ::= <letter> <nickchar> [ *<nickchar> ]
+<nickchar>     ::= <letter> | <digit> | '-' | '[' | ']' | '\' | '`' | '^' | '{' | '}'
+<letter>       ::= 'a' ... 'z' | 'A' ... 'Z'
+
+/* Examples:
+NICK newnick
+*/
+
+<user>         ::= <nonwhite> [ *<nonwhite> ]
+<nonwhite>     ::= <Any octet except NUL, CR, LF, SPACE, and '@'>
+
+/* Example:
+USER guest tolmoon tolsun :Ronnie Reagan
+*/
+
+<host>         ::= <hostname> | <hostaddr>
+<hostname>     ::= <shortname> '.' <domain>
+<shortname>    ::= <letter> [ *<letter> | <digit> | '-' ] <letter> | <digit>
+<domain>       ::= <subdomain> | <subdomain> '.' <domain>
+<subdomain>    ::= <letter> [ *<letter> | <digit> | '-' ] <letter> | <digit>
+<hostaddr>     ::= <ip4addr> | <ip6addr>
+<ip4addr>      ::= <digit> '.' <digit> '.' <digit> '.' <digit>
+<ip6addr>      ::= <hexdigit> [ *<hexdigit> ':' <hexdigit> ] <hexdigit>
+
+/* Examples:
+PING servername
+PONG servername
+PING irc.example.com
+PONG irc.example.com
+*/
+
+<servername>   ::= <host>
+
+/* Example:
+:irc.example.com PONG irc.example.com
+*/
+
+<channel>      ::= ('#' | '&') <chstring>
+<chstring>     ::= <Any octet except NUL, BELL, CR, LF, ' ', ',' and ':'>
+
+/* Examples:
+JOIN #channel
+PART #channel
+JOIN #example
+PART #example
+PRIVMSG #example :Hello, world!
+MODE #example +m
+TOPIC #example :New topic here
+KICK #example user :Spamming
+*/
+
+<modes>        ::= <modestring> [ <space> <modeparams> ]
+<modestring>   ::= ('+' | '-') <modeswitch> [ <modeswitch> ]
+<modeswitch>   ::= 'i' | 'm' | 'n' | 'p' | 's' | 't' | 'o'
+
+/* Examples:
+MODE #channel +im
+MODE nickname +i
+*/
+
+<modeparams>   ::= <middle> [ <space> <middle> ]
+
+/* Examples:
+MODE #channel +m
+MODE nickname +i
+*/

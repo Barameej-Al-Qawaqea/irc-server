@@ -1,5 +1,5 @@
-#ifndef HEADER
-# define HEADER
+#ifndef HEADER_HPP
+# define HEADER_HPP
 
 /* standard includes */
 #include <iostream>
@@ -94,7 +94,7 @@ void	serverSocketListen(s_server_data &serverData);
 void	closeSocket(int sockfd);
 std::pair<int, sockaddr_in> accpetNewConnection(s_server_data &serverData);
 
-/* comminication */
+/* communication */
 int			sendMsg(int clientFd, const std::string &msg);
 std::string	recvMsg(s_server_data &serverData, int clientIdx);
 

@@ -1,7 +1,3 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
-
 #include "header.hpp"
 
 pollfd newPollFd(int sockfd)
@@ -23,6 +19,21 @@ int isValidPort(std::string &port)
 		if (number > 65535) return (-1);
 	}
 	return (number);
+}
+
+std::vector<std::string>SplitString(const std::string &string, char delim){
+	std::istringstream Sstream(string);
+	std::vector<std::string>arr;
+	std::string buffer;
+	while (getline(Sstream, buffer, delim))
+	{
+		std::cout << buffer << '\n';
+	}
+	return arr;
+}
+
+bool CorrectPass(const std::string &UserCmnd, const std::string &ServerPassword){
+
 }
 
 int addRequest(s_server_data &serverData, int clientIdx, std::string &responce)
