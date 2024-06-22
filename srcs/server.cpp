@@ -1,13 +1,8 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
-# include "header.hpp"
+#include "header.hpp"
 
-void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr, std::string &cmnd, s_server_data &serverData)
-{
-	// if(CorrectPass(cmnd, serverData.password)){
-		
-	// }
+void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr,\
+ std::string &cmnd, s_server_data &serverData){
+
 }
 
 /* main funciton */

@@ -27,7 +27,7 @@ $(NAME) : $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 
 $(ODIR)%.o : %.cpp $(INCS)
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	$(CC) $(FLAGS) -c $< -o $@ -I$(INCS)
 
 clean :

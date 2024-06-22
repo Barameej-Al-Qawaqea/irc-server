@@ -1,6 +1,3 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
 # include "header.hpp"
 
 void socketsPolling(s_server_data &serverData)

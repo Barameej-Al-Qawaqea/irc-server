@@ -1,6 +1,3 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
 # include "header.hpp"
 
 void parsingAndSetup(s_server_data &serverData, int ac, char **av)

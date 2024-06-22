@@ -1,7 +1,3 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
-
 #include "header.hpp"
 
 /* sockets methodes */

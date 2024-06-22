@@ -1,7 +1,3 @@
-/*
-yrhiba.github.io (c). 2022-2024
-*/
-
 #include "header.hpp"
 
 pollfd newPollFd(int sockfd)
@@ -37,7 +33,7 @@ std::vector<std::string>SplitString(const std::string &string, char delim){
 }
 
 bool CorrectPass(const std::string &UserCmnd, const std::string &ServerPassword){
-	return SplitString(UserCmnd, ' ').size() == 2;
+
 }
 
 int addRequest(s_server_data &serverData, int clientIdx, std::string &responce)

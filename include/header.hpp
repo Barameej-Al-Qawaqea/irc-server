@@ -1,5 +1,5 @@
-#ifndef HEADER
-# define HEADER
+#ifndef HEADER_HPP
+# define HEADER_HPP
 
 /* standard includes */
 #include <iostream>
