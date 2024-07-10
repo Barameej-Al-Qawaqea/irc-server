@@ -1,0 +1,24 @@
+client class : username, nickname, isRegistred, isAuthenticated 
+PASS :
+	syntax : PASS passwd
+	errors: -ERR_NEEDMOREPARAMS
+		    -ERR_ALREADYREGISTRED
+		    -ERR_PASSWDMISMATCH
+	
+
+NICK: 
+	syntax : NICK nickname
+		ERR_NONICKNAMEGIVEN
+		ERR_ERRONEUSNICKNAME. (invalid nickname characters)
+		ERR_NICKNAMEINUSE(already in use by someone else)
+		an error not mentioned in rfc : what if user is not authenticated yet
+USER :
+		ERR_NEEDMOREPARAMS
+		ERR_ALREADYREGISTRED
+
+JOIN  :
+	syntax : JOIN <channel>{,<channel>} [<key>{,<key>}]
+	examples:
+		JOIN #example,#example2 
+		JOIN #example secretpassword
+		JOIN  #example,#example2 secretpassword1,secretpassword2
