@@ -3,7 +3,7 @@
 void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr,\
  std::string &cmnd, s_server_data &serverData){
 	Command command(cmnd);
-	c
+	command.checkWhichCommand();
 }
 
 /* main funciton */
