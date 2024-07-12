@@ -6,7 +6,7 @@
 
 class Client {
 private :
-    std::string nickname;
+    std::string nickName;
     std::string userName;
     bool isAuthenticated;   // to check if user already make a PASS
     bool isRegistred;      // user made PASS, NICK, USER
@@ -26,8 +26,11 @@ public :
     bool isAlreadyRegistred() {
         return this->isRegistred;
     }
+    bool getAuthenticated() {
+        return this->isAuthenticated;
+    }
     std::string getNickName() {
-        return this->nickname;
+        return this->nickName;
     }
 
     //setters
@@ -38,6 +41,9 @@ public :
     // client made successfull PASS,NICK,USER
     void    setRegistred() {
         this->isRegistred = 1;
+    }
+    void    setNickName(std::string &name) {
+        this->nickName = name;
     }
     ~Client() {}
 };

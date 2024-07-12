@@ -1,15 +1,23 @@
 #include "header.hpp"
 #include "Client.hpp"
 
+//PASS errors
 #define ERR_NEEDMOREPARAMS 461
 #define ERR_ALREADYREGISTRED 462
 #define ERR_PASSWDMISMATCH 464
+//NICK erros
+#define ERR_NONICKNAMEGIVEN 431
+#define ERR_ERRONEUSNICKNAME 432
+#define ERR_NICKNAMEINUSE 433
+#define ERR_NOTREGISTERED 451
+
 class Command
 {
     private :
         std::vector<std::string> cmd;
         Client *client;
         s_server_data &serverData;
+
 
         std::string error(int errorNumber, std::string nickName) {
             std::string serverMsg = ":server ";
@@ -23,10 +31,28 @@ class Command
                 case ERR_PASSWDMISMATCH :
                     serverMsg += std::to_string(ERR_PASSWDMISMATCH) + ' ' + nickName + " :Password incorrect\n";
                     break;
-                // case 
+                case ERR_NONICKNAMEGIVEN :
+                    serverMsg += std::to_string(ERR_NONICKNAMEGIVEN) + ' ' + nickName + " :No nickname given\n";
+                    break;
+                case ERR_ERRONEUSNICKNAME :
+                    serverMsg += std::to_string(ERR_NONICKNAMEGIVEN) + ' ' + nickName + " :Erroneous nickname\n";
+                    break;
+                case ERR_NICKNAMEINUSE :
+                    serverMsg += std::to_string(ERR_NONICKNAMEGIVEN) + ' ' + nickName + " :Nickname is already in use\n";
+                    break;
+                case ERR_NOTREGISTERED :
+                    serverMsg += std::to_string(ERR_NOTREGISTERED) + ' ' + nickName + " :You have not registered\n";
             }
             return serverMsg;
         }   
+
+        bool invalidNickName(std::string &name) {
+            std::string validCharacters = "-{}[]^`\\";
+            bool validName = 1;
+            for(size_t i = 0; i < name.size(); i++)
+                validName &= (std::isalpha(name[i]) || validCharacters.find(name[i]) != std::string::npos);
+            return validName;
+        }
 
         void    executePass() {
             int sendReturn = 1;
@@ -45,7 +71,31 @@ class Command
             if (!sendReturn)
                 std::cerr << "Error occurs while sending message to the client\n";
         }
-        void    executeNick() {}
+        void    executeNick() {
+            int sendReturn = 1;
+            std::string destination = client->getNickName().empty() ? "*" : client->getNickName();   // destination should be '*' if user doenst have a nickname yet
+            if (cmd.size() == 1)
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination));
+            else if (cmd.size() > 2 || invalidNickName(cmd[1]))
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination));
+            else if (serverData.isNickNameInUse(cmd[1])) // isNickNameInUse: to code later
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
+            else if (!client->getAuthenticated()) // no PASS YEt
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination));
+            else {
+                // all good
+
+                // remove old nickname from serverData if it is not empty && add the newnickName to data && set the client new nickname
+                // serverData.eraseNikName(client->getNickName());
+                // serverData.addNickName(cmd[1]);
+                client->setNickName(cmd[1]);
+                // should send some msg (idont know right know)
+                // sendReturn += sendMsg(client->getSocket(), "some msg");
+            }
+            if (!sendReturn)
+                std::cerr << "Error occurs while sending message to the client\n";
+        }
+
         void    executeUser() {}
         void    executeJoin() {}
         void    executeInvite() {}
@@ -97,7 +147,7 @@ class Command
 // 		ERR_NONICKNAMEGIVEN
 // 		ERR_ERRONEUSNICKNAME. (invalid nickname characters)
 // 		ERR_NICKNAMEINUSE(already in use by someone else)
-// 		an error not mentioned in rfc : what if user is not authenticated yet
+// 		ERR_NOTREGISTERED not authenticated yet(didnt make PASS yet)
 // USER :
 // 		ERR_NEEDMOREPARAMS
 // 		ERR_ALREADYREGISTRED
