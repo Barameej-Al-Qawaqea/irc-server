@@ -19,6 +19,26 @@ public :
         this->Addr = clientAddr;
         this->fd = clientSocket;
     }
+    // getters
+    int getSocket() {
+        return this->fd;
+    }
+    bool isAlreadyRegistred() {
+        return this->isRegistred;
+    }
+    std::string getNickName() {
+        return this->nickname;
+    }
+
+    //setters
+    // client made succesfull PASS cmd
+    void    setAuthenticated() {
+        this->isAuthenticated = 1;
+    }
+    // client made successfull PASS,NICK,USER
+    void    setRegistred() {
+        this->isRegistred = 1;
+    }
     ~Client() {}
 };
 
