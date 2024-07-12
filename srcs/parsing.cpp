@@ -29,5 +29,5 @@ void	serverSetup(s_server_data &serverData)
 	setupServerSocket(serverData);
 	serverSocketListen(serverData);
 	serverData.clients.push_back(newPollFd(serverData.sockfd));
-	serverData.clientsAddr.push_back(serverData.serverAddress);
+	// serverData.clientsAddr.push_back(serverData.serverAddress);
 }

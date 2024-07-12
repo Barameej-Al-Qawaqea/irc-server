@@ -44,6 +44,7 @@
 # define ON 1
 # define OFF 0
 
+class Client; 
 struct s_server_data
 {
 	int					sockfd;
@@ -56,10 +57,8 @@ struct s_server_data
 	struct sockaddr_in	serverAddress;
 
 	std::vector<pollfd>	clients;
-	std::vector<sockaddr_in> clientsAddr;
 
 	std::vector<pollfd>	clientsQueue;
-	std::vector<sockaddr_in>	clientsAddrQueue;
 
 	std::string				port;
 	int						port_number;
@@ -68,7 +67,7 @@ struct s_server_data
 	char					*buff;
 
 	std::map<int, std::string> requestsBuff;
-
+	std::map<int, Client *> fdToClient;
 	s_server_data()
 	{
 		sockfd = 0;
@@ -92,7 +91,7 @@ void	setupServerSocket(s_server_data &serverData);
 int		setSocketAsNonBlocking(int sockfd);
 void	serverSocketListen(s_server_data &serverData);
 void	closeSocket(int sockfd);
-std::pair<int, sockaddr_in> accpetNewConnection(s_server_data &serverData);
+std::pair<int, Client*> acceptNewConnection(s_server_data &serverData);
 
 /* communication */
 int			sendMsg(int clientFd, const std::string &msg);
@@ -119,7 +118,7 @@ void	checkNewClientAttempt(s_server_data &serverData);
 void	checkClientsRequests(s_server_data &serverData);
 
 /* rghouzra task - undefined */
-void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr,
+void newCmnd(int serverSocket, Client *client,
 	std::string &cmnd, s_server_data &serverData);
 
 #endif

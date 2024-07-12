@@ -1,5 +1,5 @@
 #include "header.hpp"
-
+#include "Client.hpp"
 /* sockets methodes */
 void createSocket(s_server_data &serverData)
 {
@@ -52,10 +52,11 @@ void closeSocket(int sockfd)
 	close(sockfd);
 }
 
-std::pair<int, sockaddr_in> accpetNewConnection(s_server_data &serverData)
+std::pair<int, Client*> acceptNewConnection(s_server_data &serverData)
 {
 	sockaddr_in clientAddr;
 	socklen_t size = sizeof(clientAddr);
 	int clienSocket = accept(serverData.sockfd, (sockaddr *)&(clientAddr), &size);
-	return (std::make_pair(clienSocket, clientAddr));
+	Client client(clientAddr, clienSocket);
+	return (std::make_pair(clienSocket, &client));
 }

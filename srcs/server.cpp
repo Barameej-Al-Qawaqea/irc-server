@@ -1,8 +1,8 @@
 #include "header.hpp"
 #include "Command.hpp"
-void newCmnd(int serverSocket, int clientSocket, sockaddr_in &clientAddr,\
+void newCmnd(int serverSocket, Client *client,\
  std::string &cmnd, s_server_data &serverData){
-	Command command(cmnd);
+	Command command(cmnd, client, serverData);
 	command.checkWhichCommand();
 }
 
@@ -17,7 +17,7 @@ int main(int ac, char **av)
 	while (serverData.serverStatus == ON)
 	{
 		/* for debugging + testing code bugs */
-		assert(serverData.clients.size() == serverData.clientsAddr.size() && "yap!, code have bug");
+		assert(serverData.clients.size() - 1 == serverData.fdToClient.size() && "yap!, code have bug");
 		/* step 1 : polling */
 		socketsPolling(serverData);
 		/* step 2 : checking new connection attempt */

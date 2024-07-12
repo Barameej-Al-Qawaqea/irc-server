@@ -1,4 +1,5 @@
 # include "header.hpp"
+# include "Client.hpp"
 
 void socketsPolling(s_server_data &serverData)
 {
@@ -14,7 +15,7 @@ void	checkNewClientAttempt(s_server_data &serverData)
 {
 	if (serverData.clients[0].revents & POLLIN)
 	{
-		std::pair<int, sockaddr_in> newClient = accpetNewConnection(serverData);
+		std::pair<int, Client*> newClient = acceptNewConnection(serverData);
 
 		if (newClient.first >= 0 && serverData.clients.size() < MAX_CLIENTS)
 		{
@@ -31,7 +32,7 @@ void	checkNewClientAttempt(s_server_data &serverData)
 			}
 
 			serverData.clients.push_back(newPollFd(newClient.first));
-			serverData.clientsAddr.push_back(newClient.second);
+			serverData.fdToClient[newClient.first] = newClient.second;
 		}
 		else
 		{
@@ -44,9 +45,8 @@ void removeClient(s_server_data &serverData, int clientIdx)
 {
 	closeSocket(serverData.clients[clientIdx].fd);
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
-	std::swap(serverData.clientsAddr[clientIdx], serverData.clientsAddr[serverData.clients.size() - 1]);
 	serverData.clients.pop_back();
-	serverData.clientsAddr.pop_back();
+	serverData.fdToClient.erase(clientIdx);
 }
 
 void	checkClientsRequests(s_server_data &serverData)
@@ -66,11 +66,11 @@ void	checkClientsRequests(s_server_data &serverData)
 				int r = addRequest(serverData, i, response);
 				if (r > 0)
 				{
-					std::string cmnd = serverData.requestsBuff[serverData.clients[i].fd];
-					serverData.requestsBuff.erase(serverData.clients[i].fd);
+					int clientIdx = serverData.clients[i].fd;
+					std::string cmnd = serverData.requestsBuff[clientIdx];
+					serverData.requestsBuff.erase(clientIdx);
 					cmnd.pop_back(); // remove the '\n'
-					newCmnd(serverData.sockfd, serverData.clients[i].fd,
-						serverData.clientsAddr[i], cmnd, serverData);
+					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], cmnd, serverData);
 				}
 				else if (r < 0)
 				{
