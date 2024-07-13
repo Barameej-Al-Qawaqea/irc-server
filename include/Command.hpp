@@ -19,7 +19,7 @@ class Command
         s_server_data &serverData;
 
 
-        std::string error(int errorNumber, std::string nickName) {
+        static std::string error(int errorNumber, std::string nickName) {
             std::string serverMsg = ":server ";
             switch (errorNumber) {
                 case ERR_NEEDMOREPARAMS :
@@ -46,7 +46,7 @@ class Command
             return serverMsg;
         }   
 
-        bool invalidNickName(std::string &name) {
+        static bool invalidNickName(std::string &name) {
             std::string validCharacters = "-{}[]^`\\";
             bool validName = 1;
             for(size_t i = 0; i < name.size(); i++)
@@ -86,7 +86,7 @@ class Command
                 // all good
 
                 // remove old nickname from serverData if it is not empty && add the newnickName to data && set the client new nickname
-                // serverData.eraseNikName(client->getNickName());
+                // serverData.eraseNickName(client->getNickName());
                 // serverData.addNickName(cmd[1]);
                 client->setNickName(cmd[1]);
                 // should send some msg (idont know right know)
@@ -96,7 +96,21 @@ class Command
                 std::cerr << "Error occurs while sending message to the client\n";
         }
 
-        void    executeUser() {}
+        void    executeUser() {
+            int sendReturn = 1;
+            std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
+            if (cmd.size() < 5 || (cmd.size() == 5 && cmd[4].size() == 1))
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, destination));
+            else if (!client->isAlreadyRegistred()) 
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_ALREADYREGISTRED, destination));
+            else if (!client->getAuthenticated() || client->getNickName().empty())  // user didnt make a PASS,NICK yet
+                sendReturn &= sendMsg(client->getSocket(),  error(ERR_NOTREGISTERED, destination));
+            else {
+                // all good
+                client->setRegistred();
+                // send some succesfull msg:
+            }   
+        }
         void    executeJoin() {}
         void    executeInvite() {}
         void    executeTopic() {}

@@ -68,6 +68,7 @@ struct s_server_data
 
 	std::map<int, std::string> requestsBuff;
 	std::map<int, Client *> fdToClient;
+	std::set<std::string> clientsNicknames;
 	s_server_data()
 	{
 		sockfd = 0;
@@ -120,5 +121,6 @@ void	checkClientsRequests(s_server_data &serverData);
 /* rghouzra task - undefined */
 void newCmnd(int serverSocket, Client *client,
 	std::string &cmnd, s_server_data &serverData);
+
 
 #endif
