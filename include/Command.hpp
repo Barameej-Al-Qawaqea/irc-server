@@ -54,6 +54,27 @@ class Command
             return validName;
         }
 
+        void    executeBot() {
+            //  START GAME DIFFICULTY SIZE
+            // PLAY GAME X Y
+
+            // if (temin) ..
+            // else if (!valid) ...
+            // else{
+                // playClient 
+                // checkWin
+                // playServer 
+                // checkWin
+            // }
+            std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
+          
+            if (!client->isAlreadyRegistred())
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
+            else if (client.bot.argumentsError(cmd)) {
+                sendReturn &= sendMsg(client->getSocket(), client->bot.usage()) != -1;
+            }
+            else sendReturn &= sendMsg(client->getSocket(), client.bot.play(cmd)) != -1;
+        }
         void    executePass() {
             int sendReturn = 1;
             if (cmd.size() == 1)
@@ -111,12 +132,13 @@ class Command
                 // send some succesfull msg:
             }   
         }
+        
+
         void    executeJoin() {}
         void    executeInvite() {}
         void    executeTopic() {}
         void    executeMode() {}
         void    executeKick() {}
-      
     public :
         Command(std::string &command, Client *client, s_server_data &serverData) : client(client),  serverData(serverData)
         {

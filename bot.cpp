@@ -314,6 +314,9 @@ class Bot {
         Game gomuko;
         std::string ticTacToeDifficulty;
         std::string gomukoDifficulty;
+
+        
+
     public :
         Bot() {}
         void    startNewGame(std::string gameType, std::string gameDifficulty, int boardSize) {
@@ -362,24 +365,38 @@ class Bot {
         bool    isValidMove(std::string gameType, pair<int, int> move) {
             vector<pair<int, int>> moves;
             moves = (gameType == "TICTACTOE") ? ticTacToe.getPossibleMoves() : gomuko.getPossibleMoves();
-            return  (find(moves.begin(), moves.end(), move) != moves.end()) ;
+            return  (find(moves.begin(), moves.end(), move) != moves.end());
         }
+        
+        // std::string botUsage() {
+        //     std::ostringstream oss;
+        //     oss << "Usage :\n";
+        //     oss << "1. BOT GAME DIFFICULTY SIZE\n";
+        //     oss << "   - GAME: 'GOMUKO' or 'TICTACTOE'\n";
+        //     oss << "   - DIFFICULTY: 'HARD', 'MEDIUM', 'EASY'\n";
+        //     oss << "   - SIZE: 3-10 for TICTACTOE, 5-10 for GOMUKO\n";
+        //     oss << "2. BOT PLAY X Y\n";
+        //     oss << "   - X, Y: Coordinates for the move (positive integers)\n";
+        //     return oss.str();
+        // }
+
+        // bool argumentsError() {
+        //     bool isError = (cmd.size() != 4) || (cmd[1] != "PLAY" && cmd[1] != "START") || (cmd[2] != "GOMUKO" && cmd[2] != "TICTACTOE");
+        //     if (isError) return isError;
+
+        //     if (cmd[1] == "PLAY") {
+
+        //     }
+        //     else if (cmd[1] == "START") {
+        //         if (cmd[3] = "")
+        //     }
+        //     return isError;
+        // }
 };
 
-//  START GAME DIFFICULTY SIZE
-// PLAY GAME X Y
 
-// if (temin) ..
-// else if (!valid) ...
-// else{
-    // playClient 
-    // checkWin
-    // playServer 
-    // checkWin
-// }
 
 int main(int ac, char **av) {
-    // std::string command = av[1];
     Bot bot;
     srand(time(0));
     std::string gameType = "GOMUKO";     // "you can make it to TICTACTOE or GOMUKO"
