@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <iomanip>
+#include <set>
 using namespace std;
 
 class MCTS;
@@ -68,10 +69,43 @@ public:
     pair<int, int>    playEasy() {
         vector<pair<int, int>> possibleMoves = getPossibleMoves();
         pair <int, int> move = possibleMoves[rand() % possibleMoves.size()];
-        playMove(move);
         return move;
     }
     
+    pair<int, int> playMedium() {
+        int player = currentPlayer == 'X' ? 1 : 0;
+        set<vector<int>, greater<vector<int>>> maxConsecutives;  // vector = {count , player, x, y} 
+        for(int x = 0; x < SIZE; x++) {
+            for(int y = 0; y < SIZE; y++) {
+                if (board[x][y] != '.') continue;
+                else {
+                    pair<int, int> cell = {x, y};
+                    char player = 'O';
+                    board[x][y] = player;
+                    // take the cell the have the maxconsecutive count , it 2 cells have same maxconsecu take the one where you are the currentPlayer
+                    int consecutives = countConsecutiveCells(cell, player);
+                    maxConsecutives.insert({consecutives, player, x, y});
+                    player = 'X';
+                    board[x][y] = player;
+                    consecutives = countConsecutiveCells(cell, player);
+                    maxConsecutives.insert({consecutives, player, x, y});
+                    board[x][y] = '.';
+                }
+            }
+        }
+        vector<pair<int, int>> botMoves;
+        vector<int> first = *maxConsecutives.begin();
+        for(auto it = maxConsecutives.begin(); it != maxConsecutives.end(); it++) {
+            vector<int> cur = *it;
+            if (cur[0] == first[0] && cur[1] == first[1])
+                botMoves.push_back({cur[2], cur[3]});
+            else break;
+        }
+        int idx = rand() % botMoves.size();
+        cout << "Answer : " << first[0] << ' ' << (char)first[1] << endl;
+        return botMoves[idx];
+    }
+
     char getWinner() {
         return winner;
     }
@@ -97,37 +131,44 @@ public:
     bool validIndexes(int x, int y) {
         return (x >= 0 && y >= 0 && x < SIZE && y < SIZE);
     }
-    void    checkGomukoEnd(pair<int, int> &move) {
-        int player = currentPlayer == 'X' ? 1 : 0;
-        movesLeft--;
-
+    int countConsecutiveCells(pair<int, int> &p, char player) {
         static int side1x[4] = {0, -1, -1, 1};   //x
         static int side1y[4] = {1, 0, 1, 1};  //y
 
         static int side2x[4] = {0, 1, 1, -1};
         static int side2y[4] = {-1, 0, -1, -1};
-        static const int winCondition = 5;
+        static const int gomukoWinCondition = 5;
+        int upperBound = gameType != "GOMUKO" ? SIZE : 5;
+        int maxCount = 0;
         for(int k = 0; k < 4; k++) {
             int count = 0;
-            int x = move.first, y = move.second;
-            while (count < winCondition && validIndexes(x, y) && board[x][y] == currentPlayer) {
+            int x = p.first, y = p.second;
+            while (count < upperBound && validIndexes(x, y) && board[x][y] == player) {
                 count++;
                 x += side1x[k];
                 y += side1y[k];
             }
-            x = move.first + side2x[k], y = move.second + side2y[k];
-            while (count < winCondition && validIndexes(x, y) && board[x][y] == currentPlayer) {
+            x = p.first + side2x[k], y = p.second + side2y[k];
+            while (count < upperBound && validIndexes(x, y) && board[x][y] == player) {
                 count++;
                 x += side2x[k];
                 y += side2y[k];
             }
-            if (count == winCondition) {
-                gameEnd = 1;
-                winner = currentPlayer;
-                return ;
-            }
+            if (count >= upperBound) return count;
+            else maxCount = max(maxCount, count);
         }
-        if (!movesLeft) gameEnd = 1;
+        return maxCount;
+    }
+
+    void    checkGomukoEnd(pair<int, int> &move) {
+        movesLeft--;
+        static const int winCondition = 5;
+
+        if (countConsecutiveCells(move, currentPlayer) >= winCondition) {
+            gameEnd = 1;
+            winner = currentPlayer;
+        }
+        else if (!movesLeft) gameEnd = 1;
     }
 
     void    playMove(pair <int, int> &move) {
@@ -167,7 +208,7 @@ struct Node {
     pair<int, int> move;
     vector<Node*> children;
     vector<pair<int, int>> expandableMoves;
-    Node(const Game& state, Node* parent = nullptr, pair<int, int> mv = {-1, -1})
+    Node(const Game& state, Node* parent = nullptr, pair <int, int> mv = {-1, -1})
         : state(state), parent(parent), move(mv), visitCount(0), winScore(0){
             expandableMoves = this->state.getPossibleMoves();
         }
@@ -293,15 +334,15 @@ class Bot {
             pair<int, int> botMove;
             if (difficulty == "EASY") 
                 botMove = game.playEasy();
-            // else if (difficulty == "MEDIUM")
-            //     botMove = game.playMedium();
+            else if (difficulty == "MEDIUM")
+                botMove = game.playMedium();
             else {
                 MCTS mct(5000);
                 botMove = mct.findNextMove(game);
-                game.playMove(botMove);
             }
-            // sendMoveToClient(botMove, gameType);
+            game.playMove(botMove);
             game.printBoard();
+            // sendMoveToClient(botMove, gameType);
             std::cout << "Bot Move : " << botMove.first << ' ' << botMove.second << endl;
             if (game.isTerminal())
                 std::cout << game.getWinner() << ' ' << " wins "<< endl;
@@ -328,10 +369,19 @@ class Bot {
 //  START GAME DIFFICULTY SIZE
 // PLAY GAME X Y
 
+// if (temin) ..
+// else if (!valid) ...
+// else{
+    // playClient 
+    // checkWin
+    // playServer 
+    // checkWin
+// }
+
 int main(int ac, char **av) {
     // std::string command = av[1];
     Bot bot;
-
+    srand(time(0));
     std::string gameType = "GOMUKO";     // "you can make it to TICTACTOE or GOMUKO"
     bot.startNewGame(gameType, "HARD", 10);
     int turn = 1;
@@ -348,5 +398,4 @@ int main(int ac, char **av) {
         else bot.playServerMove(gameType);
         turn++;
     }
-    // bot.startNewGame("")
 }
