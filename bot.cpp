@@ -7,33 +7,61 @@
 #include <limits>
 #include <random>
 #include <ctime>
+#include <iomanip>
 using namespace std;
 
 class MCTS;
 struct Game {
     char currentPlayer;
-    vector<string> board;
-    int sz;
+    std::vector <string> board;
+    int SIZE;
     std::string gameType;    // is it tictactoe or gomuko
     bool    gameEnd = 0;
-    char winner = 'n';
-    vector<vector<int>> row, col;
-    vector<int> leftDiagonal, rightDiagonal;
-    int movesCnt;
+    char winner;
+    int movesLeft;
+    vector<vector<int>> row;
+    vector<vector<int>> col;
+    vector<int> leftDiagonal;
+    vector<int> rightDiagonal;
 public:
     Game() {}
-    Game(int sz, std::string &gameType) : sz(sz), gameType(gameType), currentPlayer('x'), board(sz, string(sz, '.')) {
-        row = vector <vector<int>> (sz, vector<int> (2));
-        col = vector <vector<int>> (sz, vector<int> (2));
-        leftDiagonal = vector<int>(2);
-        rightDiagonal = vector<int>(2);
-        movesCnt = 0;
+    Game(int SIZE, std::string &gameType) : SIZE(SIZE), gameType(gameType), currentPlayer('X'), board(SIZE, string(SIZE, '.')) {
+        movesLeft = SIZE * SIZE;
+        winner = 'N';
+
+        if (gameType == "TICTACTOE") {
+            row = vector <vector<int>> (SIZE, vector<int> (2));
+            col = vector <vector<int>> (SIZE, vector<int> (2));
+            leftDiagonal = vector<int>(2);
+            rightDiagonal = vector<int>(2);
+        }
     }
 
     void printBoard() {
-        for (auto &row : board) {
-            for (char j : row) cout << j << ' ';
-            cout << endl;
+        std::cout << "   ";
+        for(int i = 0; i < SIZE; i++)
+            std::cout << setw(3) << i << ' ';
+        std::cout << std::endl;
+        std::cout << "   ";
+        for (int j = 0; j < SIZE; ++j) {
+            std::cout << setw(4) << "---";
+        }
+        std::cout << endl;
+
+        for (int i = 0; i < SIZE; ++i) {
+            std::cout << setw(2) << i << " ";  // Row index
+
+            for (int j = 0; j < SIZE; ++j) {
+                std::cout << "| " << board[i][j] << " ";
+            }
+            std::cout << "|" << endl;
+
+        // Print the bottom border for the row
+            std::cout << "   ";
+            for (int j = 0; j < SIZE; ++j) {
+                std::cout << setw(4) << "---";
+            }
+            std::cout << endl;
         }
     }
 
@@ -44,60 +72,74 @@ public:
         return move;
     }
     
-
-    bool checkWin(char player) {
-        // Check rows, columns, and diagonals
-         map<int, int> row, col;
-        int diag1 = 0, diag2 = 0;
-        for(int i = 0; i < sz; i++) {
-            for(int j = 0; j < sz; j++) {
-                if (board[i][j] != player) continue;
-                row[i]++;
-                col[j]++;
-                if (i == j) diag1++;
-                if (i == sz - 1 - j) diag2++;
-                if (row[i] == sz || col[j] == sz || diag1 == sz || diag2 == sz) return true;
-            }
-        }
-        return false;
-    }
-
-    bool checkDraw() {
-        for (string &s : board) {
-            for (char c : s) if (c == '.') return false;
-        }
-        return true;
-    }
-
     char getWinner() {
-        // if (checkWin('o')) return 'o';
-        // if (checkWin('x')) return 'x';
-        // return 'n';
         return winner;
     }
 
-    void    playMove(pair<int, int> &move) {
-        board[move.first][move.second] = currentPlayer;
-        int player = currentPlayer == 'x' ? 1 : 0;
+    void    checkTicTacToeEnd(pair<int, int> &move) {
+        
+        int player = (currentPlayer == 'X') ? 1 : 0;
         row[move.first][player] += 1;
         col[move.second][player] += 1;
+        movesLeft--;
         if (move.first == move.second)
             leftDiagonal[player]++;
-        if (move.first == sz - 1 - move.second)
+        if (move.first == SIZE - 1 - move.second)
             rightDiagonal[player]++;
-        movesCnt++;
-        if (row[move.first][player] == sz || col[move.second][player] == sz
-            || leftDiagonal[player] == sz || rightDiagonal[player] == sz) {
+        if (row[move.first][player] == SIZE || col[move.second][player] == SIZE
+            || leftDiagonal[player] == SIZE || rightDiagonal[player] == SIZE) {
             gameEnd = 1;
             winner = currentPlayer;
         }
-        else if (movesCnt == sz * sz) gameEnd = 1;
-        currentPlayer = (currentPlayer == 'x') ? 'o' : 'x';
+        else if (!movesLeft) gameEnd = 1;
+    }
+
+    bool validIndexes(int x, int y) {
+        return (x >= 0 && y >= 0 && x < SIZE && y < SIZE);
+    }
+    void    checkGomukoEnd(pair<int, int> &move) {
+        int player = currentPlayer == 'X' ? 1 : 0;
+        movesLeft--;
+
+        static int side1x[4] = {0, -1, -1, 1};   //x
+        static int side1y[4] = {1, 0, 1, 1};  //y
+
+        static int side2x[4] = {0, 1, 1, -1};
+        static int side2y[4] = {-1, 0, -1, -1};
+        static const int winCondition = 5;
+        for(int k = 0; k < 4; k++) {
+            int count = 0;
+            int x = move.first, y = move.second;
+            while (count < winCondition && validIndexes(x, y) && board[x][y] == currentPlayer) {
+                count++;
+                x += side1x[k];
+                y += side1y[k];
+            }
+            x = move.first + side2x[k], y = move.second + side2y[k];
+            while (count < winCondition && validIndexes(x, y) && board[x][y] == currentPlayer) {
+                count++;
+                x += side2x[k];
+                y += side2y[k];
+            }
+            if (count == winCondition) {
+                gameEnd = 1;
+                winner = currentPlayer;
+                return ;
+            }
+        }
+        if (!movesLeft) gameEnd = 1;
+    }
+
+    void    playMove(pair <int, int> &move) {
+        board[move.first][move.second] = currentPlayer;
+        if (gameType == "TICTACTOE")
+            checkTicTacToeEnd(move);
+        else checkGomukoEnd(move);
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
     }
 
     bool isTerminal() {
         return gameEnd;
-        // return checkWin('x') || checkWin('o') || checkDraw();
     }
 
     char getCurrentPlayer() {
@@ -106,8 +148,8 @@ public:
 
     vector<pair<int, int>> getPossibleMoves() {
         vector<pair<int, int>> possibleMoves;
-        for (int i = 0; i < sz; i++) {
-            for (int j = 0; j < sz; j++) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == '.') {
                     possibleMoves.push_back({i, j});
                 }
@@ -166,14 +208,14 @@ struct Node {
     void backpropagate(char winner) {
         visitCount++;
         // cerr << winner << ' ' << state.getCurrentPlayer() << "::" << endl;
-        if (winner == 'n')  winScore += 0.4;
+        if (winner == 'N')  winScore += 0.4;
         else if (state.getCurrentPlayer() != winner) winScore += 1.0;
         // else winScore += -0.5;
         if (parent) parent->backpropagate(winner);
     }
     char    simulateMove() {
         Game tmp = state;
-        vector<pair<int, int>> possibleMoves = tmp.getPossibleMoves();
+        vector <pair<int, int>> possibleMoves = tmp.getPossibleMoves();
         while (!tmp.isTerminal()) {
             int i = rand() % possibleMoves.size();
             tmp.playMove(possibleMoves[i]);
@@ -211,7 +253,7 @@ public:
         for (auto &child : root->children) {
             moves[child->move] += child->visitCount;
             sum += child->visitCount;
-            cerr << child->move.first << ' ' << child->move.second << ' ' << child->winScore << endl;
+            // cerr << child->move.first << ' ' << child->move.second << ' ' << child->winScore << endl;
         }
         for(auto &[l, r] : moves) {
             if (r / sum > bestVal) {
@@ -222,7 +264,6 @@ public:
         delete root;
         return bestMove;
     }
-
 };
 
 
@@ -232,15 +273,6 @@ class Bot {
         Game gomuko;
         std::string ticTacToeDifficulty;
         std::string gomukoDifficulty;
-    // void    playTicTacToe() {
-    //     if (ticTacToeDifficulty == "EASY")
-    //         ticTacToe.playEasy();    // use just random
-    //     else if (ticTacToeDifficulty == "MEDIUM")
-    //         ticTacToe.playMedium();       // use human logic
-    //     else tictTacToe.playHard()   // use comuter simulation IA
-    // }
-    // void    playGomuko() 
-    void    playGomuko() {}
     public :
         Bot() {}
         void    startNewGame(std::string gameType, std::string gameDifficulty, int boardSize) {
@@ -254,6 +286,7 @@ class Bot {
             }
             playServerMove(gameType);
         }
+
         void    playServerMove(std::string gameType) {
             Game &game = gameType == "GOMUKO" ? gomuko : ticTacToe;
             std::string difficulty = gameType == "GOMUKO" ? gomukoDifficulty : ticTacToeDifficulty;
@@ -263,7 +296,7 @@ class Bot {
             // else if (difficulty == "MEDIUM")
             //     botMove = game.playMedium();
             else {
-                MCTS mct(3000);
+                MCTS mct(5000);
                 botMove = mct.findNextMove(game);
                 game.playMove(botMove);
             }
@@ -282,11 +315,12 @@ class Bot {
             if (game.isTerminal())
                 std::cout << game.getWinner() << ' ' << " wins "<< endl;
         }
-        bool    terminal() {
-            return ticTacToe.isTerminal();
+        bool    isTerminal(std::string gameType) {
+            return ((gameType == "TICTACTOE") ? ticTacToe.isTerminal() : gomuko.isTerminal());
         }
-        bool    isValidMove(pair<int, int> move) {
-            vector<pair<int, int>> moves = ticTacToe.getPossibleMoves();
+        bool    isValidMove(std::string gameType, pair<int, int> move) {
+            vector<pair<int, int>> moves;
+            moves = (gameType == "TICTACTOE") ? ticTacToe.getPossibleMoves() : gomuko.getPossibleMoves();
             return  (find(moves.begin(), moves.end(), move) != moves.end()) ;
         }
 };
@@ -297,22 +331,22 @@ class Bot {
 int main(int ac, char **av) {
     // std::string command = av[1];
     Bot bot;
-    bot.startNewGame("TICTACTOE", "HARD", 3);
+
+    std::string gameType = "GOMUKO";     // "you can make it to TICTACTOE or GOMUKO"
+    bot.startNewGame(gameType, "HARD", 10);
     int turn = 1;
-    while(!bot.terminal()) {
+    while (!bot.isTerminal(gameType)) {
         if (turn & 1) {
-            pair<int, int> move;
+            pair <int, int> move;
             std::cin >> move.first >> move.second;
-            if (!bot.isValidMove(move)) {
+            if (!bot.isValidMove(gameType, move)) {
                 std::cout << "Invalid Move, please try again\n";
                 continue;
             }
-            bot.playClientMove("TICTACTOE", move);
+            bot.playClientMove(gameType, move);
         }
-        else bot.playServerMove("TICTACTOE");
+        else bot.playServerMove(gameType);
         turn++;
     }
+    // bot.startNewGame("")
 }
-
-
-// 0110
