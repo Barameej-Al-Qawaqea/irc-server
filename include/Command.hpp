@@ -54,27 +54,19 @@ class Command
             return validName;
         }
 
-        void    executeBot() {
-            //  START GAME DIFFICULTY SIZE
-            // PLAY GAME X Y
+        // void    executeBot() {
 
-            // if (temin) ..
-            // else if (!valid) ...
-            // else{
-                // playClient 
-                // checkWin
-                // playServer 
-                // checkWin
-            // }
-            std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
+        //     std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
           
-            if (!client->isAlreadyRegistred())
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
-            else if (client.bot.argumentsError(cmd)) {
-                sendReturn &= sendMsg(client->getSocket(), client->bot.usage()) != -1;
-            }
-            else sendReturn &= sendMsg(client->getSocket(), client.bot.play(cmd)) != -1;
-        }
+        //     if (!client->isAlreadyRegistred())
+        //         sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
+        //     else if (client.bot.argumentsError(cmd))
+        //         sendReturn &= sendMsg(client->getSocket(), client->bot.usage()) != -1;
+        //     else sendReturn &= sendMsg(client->getSocket(), client->bot.play(cmd)) != -1;
+        //     if (!sendReturn)
+        //         std::cerr << "Error occurs while sending message to the client\n";
+        // }
+
         void    executePass() {
             int sendReturn = 1;
             if (cmd.size() == 1)

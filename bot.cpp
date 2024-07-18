@@ -9,100 +9,103 @@
 #include <ctime>
 #include <iomanip>
 #include <set>
-using namespace std;
+#include <sstream>
 
-class MCTS;
 struct Game {
-    char currentPlayer;
-    std::vector <string> board;
     int SIZE;
     std::string gameType;    // is it tictactoe or gomuko
-    bool    gameEnd = 0;
+    char currentPlayer;
+    std::vector <std::string> board;
+    bool    gameEnd;
     char winner;
     int movesLeft;
-    vector<vector<int>> row;
-    vector<vector<int>> col;
-    vector<int> leftDiagonal;
-    vector<int> rightDiagonal;
+    std::vector<std::vector<int> > row;
+    std::vector<std::vector<int> > col;
+    std::vector<int> leftDiagonal;
+    std::vector<int> rightDiagonal;
 public:
-    Game() {}
-    Game(int SIZE, std::string &gameType) : SIZE(SIZE), gameType(gameType), currentPlayer('X'), board(SIZE, string(SIZE, '.')) {
+    Game() : SIZE(0), gameEnd(0) {}
+    Game(int SIZE, std::string &gameType) : SIZE(SIZE), gameType(gameType), currentPlayer('X'), board(SIZE, std::string(SIZE, '.')) {
         movesLeft = SIZE * SIZE;
         winner = 'N';
-
+        gameEnd = 0;
         if (gameType == "TICTACTOE") {
-            row = vector <vector<int>> (SIZE, vector<int> (2));
-            col = vector <vector<int>> (SIZE, vector<int> (2));
-            leftDiagonal = vector<int>(2);
-            rightDiagonal = vector<int>(2);
+            row = std::vector <std::vector<int> > (SIZE, std::vector<int> (2));
+            col = std::vector <std::vector<int> > (SIZE, std::vector<int> (2));
+            leftDiagonal = std::vector<int>(2);
+            rightDiagonal = std::vector<int>(2);
         }
     }
 
-    void printBoard() {
-        std::cout << "   ";
+    std::string printBoard() {
+        std::ostringstream oss;
+
+        oss << "   ";
         for(int i = 0; i < SIZE; i++)
-            std::cout << setw(3) << i << ' ';
-        std::cout << std::endl;
-        std::cout << "   ";
-        for (int j = 0; j < SIZE; ++j) {
-            std::cout << setw(4) << "---";
-        }
-        std::cout << endl;
+            oss << std::setw(3) << i << ' ';
+        oss << '\n';
+        oss << "   ";
+        for (int j = 0; j < SIZE; ++j)
+            oss << std::setw(4) << "---";
+        oss << '\n';
 
         for (int i = 0; i < SIZE; ++i) {
-            std::cout << setw(2) << i << " ";  // Row index
+            oss << std::setw(2) << i << " ";
 
-            for (int j = 0; j < SIZE; ++j) {
-                std::cout << "| " << board[i][j] << " ";
-            }
-            std::cout << "|" << endl;
-
-        // Print the bottom border for the row
-            std::cout << "   ";
-            for (int j = 0; j < SIZE; ++j) {
-                std::cout << setw(4) << "---";
-            }
-            std::cout << endl;
+            for (int j = 0; j < SIZE; ++j)
+                oss << "| " << board[i][j] << " ";
+            oss << "|\n" ;
+            oss << "   ";
+            for (int j = 0; j < SIZE; ++j)
+                oss << std::setw(4) << "---";
+            oss << '\n';
         }
+        return oss.str();
     }
 
-    pair<int, int>    playEasy() {
-        vector<pair<int, int>> possibleMoves = getPossibleMoves();
-        pair <int, int> move = possibleMoves[rand() % possibleMoves.size()];
+    bool invalidMove(std::pair <int, int> &move) {
+        return (move.first >= SIZE || move.second >= SIZE || board[move.first][move.second] != '.');
+    }
+    bool    notStartedYet() {
+        return (SIZE == 0);
+    }
+    std::pair<int, int>    playEasy() {
+        std::vector<std::pair<int, int> > possibleMoves = getPossibleMoves();
+        std::pair <int, int> move = possibleMoves[rand() % possibleMoves.size()];
         return move;
     }
     
-    pair<int, int> playMedium() {
-        int player = currentPlayer == 'X' ? 1 : 0;
-        set<vector<int>, greater<vector<int>>> maxConsecutives;  // vector = {count , player, x, y} 
+    std::pair<int, int> playMedium() {
+        std::set<std::vector<int>, std::greater<std::vector<int> > > maxConsecutives;  // vector = {count , player, x, y} 
         for(int x = 0; x < SIZE; x++) {
             for(int y = 0; y < SIZE; y++) {
                 if (board[x][y] != '.') continue;
                 else {
-                    pair<int, int> cell = {x, y};
+                    std::pair<int, int> cell = std::make_pair(x, y);
                     char player = 'O';
                     board[x][y] = player;
-                    // take the cell the have the maxconsecutive count , it 2 cells have same maxconsecu take the one where you are the currentPlayer
+                    // take the cell the have the maxconsecutive count , if 2 cells have same maxconsecu take the one where you are the currentPlayer
                     int consecutives = countConsecutiveCells(cell, player);
-                    maxConsecutives.insert({consecutives, player, x, y});
+                    int arr[] = {consecutives, player, x, y};
+                    maxConsecutives.insert(std::vector<int>(arr, arr + 4));
                     player = 'X';
                     board[x][y] = player;
                     consecutives = countConsecutiveCells(cell, player);
-                    maxConsecutives.insert({consecutives, player, x, y});
+                    arr[0] = consecutives, arr[1] = player;
+                    maxConsecutives.insert(std::vector<int>(arr, arr + 4));
                     board[x][y] = '.';
                 }
             }
         }
-        vector<pair<int, int>> botMoves;
-        vector<int> first = *maxConsecutives.begin();
-        for(auto it = maxConsecutives.begin(); it != maxConsecutives.end(); it++) {
-            vector<int> cur = *it;
+        std::vector<std::pair<int, int> > botMoves;
+        std::vector<int> first = *maxConsecutives.begin();
+        for(std::set<std::vector<int> >::iterator it = maxConsecutives.begin(); it != maxConsecutives.end(); it++) {
+            std::vector<int> cur = *it;
             if (cur[0] == first[0] && cur[1] == first[1])
-                botMoves.push_back({cur[2], cur[3]});
+                botMoves.push_back(std::make_pair(cur[2], cur[3]));
             else break;
         }
         int idx = rand() % botMoves.size();
-        cout << "Answer : " << first[0] << ' ' << (char)first[1] << endl;
         return botMoves[idx];
     }
 
@@ -110,7 +113,7 @@ public:
         return winner;
     }
 
-    void    checkTicTacToeEnd(pair<int, int> &move) {
+    void    checkTicTacToeEnd(std::pair<int, int> &move) {
         
         int player = (currentPlayer == 'X') ? 1 : 0;
         row[move.first][player] += 1;
@@ -131,13 +134,12 @@ public:
     bool validIndexes(int x, int y) {
         return (x >= 0 && y >= 0 && x < SIZE && y < SIZE);
     }
-    int countConsecutiveCells(pair<int, int> &p, char player) {
+    int countConsecutiveCells(std::pair<int, int> &p, char player) {
         static int side1x[4] = {0, -1, -1, 1};   //x
         static int side1y[4] = {1, 0, 1, 1};  //y
 
         static int side2x[4] = {0, 1, 1, -1};
         static int side2y[4] = {-1, 0, -1, -1};
-        static const int gomukoWinCondition = 5;
         int upperBound = gameType != "GOMUKO" ? SIZE : 5;
         int maxCount = 0;
         for(int k = 0; k < 4; k++) {
@@ -155,12 +157,12 @@ public:
                 y += side2y[k];
             }
             if (count >= upperBound) return count;
-            else maxCount = max(maxCount, count);
+            else maxCount = std::max(maxCount, count);
         }
         return maxCount;
     }
 
-    void    checkGomukoEnd(pair<int, int> &move) {
+    void    checkGomukoEnd(std::pair<int, int> &move) {
         movesLeft--;
         static const int winCondition = 5;
 
@@ -171,7 +173,7 @@ public:
         else if (!movesLeft) gameEnd = 1;
     }
 
-    void    playMove(pair <int, int> &move) {
+    void    playMove(std::pair <int, int> &move) {
         board[move.first][move.second] = currentPlayer;
         if (gameType == "TICTACTOE")
             checkTicTacToeEnd(move);
@@ -187,12 +189,12 @@ public:
         return currentPlayer;
     }
 
-    vector<pair<int, int>> getPossibleMoves() {
-        vector<pair<int, int>> possibleMoves;
+    std::vector<std::pair<int, int> > getPossibleMoves() {
+        std::vector<std::pair<int, int> > possibleMoves;
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == '.') {
-                    possibleMoves.push_back({i, j});
+                    possibleMoves.push_back(std::make_pair(i, j));
                 }
             }
         }
@@ -203,19 +205,19 @@ public:
 struct Node {
     Game state;
     Node *parent;
+    std::pair<int, int> move;
     int visitCount;
     double winScore;
-    pair<int, int> move;
-    vector<Node*> children;
-    vector<pair<int, int>> expandableMoves;
-    Node(const Game& state, Node* parent = nullptr, pair <int, int> mv = {-1, -1})
+    std::vector<Node*> children;
+    std::vector<std::pair<int, int> > expandableMoves;
+    Node(const Game& state, Node* parent = nullptr, std::pair <int, int> mv = std::make_pair(-1, -1))
         : state(state), parent(parent), move(mv), visitCount(0), winScore(0){
             expandableMoves = this->state.getPossibleMoves();
         }
 
     ~Node() {
-        for (auto child : children) {
-            delete child;
+        for (std::vector<Node*>::iterator it = children.begin(); it != children.end(); it++) {
+            delete *it;
         }
     }
 
@@ -225,9 +227,10 @@ struct Node {
 
    
     Node* selectPromisingNode() {
-        Node* bestNode = nullptr;
-        double bestValue = -std::numeric_limits<double>::infinity();
-        for (auto &child : children) {
+        Node* bestNode = NULL;
+        double bestValue = -1e9;
+        for (std::vector<Node*>::iterator it = children.begin(); it != children.end(); it++) {
+            Node *child = *it;
             double uctValue = child->winScore / child->visitCount + 1.41 * sqrt(log(visitCount) / child->visitCount);
             if (bestValue < uctValue) {
                 bestValue = uctValue;
@@ -256,15 +259,14 @@ struct Node {
     }
     char    simulateMove() {
         Game tmp = state;
-        vector <pair<int, int>> possibleMoves = tmp.getPossibleMoves();
+        std::vector <std::pair<int, int> > possibleMoves = tmp.getPossibleMoves();
         while (!tmp.isTerminal()) {
             int i = rand() % possibleMoves.size();
             tmp.playMove(possibleMoves[i]);
             swap(possibleMoves[i], possibleMoves.back());
             possibleMoves.pop_back();
         }
-        char winner = tmp.getWinner();
-        return winner;
+        return tmp.getWinner();
     }
 };
 
@@ -274,7 +276,7 @@ class MCTS {
 public:
     MCTS(int iterations) : iterations(iterations), generator(time(0)) {}
 
-    pair<int, int> findNextMove(Game& game) {
+    std::pair<int, int> findNextMove(Game& game) {
         Node* root = new Node(game);
         for (int i = 0; i < iterations; i++) {
             Node *it = root;
@@ -286,20 +288,20 @@ public:
             char result = it->simulateMove();
             it->backpropagate(result);
         }
-        map<pair<int, int>, double> moves;
+        std::map<std::pair<int, int>, double> moves;
         double sum = 0;
         double bestVal = -1e9;
-        pair<int, int> bestMove = {-1, -1};
-        cerr << root->children.size() << endl;
-        for (auto &child : root->children) {
+        std::pair<int, int> bestMove = std::make_pair(-1, -1);
+        // cerr << root->children.size() << endl;
+        for (std::vector<Node*>::iterator it = root->children.begin(); it != root->children.end(); it++) {
+            Node *child = *it;
             moves[child->move] += child->visitCount;
             sum += child->visitCount;
-            // cerr << child->move.first << ' ' << child->move.second << ' ' << child->winScore << endl;
         }
-        for(auto &[l, r] : moves) {
-            if (r / sum > bestVal) {
-                bestVal = r / sum;
-                bestMove = l;
+        for(std::map<std::pair<int, int>, double>::iterator it = moves.begin(); it != moves.end(); it++) {
+            if (it->second / sum > bestVal) {
+                bestVal = it->second / sum;
+                bestMove = it->first;
             }
         }
         delete root;
@@ -314,11 +316,64 @@ class Bot {
         Game gomuko;
         std::string ticTacToeDifficulty;
         std::string gomukoDifficulty;
-
+        std::string msgToSend;
         
+        bool isInvalidBoardSize(std::string &num, std::string &gameType) {
+            bool invalid = (num.size() > 2);
+            int boardSize = 0;
+            for(size_t i = 0; i < num.size(); i++) {
+                invalid |= !std::isdigit(num[i]);
+                boardSize = boardSize * 10 + num[i] - '0';
+            }
+            invalid |= ((boardSize > 10 || boardSize < 3));
+            if (gameType == "GOMUKO") invalid |= (boardSize < 5);
+            return invalid; 
+        }
 
-    public :
-        Bot() {}
+        bool    isInvalidCoordinates(std::string &X, std::string &Y) {
+            bool    invalid = (X.size() > 2 || Y.size() > 2);
+            int x = 0, y = 0;
+            for(size_t i = 0; i < X.size(); i++) {
+                invalid |= !std::isdigit(X[i]);
+                x = x * 10 + X[i] - '0';
+            }
+            for(size_t i = 0; i < Y.size(); i++) {
+                invalid |= !std::isdigit(Y[i]);
+                y = y * 10 + Y[i] - '0';
+            }
+            invalid |= (y < 0 || y > 10 || x < 0 || x > 10);
+            return invalid;
+        }
+
+        bool    isInvalidDifficulty(std::string &gameDifficulty) {
+            return (gameDifficulty != "HARD" && gameDifficulty != "MEDIUM" && gameDifficulty != "EASY");
+        }
+
+        bool isInvalidGameType(std::string &gameType) {
+            return (gameType != "GOMUKO" && gameType != "TICTACTOE");
+        }
+
+        bool    isValidMove(std::string gameType, std::pair<int, int> move) {
+            std::vector<std::pair<int, int> > moves;
+            moves = (gameType == "TICTACTOE") ? ticTacToe.getPossibleMoves() : gomuko.getPossibleMoves();
+            return  (std::find(moves.begin(), moves.end(), move) != moves.end());
+        }
+        
+        bool    isTerminal(std::string gameType) {
+            return ((gameType == "TICTACTOE") ? ticTacToe.isTerminal() : gomuko.isTerminal());
+        }
+
+        bool isGameFinished(Game &game, bool needPrint) {
+            if (!game.isTerminal()) return 0;
+            if (needPrint) msgToSend += game.printBoard();
+            if (game.getWinner() == 'N') msgToSend += "Game ended with a DRAW, ";
+            else  {
+                msgToSend += ((game.getWinner() == 'X') ? "Bot" : "You");
+                msgToSend += " have won, ";
+            }
+            msgToSend += "please start a new game if you want to play\n";
+            return 1;
+        }
         void    startNewGame(std::string gameType, std::string gameDifficulty, int boardSize) {
             if (gameType == "TICTACTOE") {
                 ticTacToe = Game(boardSize, gameType);
@@ -328,13 +383,14 @@ class Bot {
                 gomuko = Game(boardSize, gameType);
                 gomukoDifficulty = gameDifficulty;
             }
+            msgToSend.clear();
             playServerMove(gameType);
         }
 
         void    playServerMove(std::string gameType) {
             Game &game = gameType == "GOMUKO" ? gomuko : ticTacToe;
             std::string difficulty = gameType == "GOMUKO" ? gomukoDifficulty : ticTacToeDifficulty;
-            pair<int, int> botMove;
+            std::pair<int, int> botMove;
             if (difficulty == "EASY") 
                 botMove = game.playEasy();
             else if (difficulty == "MEDIUM")
@@ -344,75 +400,94 @@ class Bot {
                 botMove = mct.findNextMove(game);
             }
             game.playMove(botMove);
-            game.printBoard();
+            msgToSend += game.printBoard();
             // sendMoveToClient(botMove, gameType);
-            std::cout << "Bot Move : " << botMove.first << ' ' << botMove.second << endl;
-            if (game.isTerminal())
-                std::cout << game.getWinner() << ' ' << " wins "<< endl;
-            else std::cout << "Your turn to play, chose an action\n";
+            msgToSend += "Bot Move : [" + std::to_string(botMove.first) + ' ' + std::to_string(botMove.second) + "]\n";
+            if (isGameFinished(game, 0))
+                return ;
+            else msgToSend += "Your turn to play, please chose an action : [x, y]\n";
         }
-        void    playClientMove(std::string gameType, pair <int, int> oppMove) {
+
+        void    playClientMove(std::string gameType, std::pair <int, int> clientMove) {
             Game &game = gameType == "GOMUKO" ? gomuko : ticTacToe;
-            game.playMove(oppMove);
-            game.printBoard();
-            std::cout << "Client Move : " << oppMove.first << ' ' << oppMove.second << endl;
-            if (game.isTerminal())
-                std::cout << game.getWinner() << ' ' << " wins "<< endl;
+            if (game.isTerminal()) {
+                msgToSend = gameType + " Game have finished, please start a new one to play\n";
+                return ;
+            }
+            else if (game.notStartedYet()) {
+                msgToSend = gameType + " game didn't start yet, please start a new Game to play\n";
+                return ;
+            }
+            else if (game.invalidMove(clientMove)) {
+                msgToSend = "Invalid Move, please try again\n";
+                return ;
+            }
+            game.playMove(clientMove);
+            msgToSend = "Client Move : [" + std::to_string(clientMove.first) + ' ' + std::to_string(clientMove.second) + "]\n";
+       
+            if (isGameFinished(game, 1)) return ;
+            else playServerMove(gameType);
         }
-        bool    isTerminal(std::string gameType) {
-            return ((gameType == "TICTACTOE") ? ticTacToe.isTerminal() : gomuko.isTerminal());
+
+    public :
+        Bot() {}
+
+        std::string play(std::vector<std::string> &cmd) {
+            if (cmd[1] == "START")
+                startNewGame(cmd[2], cmd[3], std::stoi(cmd[4]));
+            else
+                playClientMove(cmd[2], std::make_pair(stoi(cmd[3]), stoi(cmd[4])));
+            return msgToSend;
         }
-        bool    isValidMove(std::string gameType, pair<int, int> move) {
-            vector<pair<int, int>> moves;
-            moves = (gameType == "TICTACTOE") ? ticTacToe.getPossibleMoves() : gomuko.getPossibleMoves();
-            return  (find(moves.begin(), moves.end(), move) != moves.end());
+       
+        std::string botUsage() {
+            std::ostringstream oss;
+            oss << "Invalid Command, please follow the command prototype below:\n";
+            oss << "Bot Usage :\n";
+            oss << "    1. BOT START GAME DIFFICULTY SIZE\n";
+            oss << "        - GAME: 'GOMUKO' or 'TICTACTOE'\n";
+            oss << "        - DIFFICULTY: 'HARD', 'MEDIUM', 'EASY'\n";
+            oss << "        - SIZE: 3-10 for TICTACTOE, 5-10 for GOMUKO\n";
+            oss << "    2. BOT PLAY GAME X Y\n";
+            oss << "        - X, Y: Coordinates for the move (positive integers)\n";
+            oss << "        - GAME: 'GOMUKO' or 'TICTACTOE'\n";
+
+            return oss.str();
         }
         
-        // std::string botUsage() {
-        //     std::ostringstream oss;
-        //     oss << "Usage :\n";
-        //     oss << "1. BOT GAME DIFFICULTY SIZE\n";
-        //     oss << "   - GAME: 'GOMUKO' or 'TICTACTOE'\n";
-        //     oss << "   - DIFFICULTY: 'HARD', 'MEDIUM', 'EASY'\n";
-        //     oss << "   - SIZE: 3-10 for TICTACTOE, 5-10 for GOMUKO\n";
-        //     oss << "2. BOT PLAY X Y\n";
-        //     oss << "   - X, Y: Coordinates for the move (positive integers)\n";
-        //     return oss.str();
-        // }
+        bool argumentsError(std::vector<std::string> &cmd) {
+            bool isError = (cmd.size() != 5) || (cmd[1] != "PLAY" && cmd[1] != "START") || isInvalidGameType(cmd[2]);
+            if (isError) return isError;
 
-        // bool argumentsError() {
-        //     bool isError = (cmd.size() != 4) || (cmd[1] != "PLAY" && cmd[1] != "START") || (cmd[2] != "GOMUKO" && cmd[2] != "TICTACTOE");
-        //     if (isError) return isError;
-
-        //     if (cmd[1] == "PLAY") {
-
-        //     }
-        //     else if (cmd[1] == "START") {
-        //         if (cmd[3] = "")
-        //     }
-        //     return isError;
-        // }
+            if (cmd[1] == "START")
+                isError = (isInvalidDifficulty(cmd[3]) || isInvalidBoardSize(cmd[4], cmd[2]));
+            else
+                isError = isInvalidCoordinates(cmd[3], cmd[4]);
+            return isError;
+        }
+        ~Bot() {};
 };
 
 
 
-int main(int ac, char **av) {
+int main() {
     Bot bot;
     srand(time(0));
-    std::string gameType = "GOMUKO";     // "you can make it to TICTACTOE or GOMUKO"
-    bot.startNewGame(gameType, "HARD", 10);
-    int turn = 1;
-    while (!bot.isTerminal(gameType)) {
-        if (turn & 1) {
-            pair <int, int> move;
-            std::cin >> move.first >> move.second;
-            if (!bot.isValidMove(gameType, move)) {
-                std::cout << "Invalid Move, please try again\n";
-                continue;
-            }
-            bot.playClientMove(gameType, move);
+    while (1){
+        std::string s, t;
+        std::getline(std::cin, s); // ---> command that cliet send 
+                                 //   cmd1 : BOT START GAME DIFFICULTY SIZE
+                                //    cmd 2: BOT PLAY  GAME  X  Y
+                                // see botUSage for more 
+        std::stringstream ss(s);
+        std::vector<std::string> cmd;
+        while (ss >> t) cmd.push_back(t);
+        if (cmd.empty() || cmd[0] != "BOT") {
+            std::cout << bot.botUsage() << std::endl;
+            continue;
         }
-        else bot.playServerMove(gameType);
-        turn++;
+        if (bot.argumentsError(cmd))
+            std::cout << "---" << bot.botUsage() << std::endl;
+        else std::cout << bot.play(cmd);
     }
 }
