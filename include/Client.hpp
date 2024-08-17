@@ -45,6 +45,12 @@ public :
     void    setNickName(std::string &name) {
         this->nickName = name;
     }
+    //copy assginment operator
+
+    bool operator==(const Client &_client){
+        return (_client.fd == this->fd);
+    }
+
     ~Client() {}
 };
 

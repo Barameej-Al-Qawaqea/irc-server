@@ -32,7 +32,14 @@
 #include <unistd.h>
 #include <poll.h>
 
+/*built-in headers*/
+#include <Client.hpp>
+#include <Channel.hpp>
+#include <Command.hpp>
+
+
 /* default defined values */
+
 
 /* Able to modify */
 # define LISTENBACKLOG 20

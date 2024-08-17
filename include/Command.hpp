@@ -91,8 +91,8 @@ class Command
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination));
             else if (cmd.size() > 2 || invalidNickName(cmd[1]))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination));
-            else if (serverData.isNickNameInUse(cmd[1])) // isNickNameInUse: to code later
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
+            // else if (serverData.isNickNameInUse(cmd[1])) // isNickNameInUse: to code later
+            //     sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
             else if (!client->getAuthenticated()) // no PASS YEt
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination));
             else {
