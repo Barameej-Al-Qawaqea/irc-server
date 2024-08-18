@@ -7,8 +7,9 @@ SRCS =  srcs/server.cpp \
 		srcs/sockets.cpp \
 		srcs/communication.cpp \
 		srcs/steps.cpp \
-		srcs/ClientCommand.cpp \
-		srcs/parsing.cpp
+		srcs/ChannelCommands.cpp \
+		srcs/parsing.cpp \
+		srcs/Channel.cpp
 
 
 INCS = include

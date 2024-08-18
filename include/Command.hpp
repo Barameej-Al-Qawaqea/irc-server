@@ -1,3 +1,5 @@
+#pragma once
+
 #include "header.hpp"
 #include "Client.hpp"
 
@@ -10,6 +12,8 @@
 #define ERR_ERRONEUSNICKNAME 432
 #define ERR_NICKNAMEINUSE 433
 #define ERR_NOTREGISTERED 451
+
+#include "header.hpp"
 
 class Command
 {
@@ -111,6 +115,7 @@ class Command
 
         void    executeUser() {
             int sendReturn = 1;
+            (void)sendReturn;
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
             if (cmd.size() < 5 || (cmd.size() == 5 && cmd[4].size() == 1))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, destination));

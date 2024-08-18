@@ -1,6 +1,7 @@
 #include "header.hpp"
-#include "Client.hpp"
+
 /* sockets methodes */
+
 void createSocket(s_server_data &serverData)
 {
 	serverData.sockfd = socket(AF_INET, SOCK_STREAM, 0);

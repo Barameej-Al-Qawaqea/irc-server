@@ -1,5 +1,5 @@
 #include "header.hpp"
-#include "Command.hpp"
+
 
 void newCmnd(int serverSocket, Client *client,\
  std::string &cmnd, s_server_data &serverData){
