@@ -44,8 +44,8 @@ void removeClient(s_server_data &serverData, int clientIdx)
 {
 	closeSocket(serverData.clients[clientIdx].fd);
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
+	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();
-	serverData.fdToClient.erase(clientIdx);
 }
 
 void	checkClientsRequests(s_server_data &serverData)
