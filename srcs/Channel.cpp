@@ -25,6 +25,15 @@ void Channel::AddToChan(const Client &client){
     std::cout<<"client added to #" << name << '\n';
 }
 
+void Channel::removeClient(const Client &client){
+    std::vector<Client>::iterator it;
+
+    it = std::find(clients.begin(), clients.end(), client);
+    if(it != clients.end()){
+        clients.erase(it);
+    }
+}
+
 Channel::~Channel(){
     std::cout << "Channel destructor\n";
 }

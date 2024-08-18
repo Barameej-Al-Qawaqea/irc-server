@@ -16,3 +16,21 @@ void join(Client &client, Channel &chan){
     }
     chan.AddToChan(client);
 }
+
+void kick(Client &client, Channel &chan, Client &target){
+    
+    if(!chan.isOnChan(client)){
+        // err;
+        return;
+    }
+    
+    if(!chan.isChanOp(client)){
+        // err;
+        return;
+    }
+    if(!chan.isOnChan(target)){
+        // err;
+        return;
+    }
+    chan.removeClient(client);
+}

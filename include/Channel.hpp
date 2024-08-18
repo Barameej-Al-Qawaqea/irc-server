@@ -21,6 +21,7 @@ class Channel{
         bool isChanOp(const Client &client);
         bool isOnChan(const Client &client);
         void AddToChan(const Client &client);
+        void removeClient(const Client &client);
         ~Channel();
 };
 #endif
