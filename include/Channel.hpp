@@ -18,6 +18,7 @@ class Channel{
         Channel();
     public:
         Channel(const std::string &name);
+        bool operator==(const Channel &chan);
         bool isChanOp(const Client &client);
         bool isOnChan(const Client &client);
         void AddToChan(const Client &client);
@@ -25,3 +26,4 @@ class Channel{
         ~Channel();
 };
 #endif
+

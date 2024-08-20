@@ -29,6 +29,8 @@ struct s_server_data
 
 	std::vector<pollfd>	clients;
 
+	std::vector<Channel>channels;
+
 	std::vector<pollfd>	clientsQueue;
 
 	std::string				port;

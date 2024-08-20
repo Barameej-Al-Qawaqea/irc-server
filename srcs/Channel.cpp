@@ -5,6 +5,17 @@ Channel::Channel(const std::string &_name):name(_name){
 
 }
 
+bool Channel::operator==(const Channel &chan){
+    return (chan.name == this->name);
+}
+
+bool isChanExit(const Channel &chan, const vector<Channel> &channels){
+    vector<const Channel>::iterator it;
+
+    it = std::find(channels.begin(), channels.end(), chan);
+    return (it != channels.end());
+}
+
 bool Channel::isChanOp(const Client &client){
     std::vector<Client>::iterator it;
 
@@ -18,7 +29,6 @@ bool Channel::isOnChan(const Client &client){
     it = std::find(clients.begin(), clients.end(), client);
     return (it != clients.end());
 }
-
 
 void Channel::AddToChan(const Client &client){
     clients.push_back(client);
@@ -35,5 +45,5 @@ void Channel::removeClient(const Client &client){
 }
 
 Channel::~Channel(){
-    std::cout << "Channel destructor\n";
+    std::cout << "Channel object destructor\n";
 }
