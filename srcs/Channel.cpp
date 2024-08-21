@@ -2,7 +2,7 @@
 
 
 Channel::Channel(const std::string &_name):name(_name){
-
+    topic = "undefined";
 }
 
 bool Channel::operator==(const Channel &chan)const{
@@ -30,6 +30,13 @@ bool Channel::isOnChan(const Client &client){
     return (it != clients.end());
 }
 
+const std::string &Channel::getTopic(){
+
+}
+
+const std::string &Channel::setTopic(const std::string &_topic){
+
+}
 void Channel::AddToChan(const Client &client){
     clients.push_back(client);
 

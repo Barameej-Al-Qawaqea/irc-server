@@ -39,3 +39,8 @@ void kick(Client &client, Channel &chan, Client &target){
     }
     chan.removeClient(client);
 }
+
+
+void topic(Channel &chan, const Client &client){
+    
+}

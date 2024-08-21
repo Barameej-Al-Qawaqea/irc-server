@@ -15,9 +15,12 @@ class Channel{
         std::string name;
         std::vector<Client>clients;
         // channel operators
+        std::string topic;
         std::vector<Client>chan_operators;
         Channel();
     public:
+        const std::string &getTopic();
+        const std::string &setTopic(const std::string &_topic);
         Channel(const std::string &name);
         bool operator==(const Channel &chan) const;
         bool isChanOp(const Client &client);
