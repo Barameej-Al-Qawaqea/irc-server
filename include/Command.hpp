@@ -153,6 +153,8 @@ class Command
                 &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
 
             int cmdIdx = -1;
+            for(int i = 0;i < cmd.size(); i++)
+                std::cout << cmd[i] << '\n';
             for(int i = 0; i < 9; i++) {
                 if (!cmd.empty() && cmd[0] == possibleCommands[i])
                     cmdIdx = i;

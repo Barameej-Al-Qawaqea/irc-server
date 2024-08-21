@@ -28,7 +28,21 @@ void join(Client &client, Channel &chan){
     . l: Set/remove the user limit to channel
 */
 
-void mode(Channel &channel, const Client &client){
+void mode(Channel &channel, const Client &client, modeopt opt){
+    if(!channel.isChanOp(client)){
+        //err
+        return;
+    }
+    switch(opt){
+        case INVITE_ONLY_OPT:
+            ;
+        case TOPIC_RESTRICTION_OPT:
+            ;
+        case CHAN_KEY_OPT:
+            ;
+        case CHANOP_OPT:
+            ;
+    }
     
 }
 

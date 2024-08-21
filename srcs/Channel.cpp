@@ -3,6 +3,10 @@
 
 Channel::Channel(const std::string &_name):name(_name){
     topic = "undefined";
+    mode.ChanReqPass = 0;
+    mode.invite_only = 0;
+    mode.TopicRestricted = 0;
+    mode.UserLimit = -1;
 }
 
 bool Channel::operator==(const Channel &chan)const{
