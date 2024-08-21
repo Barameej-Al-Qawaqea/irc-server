@@ -1,3 +1,5 @@
+
+
 #include "header.hpp"
 
 static const char *CHAN_NAME_ = "&#";
@@ -14,8 +16,11 @@ void join(Client &client, Channel &chan){
         // err;
         return;
     }
+    
     chan.AddToChan(client);
 }
+
+// void mode(Channel &channel, t)
 
 void kick(Client &client, Channel &chan, Client &target){
     

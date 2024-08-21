@@ -14,15 +14,18 @@ class Channel{
     private :
         std::string name;
         std::vector<Client>clients;
-        std::vector<Client>Chan_operators;
+        // channel operators
+        std::vector<Client>chan_operators;
         Channel();
     public:
         Channel(const std::string &name);
-        bool operator==(const Channel &chan);
+        bool operator==(const Channel &chan) const;
         bool isChanOp(const Client &client);
         bool isOnChan(const Client &client);
         void AddToChan(const Client &client);
         void removeClient(const Client &client);
+        const std::vector<Client> &getChanClients();
+        void AddToChanOPs(const Client &client);
         ~Channel();
 };
 #endif

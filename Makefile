@@ -20,7 +20,7 @@ OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
 
 CC = c++
 
-FLAGS = -Wall -Wextra -std=c++98 #-Werror
+FLAGS = -Wall -Wextra -std=c++11 -fsanitize=address -g#-Werror
 
 all : $(NAME)
 

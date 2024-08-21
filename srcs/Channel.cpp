@@ -5,12 +5,12 @@ Channel::Channel(const std::string &_name):name(_name){
 
 }
 
-bool Channel::operator==(const Channel &chan){
+bool Channel::operator==(const Channel &chan)const{
     return (chan.name == this->name);
 }
 
-bool isChanExit(const Channel &chan, const vector<Channel> &channels){
-    vector<const Channel>::iterator it;
+bool isChanExit(Channel &chan, vector<Channel> &channels){
+    vector<Channel>::iterator it;
 
     it = std::find(channels.begin(), channels.end(), chan);
     return (it != channels.end());
@@ -19,8 +19,8 @@ bool isChanExit(const Channel &chan, const vector<Channel> &channels){
 bool Channel::isChanOp(const Client &client){
     std::vector<Client>::iterator it;
 
-    it = std::find(Chan_operators.begin(), Chan_operators.end(), client);
-    return (it != Chan_operators.end());
+    it = std::find(chan_operators.begin(), chan_operators.end(), client);
+    return (it != chan_operators.end());
 }
 
 bool Channel::isOnChan(const Client &client){
@@ -32,7 +32,15 @@ bool Channel::isOnChan(const Client &client){
 
 void Channel::AddToChan(const Client &client){
     clients.push_back(client);
-    std::cout<<"client added to #" << name << '\n';
+
+}
+
+void Channel::AddToChanOPs(const Client &client){
+    chan_operators.push_back(client);
+}
+
+const std::vector<Client> &Channel::getChanClients(){
+    return clients;
 }
 
 void Channel::removeClient(const Client &client){
