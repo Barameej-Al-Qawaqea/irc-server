@@ -9,6 +9,9 @@
 using std::vector;
 using std::string;
 
+enum t_mode{
+
+};
 
 class Channel{
     private :

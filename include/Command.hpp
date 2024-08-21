@@ -59,18 +59,18 @@ class Command
             return validName;
         }
 
-        // void    executeBot() {
+        void    executeBot() {
 
-        //     std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
-          
-        //     if (!client->isAlreadyRegistred())
-        //         sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
-        //     else if (client.bot.argumentsError(cmd))
-        //         sendReturn &= sendMsg(client->getSocket(), client->bot.usage()) != -1;
-        //     else sendReturn &= sendMsg(client->getSocket(), client->bot.play(cmd)) != -1;
-        //     if (!sendReturn)
-        //         std::cerr << "Error occurs while sending message to the client\n";
-        // }
+            std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
+            int sendReturn = 1;
+            if (!client->isAlreadyRegistred())
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
+            else if (client->argumentsError(cmd))
+                sendReturn &= sendMsg(client->getSocket(), client->botUsage()) != -1;
+            else sendReturn &= sendMsg(client->getSocket(), client->play(cmd)) != -1;
+            if (!sendReturn)
+                std::cerr << "Error occurs while sending message to the client\n";
+        }
 
         void    executePass() {
             int sendReturn = 1;
@@ -144,15 +144,16 @@ class Command
             std::stringstream ss(command);
             std::string word;
             while (ss >> word) this->cmd.push_back(word);
+            // client->bot() = bot();
         }
         void    checkWhichCommand() {
-            std::string possibleCommands[8] = {"PASS", "NICK", "USER", "JOIN", "INVITE", "TOPIC", "MODE", "KICK"};
+            std::string possibleCommands[] = {"PASS", "NICK", "USER", "JOIN", "INVITE", "TOPIC", "MODE", "KICK", "BOT"};
 
-            void(Command::*possibleFunctions[8])() = {&Command::executePass, &Command::executeNick, &Command::executeUser,
-                &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick};
+            void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser,
+                &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
 
             int cmdIdx = -1;
-            for(int i = 0; i < 8; i++) {
+            for(int i = 0; i < 9; i++) {
                 if (!cmd.empty() && cmd[0] == possibleCommands[i])
                     cmdIdx = i;
             }

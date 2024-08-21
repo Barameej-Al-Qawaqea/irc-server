@@ -20,7 +20,17 @@ void join(Client &client, Channel &chan){
     chan.AddToChan(client);
 }
 
-// void mode(Channel &channel, t)
+/*
+    * i: Set/remove Invite-only channel
+    · t: Set/remove the restrictions of the TOPIC command to channel operators
+    · k: Set/remove the channel key (password)
+    · o: Give/take channel operator privilege
+    . l: Set/remove the user limit to channel
+*/
+
+void mode(Channel &channel, const Client &client){
+    
+}
 
 void kick(Client &client, Channel &chan, Client &target){
     

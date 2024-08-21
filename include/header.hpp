@@ -20,7 +20,6 @@
 #include <random>
 #include <sstream>
 #include <csignal>
-
 /* sockets includes */
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -31,6 +30,7 @@
 #include <poll.h>
 
 /*built-in headers*/
+#include "Bot.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"

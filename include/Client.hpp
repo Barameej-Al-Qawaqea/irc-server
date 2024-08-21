@@ -12,6 +12,7 @@ private :
     bool isRegistred;      // user made PASS, NICK, USER
     sockaddr_in Addr; // client info
     int fd; // client socket
+    Bot bot;
 public :
     Client(sockaddr_in &clientAddr, int clientSocket) {
         this->isAuthenticated = 0;
@@ -50,7 +51,15 @@ public :
     bool operator==(const Client &_client){
         return (_client.fd == this->fd);
     }
-
+    std::string play(std::vector<std::string> cmd){
+        return bot.play(cmd);
+    }
+    std::string botUsage(){
+        return bot.botUsage();
+    }
+    bool argumentsError(std::vector<std::string> _cmd){
+        return bot.argumentsError(_cmd);
+    }
     ~Client() {}
 };
 
