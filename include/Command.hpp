@@ -50,11 +50,12 @@ class Command
             return serverMsg;
         }   
 
-        static bool invalidNickName(std::string &name) {
+        static bool validNickName(std::string &name) {
             std::string validCharacters = "-{}[]^`\\";
             bool validName = 1;
             for(size_t i = 0; i < name.size(); i++)
                 validName &= (std::isalpha(name[i]) || validCharacters.find(name[i]) != std::string::npos);
+            // std::cout << validName << ' ' << name << '\n';
             return validName;
         }
 
@@ -93,7 +94,7 @@ class Command
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();   // destination should be '*' if user doenst have a nickname yet
             if (cmd.size() == 1)
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination));
-            else if (cmd.size() > 2 || invalidNickName(cmd[1]))
+            else if (cmd.size() > 2 || !validNickName(cmd[1]))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination));
             // else if (serverData.isNickNameInUse(cmd[1])) // isNickNameInUse: to code later
             //     sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
@@ -117,21 +118,22 @@ class Command
             int sendReturn = 1;
             (void)sendReturn;
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
+            std::cout << client->isAlreadyRegistred() << '\n';
             if (cmd.size() < 5 || (cmd.size() == 5 && cmd[4].size() == 1))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, destination));
-            else if (!client->isAlreadyRegistred()) 
+            else if (client->isAlreadyRegistred()) 
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ALREADYREGISTRED, destination));
             else if (!client->getAuthenticated() || client->getNickName().empty())  // user didnt make a PASS,NICK yet
                 sendReturn &= sendMsg(client->getSocket(),  error(ERR_NOTREGISTERED, destination));
             else {
                 // all good
                 client->setRegistred();
-                // send some succesfull msg:
+                sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + "to ft_irc server\n");
             }   
         }
         
 
-        void    executeJoin() {}
+        void    executeJoin() { }
         void    executeInvite() {}
         void    executeTopic() {}
         void    executeMode() {}

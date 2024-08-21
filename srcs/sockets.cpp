@@ -60,6 +60,6 @@ std::pair<int, Client*> acceptNewConnection(s_server_data &serverData)
 	sockaddr_in clientAddr;
 	socklen_t size = sizeof(clientAddr);
 	int clienSocket = accept(serverData.sockfd, (sockaddr *)&(clientAddr), &size);
-	Client client(clientAddr, clienSocket);
-	return (std::make_pair(clienSocket, &client));
+	Client *client = new Client(clientAddr, clienSocket);
+	return (std::make_pair(clienSocket, client));
 }

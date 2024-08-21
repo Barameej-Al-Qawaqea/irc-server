@@ -31,7 +31,7 @@ bool Channel::isOnChan(const Client &client){
 }
 
 const std::string &Channel::getTopic(){
-
+    return this->topic;
 }
 
 const std::string &Channel::setTopic(const std::string &_topic){
