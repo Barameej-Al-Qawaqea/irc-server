@@ -101,8 +101,6 @@ class Command
             else if (!client->getAuthenticated()) // no PASS YEt
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination));
             else {
-                // all good
-
                 // remove old nickname from serverData if it is not empty && add the newnickName to data && set the client new nickname
                 // serverData.eraseNickName(client->getNickName());
                 // serverData.addNickName(cmd[1]);
@@ -136,7 +134,11 @@ class Command
         void    executeJoin() { }
         void    executeInvite() {}
         void    executeTopic() {}
-        void    executeMode() {}
+        void    executeMode() {
+            for(auto c: cmd)
+                std::cout << c << '\t';
+            std::cout << '\n';
+        }
         void    executeKick() {}
     public :
         Command(std::string &command, Client *client, s_server_data &serverData) : client(client),  serverData(serverData)
@@ -153,8 +155,6 @@ class Command
                 &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
 
             int cmdIdx = -1;
-            for(int i = 0;i < cmd.size(); i++)
-                std::cout << cmd[i] << '\n';
             for(int i = 0; i < 9; i++) {
                 if (!cmd.empty() && cmd[0] == possibleCommands[i])
                     cmdIdx = i;

@@ -39,7 +39,7 @@ const std::string &Channel::getTopic(){
 }
 
 const std::string &Channel::setTopic(const std::string &_topic){
-
+    topic = _topic;
 }
 void Channel::AddToChan(const Client &client){
     clients.push_back(client);
