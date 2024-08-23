@@ -31,14 +31,19 @@ class Channel{
         std::vector<Client>clients;
         // channel operators
         Mode mode; 
+        std::string password;
         std::string topic;
         std::vector<Client>chan_operators;
+        int limit;
         Channel();
     public:
         const std::string &getTopic();
         const std::string &setTopic(const std::string &_topic);
         const std::string &getName(){
             return name;
+        }
+        int getlimit(){
+            return this->limit;
         }
         Channel(const std::string &name);
         bool operator==(const Channel &chan) const;
@@ -52,13 +57,49 @@ class Channel{
             return  mode;
         }
         /*mode commands*/
-        void set_remove_invite(const Client &client, bool _do){
+        void set_remove_invite_only(const Client &client, bool _do){
             if(isChanOp(client)){
+                std::cout << (_do? "channel mode join changed to invite only":"channel mode join changed to default")  << '\n';
                 mode.invite_only = _do;
                 return;
             }
             std::cerr << "Not permitted\n";
         }
+        void set_remove_topic_restriction(const Client &client, bool _do){
+            if(isChanOp(client)){
+                std::cout << (_do? "channel mode changed to topic restriction":"channel mode changed to default")  << '\n';
+                mode.TopicRestricted = _do;
+                return;
+            }
+            std::cerr << "Not permitted\n";
+        }
+        void set_remove_channel_key(const Client &client, bool _do, std::string _password){
+            if(isChanOp(client)){
+                mode.ChanReqPass = _do;
+                password = _password;
+                return;
+            }
+            std::cerr << "Not permitted\n";
+        }
+        void add_clientToChanops(Client client, Client target, bool _do){
+                if(isChanOp(client)){
+                    if(!isChanOp(target) && _do){
+                        chan_operators.push_back(client);
+                    }
+                }
+                std::cerr << "Not permitted\n";
+        }
+        void limitUserToChan(Client client,bool _do, int _limit){
+                if(isChanOp(client)){
+                    mode.UserLimit = _do;
+                    if(_do && limit >= clients.size()){
+                        mode.UserLimit = 1;
+                        limit = _limit;
+                    }
+                }
+                std::cerr << "Not permitted\n";
+        }
+
         ~Channel();
 };
 #endif

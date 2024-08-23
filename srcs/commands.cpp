@@ -8,10 +8,12 @@ void    Command::executeJoin(){
         std::cerr << "invalid join params\n"; 
         return ;
     }
-    name = std::string(cmd[1].c_str() + 1);
+    // todo: skip # in the first name of the channel
+    name = std::string(cmd[1].c_str() );
     Channel *chan = new Channel(name);
-    serverData.channels.push_back(*chan);
-    join(this->client,   serverData.channels.back());
+    if(join(this->client, *chan)){
+        serverData.channels.push_back(*chan);
+    }
 }
 void    Command::executeInvite(){;}
 void    Command::executeTopic(){;}

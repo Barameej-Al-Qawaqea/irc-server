@@ -6,7 +6,7 @@ Channel::Channel(const std::string &_name):name(_name){
     mode.ChanReqPass = 0;
     mode.invite_only = 0;
     mode.TopicRestricted = 0;
-    mode.UserLimit = -1;
+    mode.UserLimit = 0;
 }
 
 bool Channel::operator==(const Channel &chan)const{
@@ -42,9 +42,11 @@ const std::string &Channel::setTopic(const std::string &_topic){
     topic = _topic;
 }
 void Channel::AddToChan(const Client &client){
-    clients.push_back(client);
-    if(clients.size() == 1)
-        chan_operators.push_back(client);
+    if((!mode.UserLimit) || (mode.UserLimit && this->clients.size() < this->getlimit())){
+        clients.push_back(client);
+        if(clients.size() == 1)
+            chan_operators.push_back(client);
+    }
 }
 
 void Channel::AddToChanOPs(const Client &client){

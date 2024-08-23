@@ -107,6 +107,6 @@ void newCmnd(int serverSocket, Client *client,
     * l: Set/remove the user limit to channel
 */
 void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do);
-void join(Client *client, Channel &chan);
+bool join(Client *client, Channel &chan);
 /*channel utils*/
 modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);
