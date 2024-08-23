@@ -9,6 +9,7 @@ SRCS =  srcs/server.cpp \
 		srcs/steps.cpp \
 		srcs/ChannelCommands.cpp \
 		srcs/parsing.cpp \
+		srcs/commands.cpp \
 		srcs/Channel.cpp
 
 

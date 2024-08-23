@@ -130,17 +130,12 @@ class Command
             }   
         }
         
-
-        void    executeJoin() { }
-        void    executeInvite() {}
-        void    executeTopic() {}
-        void    executeMode() {
-            for(auto c: cmd)
-                std::cout << c << '\t';
-            std::cout << '\n';
-        }
-        void    executeKick() {}
     public :
+        void    executeJoin();
+        void    executeInvite();
+        void    executeTopic();
+        void    executeMode();
+        void    executeKick();
         Command(std::string &command, Client *client, s_server_data &serverData) : client(client),  serverData(serverData)
         {
             std::stringstream ss(command);

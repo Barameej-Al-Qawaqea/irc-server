@@ -9,13 +9,14 @@
 using std::vector;
 using std::string;
 
-typedef enum modeopt{
+typedef enum t_modeopt{
     INVITE_ONLY_OPT,
     TOPIC_RESTRICTION_OPT,
     CHAN_KEY_OPT,
     CHANOP_OPT,
-    USER_LIMIT_OPT
-};
+    USER_LIMIT_OPT,
+    UNKOWN
+}modeopt;
 
 typedef struct t_mode{
     int invite_only;
