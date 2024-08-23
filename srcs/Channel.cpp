@@ -43,7 +43,8 @@ const std::string &Channel::setTopic(const std::string &_topic){
 }
 void Channel::AddToChan(const Client &client){
     clients.push_back(client);
-
+    if(clients.size() == 1)
+        chan_operators.push_back(client);
 }
 
 void Channel::AddToChanOPs(const Client &client){

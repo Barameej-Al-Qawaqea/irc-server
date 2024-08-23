@@ -24,6 +24,9 @@ public :
         this->currChan = NULL;
     }
     // getters
+    void setcurrChan(Channel *chan){
+        currChan = chan;
+    }
     Channel *getcurrChan(){
         return this->currChan;
     }

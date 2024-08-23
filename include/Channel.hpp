@@ -37,6 +37,9 @@ class Channel{
     public:
         const std::string &getTopic();
         const std::string &setTopic(const std::string &_topic);
+        const std::string &getName(){
+            return name;
+        }
         Channel(const std::string &name);
         bool operator==(const Channel &chan) const;
         bool isChanOp(const Client &client);
@@ -45,6 +48,17 @@ class Channel{
         void removeClient(const Client &client);
         const std::vector<Client> &getChanClients();
         void AddToChanOPs(const Client &client);
+        Mode getMode(){
+            return  mode;
+        }
+        /*mode commands*/
+        void set_remove_invite(const Client &client, bool _do){
+            if(isChanOp(client)){
+                mode.invite_only = _do;
+                return;
+            }
+            std::cerr << "Not permitted\n";
+        }
         ~Channel();
 };
 #endif

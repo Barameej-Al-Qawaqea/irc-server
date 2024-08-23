@@ -11,23 +11,22 @@ static const char *CHAN_NAME_ = "&#";
 // INVITE  - Invite a client to an invite-only channel (mode +i)
 // TOPIC   - Change the channel topic in a mode +t channel
 
-void join(Client &client, Channel &chan){
-    if(chan.isOnChan(client)){
+void join(Client *client, Channel &chan){
+    if(chan.isOnChan(*client) || chan.getMode().invite_only){
         // err;
         return;
     }
-    chan.AddToChan(client);
+    chan.AddToChan(*client);
+    client->setcurrChan(&chan);
 }
 
 void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do){
     std::vector<std::string>::iterator params = extra_params.begin();
-    params += 3;
-    std::cout << *params << '\n';
-    
     if(!channel|| !channel->isChanOp(*client)){
         std::cerr << "Invalid operation\n";
         return;
     }
+    params+=2;
     switch(opt){
         case INVITE_ONLY_OPT:
             ;
