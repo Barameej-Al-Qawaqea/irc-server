@@ -16,21 +16,16 @@ void join(Client &client, Channel &chan){
         // err;
         return;
     }
-    
     chan.AddToChan(client);
 }
 
-/*
-    * i: Set/remove Invite-only channel
-    · t: Set/remove the restrictions of the TOPIC command to channel operators
-    · k: Set/remove the channel key (password)
-    · o: Give/take channel operator privilege
-    . l: Set/remove the user limit to channel
-*/
-
-void mode(Channel &channel, const Client &client, modeopt opt){
-    if(!channel.isChanOp(client)){
-        //err
+void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do){
+    std::vector<std::string>::iterator params = extra_params.begin();
+    params += 3;
+    std::cout << *params << '\n';
+    
+    if(!channel|| !channel->isChanOp(*client)){
+        std::cerr << "Invalid operation\n";
         return;
     }
     switch(opt){
@@ -42,6 +37,10 @@ void mode(Channel &channel, const Client &client, modeopt opt){
             ;
         case CHANOP_OPT:
             ;
+        case USER_LIMIT_OPT:
+            ;
+        case UNKOWN:
+            std::cerr << "UNKOWN OPTION\n";
     }
     
 }

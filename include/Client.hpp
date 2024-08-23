@@ -4,8 +4,10 @@
 
 #define NICKMAXLEN 9
 
+class Channel;
 class Client {
 private :
+    Channel *currChan;
     std::string nickName;
     std::string userName;
     bool isAuthenticated;   // to check if user already make a PASS
@@ -19,8 +21,12 @@ public :
         this->isRegistred = 0;
         this->Addr = clientAddr;
         this->fd = clientSocket;
+        this->currChan = NULL;
     }
     // getters
+    Channel *getcurrChan(){
+        return this->currChan;
+    }
     int getSocket() {
         return this->fd;
     }

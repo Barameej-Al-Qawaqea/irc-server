@@ -22,7 +22,6 @@ class Command
         Client *client;
         s_server_data &serverData;
 
-
         static std::string error(int errorNumber, std::string nickName) {
             std::string serverMsg = ":server ";
             switch (errorNumber) {

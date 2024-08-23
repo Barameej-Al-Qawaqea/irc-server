@@ -99,3 +99,13 @@ void newCmnd(int serverSocket, Client *client,
 
 /*channel commands*/
 
+/*
+    * i: Set/remove Invite-only channel
+    * t: Set/remove the restrictions of the TOPIC command to channel operators
+    * k: Set/remove the channel key (password)
+    * o: Give/take channel operator privilege
+    * l: Set/remove the user limit to channel
+*/
+void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do);
+/*channel utils*/
+modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);
