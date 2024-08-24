@@ -25,7 +25,6 @@ void    Command::executeJoin(){
     }
     // todo: skip # in the first name of the channel
     name = std::string(cmd[1].c_str() + 1);
-    
     Channel chan = findChan(name, this->serverData.channels, created);
     if(join(this->client, chan) && created){
         serverData.channels.push_back(chan);
@@ -47,4 +46,7 @@ void    Command::executeMode(){
     mode(this->client->getcurrChan(), this->client, get_which_opt(cmd, ((cmd.size() < 3) * -1), plus), cmd , plus);
 }
 
-void    Command::executeKick(){;}
+void    Command::executeKick(){
+    if(cmd.size() == 3)
+        kick(this->client, this->client->getcurrChan(), this->serverData.nameToClient[cmd[1]]);
+}

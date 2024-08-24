@@ -21,10 +21,7 @@ bool isChanExit(Channel &chan, vector<Channel> &channels){
 }
 
 bool Channel::isChanOp(const Client &client){
-    std::vector<Client>::iterator it;
-
-    it = std::find(chan_operators.begin(), chan_operators.end(), client);
-    return (it != chan_operators.end());
+   
 }
 
 bool Channel::isOnChan(const Client &client){
@@ -41,16 +38,16 @@ const std::string &Channel::getTopic(){
 void Channel::setTopic(const std::string &_topic){
     topic = _topic;
 }
-void Channel::AddToChan(const Client &client){
+void Channel::AddToChan(Client client){
     if((!mode.UserLimit) || (mode.UserLimit && (int)this->clients.size() < this->getlimit())){
         clients.push_back(client);
         if(clients.size() == 1)
-            chan_operators.push_back(client);
+            chan_operators.push_back(client.getSocket());
     }
 }
 
-void Channel::AddToChanOPs(const Client &client){
-    chan_operators.push_back(client);
+void Channel::AddToChanOPs(Client client){
+    chan_operators.push_back(client.getSocket());
 }
 
 const std::vector<Client> &Channel::getChanClients(){

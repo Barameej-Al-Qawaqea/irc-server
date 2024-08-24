@@ -53,19 +53,20 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
     
 }
 
-void kick(Client &client, Channel &chan, Client &target){
-    
-    if(!chan.isChanOp(client)){
+void kick(Client *client, Channel *chan, Client *target){
+    if(!chan)
+        return ;
+    if(!chan->isChanOp(*client)){
         // err;
-        std::cerr << client.getNickName() << " is not with chanops\n";
+        std::cerr << client->getNickName() << " is not with chanops\n";
         return;
     }
-    if(!chan.isOnChan(target)){
+    if(!chan->isOnChan(*target)){
         // err;
-        std::cerr << target.getNickName() << "is not in in the " << chan.getName() << '\n';
+        std::cerr << target->getNickName() << "is not in in the " << chan->getName() << '\n';
         return;
     }
-    chan.removeClient(client);
+    chan->removeClient(*client);
 }
 
 

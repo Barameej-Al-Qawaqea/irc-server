@@ -123,7 +123,8 @@ class Command
                 // all good
                 client->setRegistred();
                 sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + "to ft_irc server\n");
-                serverData.nameToClient[client->getNickName()] = *client;
+                // todo
+                serverData.nameToClient[client->getNickName()] = client;
             }   
         }
         

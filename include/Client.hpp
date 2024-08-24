@@ -57,7 +57,7 @@ public :
     }
     //copy assginment operator
 
-    bool operator==(const Client &_client){
+    bool operator==(Client _client){
         return (_client.fd == this->fd);
     }
     std::string play(std::vector<std::string> cmd){
