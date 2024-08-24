@@ -26,7 +26,7 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
     int _do, std::map<std::string, Client*>name_to_client){
 
     std::vector<std::string>::iterator params = extra_params.begin();
-
+    Client *clientTarget;
     if(!channel|| !channel->isChanOp(client)){
         if(!channel)
             std::cerr << "Invalid operation\n";
@@ -34,7 +34,6 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
             std::cerr << "Not permitted\n";
         return;
     }
-    std::cout << params[0] << '\n';
     params+=2;
     switch(opt){
         case INVITE_ONLY_OPT:
@@ -47,11 +46,22 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
-            // Client *clientTarget = name_to_client[*params];
-            // channel->add_clientToChanops(*client,);
-            // need achraf help on this
+            if(params->size() < 2){
+                //error
+                return;
+            }
+            params++;
+            if(name_to_client.find(*params) == name_to_client.end())
+                return ;
+            clientTarget = name_to_client[*params];
+            channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:
+            if(params->size() < 2){
+                //error
+                return;
+            }
+            params++;
             channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
