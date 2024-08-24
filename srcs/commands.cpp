@@ -19,7 +19,8 @@ void    Command::executeJoin(){
     std::string name = cmd[1];
     bool created  = false;
     if(cmd.size() != 2 || cmd[1].length() < 2||(cmd[1][0] != '#' && cmd[1][0] != '&')){
-        std::cerr << "invalid join params\n"; 
+        // ERR_NEEDMOREPARAMS
+        sendMsg(client->getSocket(), std::string("invalid join params\n")); 
         return ;
     }
     // todo: skip # in the first name of the channel

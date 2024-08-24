@@ -95,17 +95,14 @@ class Command
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination));
             else if (cmd.size() > 2 || !validNickName(cmd[1]))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination));
-            // else if (serverData.isNickNameInUse(cmd[1])) // isNickNameInUse: to code later
-            //     sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
+            else if (serverData.nameToClient.find(cmd[1]) != serverData.nameToClient.end()) // already regitred
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
             else if (!client->getAuthenticated()) // no PASS YEt
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination));
             else {
-                // remove old nickname from serverData if it is not empty && add the newnickName to data && set the client new nickname
-                // serverData.eraseNickName(client->getNickName());
-                // serverData.addNickName(cmd[1]);
                 client->setNickName(cmd[1]);
                 // should send some msg (idont know right know)
-                // sendReturn += sendMsg(client->getSocket(), "some msg");
+                sendReturn += sendMsg(client->getSocket(), cmd[1] + " successfully set a new nickname\n");
             }
             if (!sendReturn)
                 std::cerr << "Error occurs while sending message to the client\n";
@@ -126,6 +123,7 @@ class Command
                 // all good
                 client->setRegistred();
                 sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + "to ft_irc server\n");
+                serverData.nameToClient[client->getNickName()] = *client;
             }   
         }
         

@@ -42,6 +42,7 @@ struct s_server_data
 	std::map<int, std::string> requestsBuff;
 	std::map<int, Client *> fdToClient;
 	std::set<std::string> clientsNicknames;
+	std::map<std::string, Client> nameToClient; 
 	s_server_data()
 	{
 		sockfd = 0;
