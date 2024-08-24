@@ -67,5 +67,5 @@ void Channel::removeClient(const Client &client){
 }
 
 Channel::~Channel(){
-    std::cout << "Channel object destructor\n";
+    
 }
