@@ -35,14 +35,20 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
             break;
         case TOPIC_RESTRICTION_OPT:
             channel->set_remove_topic_restriction(*client, _do);
+            break;
         case CHAN_KEY_OPT:
             channel->set_remove_channel_key(*client, _do, *params);
+            break;
         case CHANOP_OPT:
             // channel->add_clientToChanops(*client, , _do);
+            // need achraf help on this
+            break;
         case USER_LIMIT_OPT:
             channel->limitUserToChan(*client, _do, std::atoi(params->c_str()));
+            break;
         case UNKOWN:
             std::cerr << "UNKOWN OPTION\n";
+            break;
     }
     
 }
@@ -63,6 +69,17 @@ void kick(Client &client, Channel &chan, Client &target){
 }
 
 
-void topic(Channel &chan, const Client &client){
-    
+void topic(Channel &chan, const Client &client, std::string topic, int _do){
+    if(chan.getMode().TopicRestricted && !chan.isChanOp(client)){
+        std::cerr << "Not permitted\n";
+        return;
+    }
+    if(_do){
+        chan.setTopic(topic);
+        std::cout << "Topic changed to " << topic << '\n';
+    }
+    else{
+        std::cout << chan.getTopic() << '\n';
+    }
+
 }
