@@ -1,16 +1,16 @@
 #include "header.hpp"
 
 
-Channel findChan(std::string name, std::deque<Channel> channels, bool &created){
-    std::deque<Channel>::iterator it;
+Channel *findChan(std::string name, std::deque<Channel*> channels, bool &created){
+    std::deque<Channel *>::iterator it;
     it = channels.begin();
     while(it != channels.end()){
-        if(it->getName() == name){
-            return (*it);
+        if((*it)->getName() == name){
+            return &(**it);
         }
         it++;
     }
-    Channel chan(name);
+    Channel *chan = new Channel(name);
     created = true;
     return chan;
 }
@@ -25,7 +25,7 @@ void    Command::executeJoin(){
     }
     // todo: skip # in the first name of the channel
     name = std::string(cmd[1].c_str() + 1);
-    Channel chan = findChan(name, this->serverData.channels, created);
+    Channel *chan = findChan(name, this->serverData.channels, created);
     if(join(this->client, chan) && created){
         serverData.channels.push_back(chan);
     }

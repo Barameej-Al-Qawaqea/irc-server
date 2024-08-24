@@ -11,37 +11,40 @@
 // INVITE  - Invite a client to an invite-only channel (mode +i)
 // TOPIC   - Change the channel topic in a mode +t channel
 
-bool join(Client *client, Channel &chan){
-    if(chan.isOnChan(*client) || chan.getMode().invite_only){
-        std::cout << client->getNickName() << " cant join #" << chan.getName() << '\n';
+bool join(Client *client, Channel *chan){
+    if(chan->isOnChan(*client) || chan->getMode().invite_only){
+        std::cout << client->getNickName() << " cant join #" << chan->getName() << '\n';
         return false;
     }
-    chan.AddToChan(*client);
-    client->setcurrChan(&chan);
-    std::cout << client->getNickName() << " joined #" << chan.getName() << '\n';
+    chan->AddToChan(*client);
+    client->setcurrChan(chan);
+    std::cout << client->getNickName() << " joined #" << chan->getName() << '\n';
     return true;
 }
 
-void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do, std::map<std::string, Client*>name_to_client){
+void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string> extra_params, \
+    int _do, std::map<std::string, Client*>name_to_client){
+
     std::vector<std::string>::iterator params = extra_params.begin();
-    if(!channel|| !channel->isChanOp(*client)){
+
+    if(!channel|| !channel->isChanOp(client)){
         if(!channel)
             std::cerr << "Invalid operation\n";
         else
             std::cerr << "Not permitted\n";
         return;
     }
+    std::cout << params[0] << '\n';
     params+=2;
-    std::cout << *params << '\n';
     switch(opt){
         case INVITE_ONLY_OPT:
-            channel->set_remove_invite_only(*client, _do);
+            channel->set_remove_invite_only(client, _do);
             break;
         case TOPIC_RESTRICTION_OPT:
-            channel->set_remove_topic_restriction(*client, _do);
+            channel->set_remove_topic_restriction(client, _do);
             break;
         case CHAN_KEY_OPT:
-            channel->set_remove_channel_key(*client, _do, *params);
+            channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
             // Client *clientTarget = name_to_client[*params];
@@ -49,7 +52,7 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
             // need achraf help on this
             break;
         case USER_LIMIT_OPT:
-            channel->limitUserToChan(*client, _do, std::atoi(params->c_str()));
+            channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
             std::cerr << "UNKOWN OPTION\n";
@@ -61,7 +64,7 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
 void kick(Client *client, Channel *chan, Client *target){
     if(!chan)
         return ;
-    if(!chan->isChanOp(*client)){
+    if(!chan->isChanOp(client)){
         // err;
         std::cerr << client->getNickName() << " is not with chanops\n";
         return;
@@ -75,8 +78,8 @@ void kick(Client *client, Channel *chan, Client *target){
 }
 
 
-void topic(Channel *chan, const Client *client, std::string topic, int _do){
-    if(chan->getMode().TopicRestricted && !chan->isChanOp(*client)){
+void topic(Channel *chan, Client *client, std::string topic, int _do){
+    if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
         std::cerr << "Not permitted\n";
         return;
     }

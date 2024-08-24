@@ -29,7 +29,7 @@ struct s_server_data
 
 	std::vector<pollfd>	clients;
 
-	std::deque<Channel>channels;
+	std::deque<Channel*>channels;
 
 	std::vector<pollfd>	clientsQueue;
 
@@ -107,9 +107,9 @@ void newCmnd(int serverSocket, Client *client,
     * o: Give/take channel operator privilege
     * l: Set/remove the user limit to channel
 */
-void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do, std::map<std::string, Client*>name_to_client);
-bool join(Client *client, Channel &chan);
-void topic(Channel *chan, const Client *client, std::string topic, int _do);
+void mode(Channel *channel,  Client *client, modeopt opt, std::vector<std::string> extra_params,int _do, std::map<std::string, Client*>name_to_client);
+bool join(Client *client, Channel *chan);
+void topic(Channel *chan, Client *client, std::string topic, int _do);
 void kick(Client *client, Channel *chan, Client *target);
 /*channel utils*/
 modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);

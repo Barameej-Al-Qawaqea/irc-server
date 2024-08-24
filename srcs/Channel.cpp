@@ -20,10 +20,10 @@ bool isChanExit(Channel &chan, vector<Channel> &channels){
     return (it != channels.end());
 }
 
-bool Channel::isChanOp(Client client){
+bool Channel::isChanOp(Client *client){
     std::vector<int>::iterator it;
-
-    it = std::find(chan_operators.begin(), chan_operators.end(), client.getSocket());
+ 
+    it = std::find(chan_operators.begin(), chan_operators.end(), client->getSocket());
     return (it != chan_operators.end());
 }
 
