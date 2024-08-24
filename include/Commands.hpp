@@ -143,8 +143,7 @@ class Command
         }
         void    checkWhichCommand() {
             std::string possibleCommands[] = {"PASS", "NICK", "USER", "JOIN", "INVITE", "TOPIC", "MODE", "KICK", "BOT"};
-
-            void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser,
+                void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser,
                 &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
 
             int cmdIdx = -1;

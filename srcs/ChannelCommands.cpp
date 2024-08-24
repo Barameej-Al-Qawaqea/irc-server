@@ -22,13 +22,17 @@ bool join(Client *client, Channel &chan){
     return true;
 }
 
-void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do){
+void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do, std::map<std::string, Client*>name_to_client){
     std::vector<std::string>::iterator params = extra_params.begin();
     if(!channel|| !channel->isChanOp(*client)){
-        std::cerr << "Invalid operation\n";
+        if(!channel)
+            std::cerr << "Invalid operation\n";
+        else
+            std::cerr << "Not permitted\n";
         return;
     }
     params+=2;
+    std::cout << *params << '\n';
     switch(opt){
         case INVITE_ONLY_OPT:
             channel->set_remove_invite_only(*client, _do);
@@ -40,7 +44,8 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
             channel->set_remove_channel_key(*client, _do, *params);
             break;
         case CHANOP_OPT:
-            // channel->add_clientToChanops(*client, , _do);
+            // Client *clientTarget = name_to_client[*params];
+            // channel->add_clientToChanops(*client,);
             // need achraf help on this
             break;
         case USER_LIMIT_OPT:
