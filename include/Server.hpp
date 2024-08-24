@@ -108,5 +108,6 @@ void newCmnd(int serverSocket, Client *client,
 */
 void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::string> extra_params,int _do);
 bool join(Client *client, Channel &chan);
+void topic(Channel *chan, const Client *client, std::string topic, int _do);
 /*channel utils*/
 modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);

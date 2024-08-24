@@ -38,11 +38,11 @@ const std::string &Channel::getTopic(){
     return this->topic;
 }
 
-const std::string &Channel::setTopic(const std::string &_topic){
+void Channel::setTopic(const std::string &_topic){
     topic = _topic;
 }
 void Channel::AddToChan(const Client &client){
-    if((!mode.UserLimit) || (mode.UserLimit && this->clients.size() < this->getlimit())){
+    if((!mode.UserLimit) || (mode.UserLimit && (int)this->clients.size() < this->getlimit())){
         clients.push_back(client);
         if(clients.size() == 1)
             chan_operators.push_back(client);

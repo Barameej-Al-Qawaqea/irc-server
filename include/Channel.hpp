@@ -38,7 +38,7 @@ class Channel{
         Channel();
     public:
         const std::string &getTopic();
-        const std::string &setTopic(const std::string &_topic);
+        void setTopic(const std::string &_topic);
         const std::string &getName(){
             return name;
         }
@@ -92,7 +92,7 @@ class Channel{
         void limitUserToChan(Client client,bool _do, int _limit){
                 if(isChanOp(client)){
                     mode.UserLimit = _do;
-                    if(_do && limit >= clients.size()){
+                    if(_do && limit >= (int)clients.size()){
                         mode.UserLimit = 1;
                         limit = _limit;
                     }

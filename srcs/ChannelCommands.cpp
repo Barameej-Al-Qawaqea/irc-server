@@ -2,7 +2,7 @@
 
 #include "header.hpp"
 
-static const char *CHAN_NAME_ = "&#";
+// static const char *CHAN_NAME_ = "&#";
 
 
 /* chanops commands */
@@ -69,17 +69,17 @@ void kick(Client &client, Channel &chan, Client &target){
 }
 
 
-void topic(Channel &chan, const Client &client, std::string topic, int _do){
-    if(chan.getMode().TopicRestricted && !chan.isChanOp(client)){
+void topic(Channel *chan, const Client *client, std::string topic, int _do){
+    if(chan->getMode().TopicRestricted && !chan->isChanOp(*client)){
         std::cerr << "Not permitted\n";
         return;
     }
     if(_do){
-        chan.setTopic(topic);
+        chan->setTopic(topic);
         std::cout << "Topic changed to " << topic << '\n';
     }
     else{
-        std::cout << chan.getTopic() << '\n';
+        std::cout << chan->getTopic() << '\n';
     }
 
 }
