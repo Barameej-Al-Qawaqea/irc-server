@@ -34,13 +34,13 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
             channel->set_remove_invite_only(*client, _do);
             break;
         case TOPIC_RESTRICTION_OPT:
-            ;
+            channel->set_remove_topic_restriction(*client, _do);
         case CHAN_KEY_OPT:
-            ;
+            channel->set_remove_channel_key(*client, _do, *params);
         case CHANOP_OPT:
-            ;
+            // channel->add_clientToChanops(*client, , _do);
         case USER_LIMIT_OPT:
-            ;
+            channel->limitUserToChan(*client, _do, std::atoi(params->c_str()));
         case UNKOWN:
             std::cerr << "UNKOWN OPTION\n";
     }
@@ -49,17 +49,14 @@ void mode(Channel *channel, const Client *client, modeopt opt, std::vector<std::
 
 void kick(Client &client, Channel &chan, Client &target){
     
-    if(!chan.isOnChan(client)){
-        // err;
-        return;
-    }
-    
     if(!chan.isChanOp(client)){
         // err;
+        std::cerr << client.getNickName() << " is not with chanops\n";
         return;
     }
     if(!chan.isOnChan(target)){
         // err;
+        std::cerr << target.getNickName() << "is not in in the " << chan.getName() << '\n';
         return;
     }
     chan.removeClient(client);
