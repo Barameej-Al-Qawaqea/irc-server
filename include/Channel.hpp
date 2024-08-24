@@ -42,6 +42,9 @@ class Channel{
         const std::string &getName(){
             return name;
         }
+        std::string getPassword(){
+            return password;
+        }
         int getlimit(){
             return this->limit;
         }

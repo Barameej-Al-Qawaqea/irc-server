@@ -11,8 +11,8 @@
 // INVITE  - Invite a client to an invite-only channel (mode +i)
 // TOPIC   - Change the channel topic in a mode +t channel
 
-bool join(Client *client, Channel *chan){
-    if(chan->isOnChan(*client) || chan->getMode().invite_only){
+bool join(Client *client, Channel *chan, std::string key){
+    if(chan->isOnChan(*client) || chan->getMode().invite_only || (chan->getMode().ChanReqPass && (chan->getPassword() != key))){
         std::cout << client->getNickName() << " cant join #" << chan->getName() << '\n';
         return false;
     }
@@ -23,7 +23,7 @@ bool join(Client *client, Channel *chan){
 }
 
 void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string> extra_params, \
-    int _do, std::map<std::string, Client*>name_to_client){
+    int _do, std::map<std::string, Client*>name_to_client) {
 
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
@@ -35,6 +35,7 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
         return;
     }
     params+=2;
+
     switch(opt){
         case INVITE_ONLY_OPT:
             channel->set_remove_invite_only(client, _do);
@@ -43,6 +44,11 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
             channel->set_remove_topic_restriction(client, _do);
             break;
         case CHAN_KEY_OPT:
+             if(params->size() < 2){
+                //error
+                return;
+            }
+            params++;
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
