@@ -48,6 +48,9 @@ public :
     void    setAuthenticated() {
         this->isAuthenticated = 1;
     }
+    void    unsetAuthenticated() {
+        this->isAuthenticated = 0;
+    }
     // client made successfull PASS,NICK,USER
     void    setRegistred() {
         this->isRegistred = 1;

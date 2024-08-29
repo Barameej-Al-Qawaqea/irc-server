@@ -73,18 +73,19 @@ class Command
 
         void    executePass() {
             int sendReturn = 1;
-            if (cmd.size() == 1)
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, "*")) != -1;
-            else if (client->isAlreadyRegistred())
+            if (client->isAlreadyRegistred())
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ALREADYREGISTRED, client->getNickName())) != -1;
-            else if (cmd.size() > 2 || cmd[1] != serverData.password)
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_PASSWDMISMATCH, "*")) != -1;
-            else {
-                // command have the right passwd 
-                client->setAuthenticated();
-                // should send Some successfull reply that I dont currently know
-                // sendReturn &= sendMsg(client->getSocket(), "some msg") != -1;
+            else if (cmd.size() == 1) {
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, "*")) != -1;
+                client->unsetAuthenticated();  // only last pass command is used for verif
             }
+            else if (cmd.size() > 2 || cmd[1] != serverData.password) {
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_PASSWDMISMATCH, "*")) != -1;
+                // this is according to rfc1459, only last pass command is used for verification
+                client->unsetAuthenticated(); 
+            }
+            else
+                client->setAuthenticated();
             if (!sendReturn)
                 std::cerr << "Error occurs while sending message to the client\n";
         }
@@ -92,16 +93,23 @@ class Command
             int sendReturn = 1;
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();   // destination should be '*' if user doenst have a nickname yet
             if (cmd.size() == 1)
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination));
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination)) != -1;
             else if (cmd.size() > 2 || !validNickName(cmd[1]))
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination));
-            else if (serverData.nameToClient.find(cmd[1]) != serverData.nameToClient.end()) // already regitred
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination));
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination)) != -1;
+            else if (serverData.clientsNicknames.count(cmd[1])) // already inuse
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NICKNAMEINUSE, destination)) != -1;
             else if (!client->getAuthenticated()) // no PASS YEt
-                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination));
+                sendReturn &= sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, destination)) != -1;
             else {
+                if (serverData.clientsNicknames.count(client->getNickName()))
+                    serverData.clientsNicknames.erase(client->getNickName());
+                serverData.clientsNicknames.insert(cmd[1]);
+                // should change his name in nameToClient too if he is fully registered
+                // if (client->isAlreadyRegistred()) {
+                    serverData.nameToClient.erase(client->getNickName());
+                    serverData.nameToClient[cmd[1]] = client;
+                // }
                 client->setNickName(cmd[1]);
-                // should send some msg (idont know right know)
                 sendReturn += sendMsg(client->getSocket(), cmd[1] + " successfully set a new nickname\n");
             }
             if (!sendReturn)
@@ -122,25 +130,24 @@ class Command
             else {
                 // all good
                 client->setRegistred();
-                sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + "to ft_irc server\n");
+                sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + " to ft_irc server\n");
                 // todo
                 serverData.nameToClient[client->getNickName()] = client;
             }   
         }
-        
-    public :
         void    executeJoin();
         void    executeInvite();
         void    executeTopic();
         void    executeMode();
         void    executeKick();
+    public :
         Command(std::string &command, Client *client, s_server_data &serverData) : client(client),  serverData(serverData)
         {
             std::stringstream ss(command);
             std::string word;
             while (ss >> word) this->cmd.push_back(word);
-            // client->bot() = bot();
         }
+
         void    checkWhichCommand() {
             std::string possibleCommands[] = {"PASS", "NICK", "USER", "JOIN", "INVITE", "TOPIC", "MODE", "KICK", "BOT"};
                 void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser,
