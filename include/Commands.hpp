@@ -105,10 +105,10 @@ class Command
                     serverData.clientsNicknames.erase(client->getNickName());
                 serverData.clientsNicknames.insert(cmd[1]);
                 // should change his name in nameToClient too if he is fully registered
-                // if (client->isAlreadyRegistred()) {
+                if (client->isAlreadyRegistred()) {
                     serverData.nameToClient.erase(client->getNickName());
                     serverData.nameToClient[cmd[1]] = client;
-                // }
+                }
                 client->setNickName(cmd[1]);
                 sendReturn += sendMsg(client->getSocket(), cmd[1] + " successfully set a new nickname\n");
             }
