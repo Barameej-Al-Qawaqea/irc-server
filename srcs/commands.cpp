@@ -2,13 +2,9 @@
 
 
 Channel *findChan(std::string name, std::deque<Channel*> channels, bool &created){
-    std::deque<Channel *>::iterator it;
-    it = channels.begin();
-    while(it != channels.end()){
-        if((*it)->getName() == name){
-            return &(**it);
-        }
-        it++;
+    for(int i = 0; i < channels.size(); i++){
+        if(channels[i]->getName() == name)
+            return channels[i];
     }
     Channel *chan = new Channel(name);
     created = true;
@@ -28,15 +24,22 @@ void    Command::executeJoin(){
     Channel *chan = findChan(name, this->serverData.channels, created);
     std::string key;
 
-
-    if(cmd.size() == 3)
+    if(cmd.size() == 3){
         key = cmd[2];
+    }
     if(join(this->client, chan, key) && created){
         serverData.channels.push_back(chan);
     }
 }
 
-void    Command::executeInvite(){;}
+void    Command::executeInvite(){
+    if(cmd.size() != 3){
+        sendMsg(client->getSocket(), std::string("invalid invite params\n")); 
+        return;
+    }
+    
+}
+
 void    Command::executeTopic(){
     if(cmd.size()==1){
         topic(this->client->getcurrChan(), this->client,"", 0 );

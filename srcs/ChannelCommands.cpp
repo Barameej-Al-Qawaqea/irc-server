@@ -22,9 +22,9 @@ bool join(Client *client, Channel *chan, std::string key){
     return true;
 }
 
-void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string> extra_params, \
-    int _do, std::map<std::string, Client*>name_to_client) {
-
+void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string> extra_params, \
+                int _do, std::map<std::string, Client*>name_to_client) {
+    
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
 
@@ -36,7 +36,6 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
         return;
     }
     params+=2;
-
     switch(opt){
         case INVITE_ONLY_OPT:
             channel->set_remove_invite_only(client, _do);
@@ -94,6 +93,9 @@ void kick(Client *client, Channel *chan, Client *target){
     chan->removeClient(*client);
 }
 
+void invite(Channel *chan, Client *client, Client *target){
+    // if()
+}
 
 void topic(Channel *chan, Client *client, std::string topic, int _do){
     if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){

@@ -62,7 +62,7 @@ class Channel{
         /*mode commands*/
         void set_remove_invite_only(Client *client, bool _do){
             if(isChanOp(client)){
-                std::cout << (_do? "channel mode join changed to invite only":"channel mode join changed to default")  << '\n';
+                std::cout << (_do ? "channel mode join changed to invite only" : "channel mode join changed to default")  << '\n';
                 mode.invite_only = _do;
                 return;
             }
@@ -87,7 +87,7 @@ class Channel{
         void add_clientToChanops(Client *client, Client *target, bool _do){
                 if(isChanOp(client)){
                     if(!isChanOp(target) && _do){
-                        chan_operators.push_back(client->getSocket());
+                        chan_operators.push_back(target->getSocket());
                     }
                     return ;
                 }
@@ -108,4 +108,3 @@ class Channel{
         ~Channel();
 };
 #endif
-
