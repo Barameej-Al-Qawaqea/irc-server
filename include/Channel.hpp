@@ -82,13 +82,14 @@ class Channel{
                 password = _password;
                 return;
             }
-            std::cerr << "Not permitted\n";
+            std::cerr << "set_remove_channel_key: Not permitted\n";
         }
         void add_clientToChanops(Client *client, Client *target, bool _do){
                 if(isChanOp(client)){
                     if(!isChanOp(target) && _do){
                         chan_operators.push_back(client->getSocket());
                     }
+                    return ;
                 }
                 std::cerr << "Not permitted\n";
         }
@@ -99,6 +100,7 @@ class Channel{
                         mode.UserLimit = 1;
                         limit = _limit;
                     }
+                    return ;
                 }
                 std::cerr << "Not permitted\n";
         }

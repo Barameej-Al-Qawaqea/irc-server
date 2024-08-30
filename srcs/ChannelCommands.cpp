@@ -27,6 +27,7 @@ void mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string
 
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
+
     if(!channel|| !channel->isChanOp(client)){
         if(!channel)
             std::cerr << "Invalid operation\n";
