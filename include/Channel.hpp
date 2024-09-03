@@ -34,7 +34,7 @@ class Channel{
         Mode mode; 
         std::string password;
         std::string topic;
-        std::vector<int>chan_operators;
+        std::vector<Client>chan_operators;
         int limit;
         Channel();
     public:
@@ -75,6 +75,7 @@ class Channel{
         bool isOnChan(const Client &client);
         void AddToChan(Client  client);
         void removeClient(const Client &client);
+        void removeChanop(const Client &client);
         const std::vector<Client> &getChanClients();
         void AddToChanOPs( Client client);
         Mode getMode(){
@@ -108,7 +109,7 @@ class Channel{
         void add_clientToChanops(Client *client, Client *target, bool _do){
                 if(isChanOp(client)){
                     if(!isChanOp(target) && _do){
-                        chan_operators.push_back(target->getSocket());
+                        chan_operators.push_back(*target);
                     }
                     return ;
                 }

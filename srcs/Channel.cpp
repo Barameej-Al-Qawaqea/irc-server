@@ -21,13 +21,8 @@ bool isChanExit(Channel &chan, vector<Channel> &channels){
 }
 
 bool Channel::isChanOp(Client *client){
-    std::vector<int>::iterator it = chan_operators.begin();
-    std::cout << "client Socket -> \t" << client->getSocket() << '\n';
-    while(it != chan_operators.end()){
-        std::cout << *it  << '\n';
-        it++;
-    }
-    it = std::find(chan_operators.begin(), chan_operators.end(), client->getSocket());
+    std::vector<Client>::iterator it = chan_operators.begin();
+    it = std::find(chan_operators.begin(), chan_operators.end(), client);
     return (it != chan_operators.end());
 }
 
@@ -49,12 +44,12 @@ void Channel::AddToChan(Client client){
     if((!mode.UserLimit) || (mode.UserLimit && (int)this->clients.size() < this->getlimit())){
         clients.push_back(client);
         if (clients.size() == 1)
-            chan_operators.push_back(client.getSocket());
+            chan_operators.push_back(client);
     }
 }
 
 void Channel::AddToChanOPs(Client client){
-    chan_operators.push_back(client.getSocket());
+    chan_operators.push_back(client);
 }
 
 const std::vector<Client> &Channel::getChanClients(){
@@ -70,6 +65,14 @@ void Channel::removeClient(const Client &client){
     }
 }
 
+void Channel::removeChanop(const Client &client){
+    std::vector<Client>::iterator it;
+
+    it = std::find(chan_operators.begin(), chan_operators.end(), client);
+    if(it != chan_operators.end()){
+        chan_operators.erase(it);
+    }
+}
 Channel::~Channel(){
     
 }
