@@ -1,9 +1,15 @@
 #include "header.hpp"
+
+
 Channel *findChan(std::string name, std::deque<Channel *> channels,
                   bool &created) {
   for (size_t i = 0; i < channels.size(); i++) {
     if (channels[i]->getName() == name)
       return channels[i];
+  }
+  if(created){
+    created = false;
+    return NULL;
   }
   Channel *chan = new Channel(name);
   created = true;

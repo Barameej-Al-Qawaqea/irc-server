@@ -2,6 +2,7 @@
 
 #include "header.hpp"
 #include "Client.hpp"
+// #include "Channel.hpp"
 
 //PASS errors
 #define ERR_NEEDMOREPARAMS 461
@@ -19,6 +20,10 @@
 #define ERR_NOSUCHNICK 401
 
 #include "header.hpp"
+
+
+Channel *findChan(std::string name, std::deque<Channel *> channels,
+                  bool &created);
 
 class Command
 {
@@ -164,7 +169,7 @@ class Command
                 toSend.push_back(newUser);
             return toSend;
         }
-
+    
         bool isChannel(const std::string &msg){
             return (msg[0] == '#' || msg[0] == '&');
         }
@@ -172,16 +177,32 @@ class Command
         bool clientExist(std::string &name) {
             return serverData.nameToClient.count(name);
         }
-
+        // prvmsg  client1,clinet2,..,channel1,... :message
         bool    sendPrivMessage(std::vector<std::string> &toSend, std::string &message) {
             if (toSend.size() > 10 || !toSend.size() || message.empty()) return 1;
-            std::cout << ":: " << toSend.size() << '\n';
+            // std::cout << ":: " << toSend.size() << '\n';
             bool sendReturn = 1;
             for(size_t i = 0; i < toSend.size(); i++) {
                 std::string receiver = toSend[i];
                 if (isChannel(receiver)) {
                     // check if channel exist : ERR_NOSUCHNICK 
-                    // check if clinet is in channel  : ERR_CANNOTSENDTOCHAN
+                    bool created = 1;
+                    Channel *chan = findChan(receiver.substr(1), serverData.channels, created);
+                    if (!created)
+                        sendReturn &= sendMsg(client->getSocket(), error(ERR_NOSUCHNICK, client->getNickName()));
+                    else {
+                        // check if clinet is in channel  : ERR_CANNOTSENDTOCHAN
+                        if(!chan->isOnChan(*client))
+                            //! ERR_CANNOTSENDTOCHAN
+                            sendReturn &= sendMsg(client->getSocket(), error(500, client->getNickName()));
+                        else {
+                            std::vector<Client> ChanClien = chan->getChanClients();
+                            for(int i = 0; i < ChanClien.size(); i++) {
+                                if (ChanClien[i].getSocket() == client->getSocket()) continue;    
+                                sendReturn &= sendMsg(ChanClien[i].getSocket(), "Message from " + client->getNickName() + ": " + message + "\n") != -1;
+                            }
+                        }
+                    }
                 }
                 else {
                     // check if client is connected to the server
@@ -195,7 +216,7 @@ class Command
             }
             return sendReturn;
         }
-
+ 
         void    executePrivmsg() {
             std::string messageTosSend = "";
             size_t msgIdx = originCmd.find(':');
@@ -248,11 +269,18 @@ class Command
             if (cmdIdx == -1) {
                 // command not found -> should send some error to the client
             }
-            else (this->*possibleFunctions[cmdIdx])();
+            else {
+                if (cmdIdx >= 3) {
+                    if (!client->isAlreadyRegistred()) {
+                        if (sendMsg(client->getSocket(), error(ERR_NOTREGISTERED, client->getNickName().empty() ? "*" : client->getNickName())) == -1)
+                            std::cerr << "Error occurs while sending message to the client\n";
+                        return ;
+                    }
+                }
+                (this->*possibleFunctions[cmdIdx])();
+            }
         }
 };
-
-
 
 // what I need,  fdToClient
 // need the serverData
