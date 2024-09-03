@@ -74,10 +74,35 @@ class Channel{
         bool isChanOp(Client *client);
         bool isOnChan(const Client &client);
         void AddToChan(Client  client);
-        void removeClient(const Client &client);
-        void removeChanop(const Client &client);
+        void removeClient(Client client);
+        void removeChanop(Client client);
         const std::vector<Client> &getChanClients();
         void AddToChanOPs( Client client);
+        void debug(){
+            std::cout << "channel members : {\n";
+            for(size_t i = 0; i < clients.size(); i++){
+                std::cout << clients[i].getNickName() << '\n';
+            }
+            std::cout << "}\n";
+            std::cout << "channel operators : {\n";
+            for(size_t i = 0; i < chan_operators.size(); i++){
+                std::cout << chan_operators[i].getNickName() << '\n';
+            }
+            std::cout << "}\n";
+            std::cout << "channel pending clients : {\n";
+            for(size_t i = 0; i < invited_clients.size(); i++){
+                std::cout << invited_clients[i].getNickName() << '\n';
+            }
+            std::cout << "}\n";
+            std::cout << "channel mode : {\n";
+            std::cout << "invite_only : " << mode.invite_only << '\n';
+            std::cout << "TopicRestricted : " << mode.TopicRestricted << '\n';
+            std::cout << "ChanReqPass : " << mode.ChanReqPass << '\n';
+            std::cout << "UserLimit : " << mode.UserLimit << '\n';
+            std::cout << "}\n";
+            std::cout << "channel topic : " << topic << '\n';
+            fflush(stdout);
+        }
         Mode getMode(){
             return  mode;
         }
@@ -90,6 +115,7 @@ class Channel{
             }
             std::cerr << "Not permitted\n";
         }
+
         void set_remove_topic_restriction(Client *client, bool _do){
             if(isChanOp(client)){
                 std::cout << (_do? "channel mode changed to topic restriction":"channel mode changed to default")  << '\n';
@@ -98,6 +124,7 @@ class Channel{
             }
             std::cerr << "Not permitted\n";
         }
+
         void set_remove_channel_key(Client *client, bool _do, std::string _password){
             if(isChanOp(client)){
                 mode.ChanReqPass = _do;
@@ -106,6 +133,7 @@ class Channel{
             }
             std::cerr << "set_remove_channel_key: Not permitted\n";
         }
+
         void add_clientToChanops(Client *client, Client *target, bool _do){
                 if(isChanOp(client)){
                     if(!isChanOp(target) && _do){
@@ -115,6 +143,7 @@ class Channel{
                 }
                 std::cerr << "Not permitted\n";
         }
+
         void limitUserToChan(Client *client,bool _do, int _limit){
                 if(isChanOp(client)){
                     mode.UserLimit = _do;

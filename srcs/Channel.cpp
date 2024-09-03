@@ -22,7 +22,7 @@ bool isChanExit(Channel &chan, vector<Channel> &channels){
 
 bool Channel::isChanOp(Client *client){
     std::vector<Client>::iterator it = chan_operators.begin();
-    it = std::find(chan_operators.begin(), chan_operators.end(), client);
+    it = std::find(chan_operators.begin(), chan_operators.end(), *client);
     return (it != chan_operators.end());
 }
 
@@ -56,7 +56,7 @@ const std::vector<Client> &Channel::getChanClients(){
     return clients;
 }
 
-void Channel::removeClient(const Client &client){
+void Channel::removeClient(Client client){
     std::vector<Client>::iterator it;
 
     it = std::find(clients.begin(), clients.end(), client);
@@ -65,7 +65,7 @@ void Channel::removeClient(const Client &client){
     }
 }
 
-void Channel::removeChanop(const Client &client){
+void Channel::removeChanop(Client client){
     std::vector<Client>::iterator it;
 
     it = std::find(chan_operators.begin(), chan_operators.end(), client);
