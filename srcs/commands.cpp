@@ -1,5 +1,4 @@
 #include "header.hpp"
-
 Channel *findChan(std::string name, std::deque<Channel *> channels,
                   bool &created) {
   for (size_t i = 0; i < channels.size(); i++) {
