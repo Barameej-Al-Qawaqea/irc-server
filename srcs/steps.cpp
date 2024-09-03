@@ -24,7 +24,7 @@ void	checkNewClientAttempt(s_server_data &serverData)
 				return ;
 			}
 
-			if (sendMsg(newClient.first, "Welcome to ft_irc server.\r\n1337@2024 createad by [yrhiba, rghouzra].\r\n") < 0)
+			if (sendMsg(newClient.first, "Welcome to ft_irc server.\r\n1337@2024 createad by [asettar, yrhiba, rghouzra].\r\n") < 0)
 			{
 				// std::cout << "failed sending message to " << serverData.clients.back().fd << std::endl;
 				return ;
