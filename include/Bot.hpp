@@ -1,5 +1,6 @@
 #pragma once
 #include "header.hpp"
+
 struct Game {
     int SIZE;
     std::string gameType;    // is it tictactoe or gomuko

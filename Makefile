@@ -17,6 +17,15 @@ INCS = include
 
 ODIR = .objs/
 
+
+HEADERS = include/Bot.hpp \
+		include/Channel.hpp \
+		include/Client.hpp \
+		include/Commands.hpp \
+		include/header.hpp \
+		include/Server.hpp
+
+
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
 
 CC = c++
@@ -25,10 +34,10 @@ FLAGS = -Wall -Wextra -std=c++11 -fsanitize=address -g#-Werror
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
+$(NAME) : $(OBJS) 
 	$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 
-$(ODIR)%.o : %.cpp $(INCS)
+$(ODIR)%.o : %.cpp $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(FLAGS) -c $< -o $@ -I$(INCS)
 

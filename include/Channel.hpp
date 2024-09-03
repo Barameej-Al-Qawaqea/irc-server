@@ -29,6 +29,7 @@ class Channel{
     private :
         std::string name;
         std::vector<Client>clients;
+        std::deque<Client>invited_clients;
         // channel operators
         Mode mode; 
         std::string password;
@@ -44,6 +45,26 @@ class Channel{
         }
         std::string getPassword(){
             return password;
+        }
+        void addPendingClient(Client client){
+            invited_clients.push_back(client);
+        }
+        void removePendingClient(Client client){
+            std::deque<Client>::iterator it;
+            it = std::find(invited_clients.begin(), invited_clients.end(), client);
+            if(it != invited_clients.end()){
+                invited_clients.erase(it);
+            }
+        }
+
+        std::deque<Client> &getPendingClients(){
+            return invited_clients;
+        }
+
+        bool isPendingClient(Client client){
+            std::deque<Client>::iterator it;
+            it = std::find(invited_clients.begin(), invited_clients.end(), client);
+            return (it != invited_clients.end());
         }
         int getlimit(){
             return this->limit;
@@ -104,7 +125,6 @@ class Channel{
                 }
                 std::cerr << "Not permitted\n";
         }
-
         ~Channel();
 };
 #endif

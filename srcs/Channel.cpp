@@ -48,7 +48,7 @@ void Channel::setTopic(const std::string &_topic){
 void Channel::AddToChan(Client client){
     if((!mode.UserLimit) || (mode.UserLimit && (int)this->clients.size() < this->getlimit())){
         clients.push_back(client);
-        if(clients.size() == 1)
+        if (clients.size() == 1)
             chan_operators.push_back(client.getSocket());
     }
 }

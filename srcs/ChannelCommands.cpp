@@ -12,13 +12,14 @@
 // TOPIC   - Change the channel topic in a mode +t channel
 
 bool join(Client *client, Channel *chan, std::string key){
-    if(chan->isOnChan(*client) || chan->getMode().invite_only || (chan->getMode().ChanReqPass && (chan->getPassword() != key))){
-        std::cout << client->getNickName() << " cant join #" << chan->getName() << '\n';
+    if(chan->isOnChan(*client) || (chan->getMode().invite_only && !chan->isPendingClient(*client) )|| (chan->getMode().ChanReqPass && (chan->getPassword() != key))){
+        std::cerr << "Not permitted\n";
         return false;
     }
+    std::cout << "Joining " << chan->getName() << '\n';
     chan->AddToChan(*client);
     client->setcurrChan(chan);
-    std::cout << client->getNickName() << " joined #" << chan->getName() << '\n';
+    sendMsg(client->getSocket(), "JOIN " + chan->getName() + "\n");
     return true;
 }
 
@@ -38,6 +39,10 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     params+=2;
     switch(opt){
         case INVITE_ONLY_OPT:
+            if(*params != "+i" && *params != "-i"){
+                //error
+                return;
+            }
             channel->set_remove_invite_only(client, _do);
             break;
         case TOPIC_RESTRICTION_OPT:
@@ -93,8 +98,24 @@ void kick(Client *client, Channel *chan, Client *target){
     chan->removeClient(*client);
 }
 
+void sendInvite(Client *client, Client *target, Channel *chan){
+    std::string msg = "INVITE " + target->getNickName() + " " + chan->getName() + "\n";
+    sendMsg(target->getSocket(), msg);
+}
+
 void invite(Channel *chan, Client *client, Client *target){
-    // if()
+    if(!chan || !chan->isChanOp(client)){
+        std::cerr << "Not permitted\n";
+        return;
+    }
+    if(chan->getMode().invite_only){
+        if(chan->isOnChan(*target)){
+            std::cerr << target->getNickName() << " is already in the channel\n";
+            return;
+        }
+        sendInvite(client, target, chan);
+        chan->addPendingClient(*target);
+    }
 }
 
 void topic(Channel *chan, Client *client, std::string topic, int _do){

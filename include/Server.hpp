@@ -111,5 +111,6 @@ void mode(Channel *channel,  Client *client, modeopt opt, std::vector<std::strin
 bool join(Client *client, Channel *chan, std::string key);
 void topic(Channel *chan, Client *client, std::string topic, int _do);
 void kick(Client *client, Channel *chan, Client *target);
+void invite(Channel *chan, Client *client, Client *target);
 /*channel utils*/
 modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);
