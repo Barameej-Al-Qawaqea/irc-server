@@ -109,8 +109,10 @@ class Command
         void    executeNick() {
             int sendReturn = 1;
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();   // destination should be '*' if user doenst have a nickname yet
-            if (cmd.size() == 1)
+            if (cmd.size() == 1){
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NONICKNAMEGIVEN, destination)) != -1;
+                std::cout << "debug \n";
+            }
             else if (cmd.size() > 2 || !validNickName(cmd[1]))
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ERRONEUSNICKNAME, destination)) != -1;
             else if (serverData.clientsNicknames.count(cmd[1])) // already inuse
@@ -138,7 +140,7 @@ class Command
             (void)sendReturn;
             std::string destination = client->getNickName().empty() ? "*" : client->getNickName();
             std::cout << client->isAlreadyRegistred() << '\n';
-            if (cmd.size() < 5 || (cmd.size() == 5 && cmd[4].size() == 1))
+            if (cmd.size() != 5)
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_NEEDMOREPARAMS, destination));
             else if (client->isAlreadyRegistred()) 
                 sendReturn &= sendMsg(client->getSocket(), error(ERR_ALREADYREGISTRED, destination));
@@ -257,6 +259,7 @@ class Command
         }
 
         void    checkWhichCommand() {
+            std::cout << originCmd << '\n';
             std::string possibleCommands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN", "INVITE", "TOPIC", "MODE", "KICK", "BOT"};
                 void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser, &Command::executePrivmsg,
                 &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};

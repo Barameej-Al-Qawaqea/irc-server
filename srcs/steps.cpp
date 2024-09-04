@@ -68,7 +68,8 @@ void	checkClientsRequests(s_server_data &serverData)
 					int clientIdx = serverData.clients[i].fd;
 					std::string cmnd = serverData.requestsBuff[clientIdx];
 					serverData.requestsBuff.erase(clientIdx);
-					cmnd.pop_back(); // remove the '\n'
+					while (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r'))
+						cmnd.pop_back(); // remove the '\n'
 					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], cmnd, serverData);
 				}
 				else if (r < 0)
