@@ -10,7 +10,10 @@ SRCS =  srcs/server.cpp \
 		srcs/ChannelCommands.cpp \
 		srcs/parsing.cpp \
 		srcs/commands.cpp \
-		srcs/Channel.cpp
+		srcs/Channel.cpp \
+		srcs/Client.cpp \
+		srcs/authenticationCommands.cpp \
+		srcs/PRIVMSGcommand.cpp \
 
 
 INCS = include
