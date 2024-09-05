@@ -67,7 +67,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case CHAN_KEY_OPT:
              if(params->size() < 2){
-                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
             params++;
@@ -75,7 +75,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case CHANOP_OPT:
             if(params->size() < 2){
-                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
             params++;
@@ -86,7 +86,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case USER_LIMIT_OPT:
             if(params->size() < 2){
-                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName() ,std::string("MODE")));
                 return;
             }
             params++;
