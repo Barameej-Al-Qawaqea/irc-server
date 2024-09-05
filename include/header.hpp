@@ -30,7 +30,7 @@
 #include <poll.h>
 
 /*built-in headers*/
-#include "Bot.hpp"
+#include "../Bot/Bot.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"

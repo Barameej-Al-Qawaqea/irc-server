@@ -14,19 +14,23 @@ SRCS =  srcs/server.cpp \
 		srcs/Client.cpp \
 		srcs/authenticationCommands.cpp \
 		srcs/PRIVMSGcommand.cpp \
-
+		Bot/Bot.cpp \
+		Bot/Game.cpp \
+		Bot/MCTS.cpp
 
 INCS = include
 
 ODIR = .objs/
 
 
-HEADERS = include/Bot.hpp \
-		include/Channel.hpp \
+HEADERS = include/Channel.hpp \
 		include/Client.hpp \
 		include/Commands.hpp \
 		include/header.hpp \
-		include/Server.hpp
+		include/Server.hpp \
+		Bot/Bot.hpp \
+		Bot/Game.hpp \
+		Bot/MCTS.hpp
 
 
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))

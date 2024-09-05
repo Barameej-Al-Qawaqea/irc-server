@@ -5,6 +5,7 @@
 #define NICKMAXLEN 9
 
 class Channel;
+class Bot;
 class Client {
 private :
     Channel *currChan;
