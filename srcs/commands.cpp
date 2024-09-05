@@ -57,11 +57,7 @@ void Command::executeInvite() {
 }
 
 void Command::executeTopic() {
-  if (cmd.size() == 1) {
-    topic(this->client->getcurrChan(), this->client, "", 0);
-  } else {
-    topic(this->client->getcurrChan(), this->client, cmd[1], 1);
-  }
+    topic(this->client->getcurrChan(), this->client, cmd);
 }
 
 void Command::executeMode() {

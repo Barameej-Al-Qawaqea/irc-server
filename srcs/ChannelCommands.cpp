@@ -140,17 +140,25 @@ void invite(Channel *chan, Client *client, Client *target){
     }
 }
 
-void topic(Channel *chan, Client *client, std::string topic, int _do){
-    if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
-        sendMsg(client->getSocket(), "ERR_CHANOPRIVSNEEDED\n");
+void topic(Channel *chan, Client *client, std::vector<string>params){
+    if(params.size() < 2){
+        sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
         return;
     }
-    if(_do){
-        if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
-            sendMsg(client->getSocket(), "ERR_CHANOPRIVSNEEDED\n");
+    if(!chan){
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(chan->getName()));
+        return;
+    }
+    if(chan->getMode().TopicRestricted && !chan->isChanOp(client) && params.size() == 3){
+        sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(chan->getName()));
+        return;
+    }
+    if(params.size() == 3){
+        if(params[2][0]!= ':'){
+            sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
             return;
         }
-        chan->setTopic(topic);
+        chan->setTopic(params[2].substr(1));
     }
     else{
         string topic = chan->getTopic();
@@ -160,5 +168,4 @@ void topic(Channel *chan, Client *client, std::string topic, int _do){
         }
         sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
     }
-
 }

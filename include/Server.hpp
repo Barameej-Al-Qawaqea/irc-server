@@ -109,7 +109,7 @@ void newCmnd(int serverSocket, Client *client,
 */
 void mode(Channel *channel,  Client *client, modeopt opt, std::vector<std::string> extra_params,int _do, std::map<std::string, Client*>name_to_client);
 bool join(Client *client, Channel *chan, std::string key);
-void topic(Channel *chan, Client *client, std::string topic, int _do);
+void topic(Channel *chan, Client *client, std::vector<string>params);
 void kick(Client *client, Channel *chan, Client *target);
 void invite(Channel *chan, Client *client, Client *target);
 /*channel utils*/
