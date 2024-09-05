@@ -35,3 +35,4 @@
 #include "Channel.hpp"
 #include "Server.hpp"
 #include "Commands.hpp"
+#include "Replies.hpp"

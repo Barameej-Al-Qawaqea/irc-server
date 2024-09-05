@@ -2,7 +2,7 @@
 
 
 Channel::Channel(const std::string &_name):name(_name){
-    topic = "undefined";
+    topic = "";
     mode.ChanReqPass = 0;
     mode.invite_only = 0;
     mode.TopicRestricted = 0;

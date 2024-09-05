@@ -12,14 +12,31 @@
 // TOPIC   - Change the channel topic in a mode +t channel
 
 bool join(Client *client, Channel *chan, std::string key){
-    if(chan->isOnChan(*client) || (chan->getMode().invite_only && !chan->isPendingClient(*client) )|| (chan->getMode().ChanReqPass && (chan->getPassword() != key))){
-        std::cerr << "Not permitted\n";
+    if(chan->isOnChan(*client)){
+        sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
         return false;
     }
-    std::cout << "Joining " << chan->getName() << '\n';
+    if(chan->getMode().invite_only && !chan->isPendingClient(*client)){
+        sendMsg(client->getSocket(), ERR_INVITEONLYCHAN(chan->getName()));
+        return false;
+    }
+    
+    if(chan->getMode().UserLimit && (int)chan->getChanClients().size() >= chan->getlimit()){
+        sendMsg(client->getSocket(), ERR_CHANNELISFULL(chan->getName()));
+        return false;
+    }
+    if(chan->getMode().ChanReqPass && (chan->getPassword() != key)){
+        sendMsg(client->getSocket(), ERR_BADCHANNELKEY(chan->getName()));
+        return false;
+    }
+    // (chan->getMode().ChanReqPass && (chan->getPassword() != key))
+    vector<Client> clients = chan->getChanClients();
+    for(size_t i = 0; i < clients.size(); i++){
+        sendMsg(clients[i].getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
+    }
     chan->AddToChan(*client);
     client->setcurrChan(chan);
-    sendMsg(client->getSocket(), "JOIN " + chan->getName() + "\n");
+    sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
     return true;
 }
 
@@ -31,16 +48,16 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
 
     if(!channel|| !channel->isChanOp(client)){
         if(!channel)
-            std::cerr << "Invalid operation\n";
+            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(channel->getName()));
         else
-            std::cerr << "Not permitted\n";
+            sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(channel->getName()));
         return;
     }
     params+=2;
     switch(opt){
         case INVITE_ONLY_OPT:
             if(*params != "+i" && *params != "-i"){
-                //error
+                sendMsg(client->getSocket(), ERR_UNKNOWNMODE(*params));
                 return;
             }
             channel->set_remove_invite_only(client, _do);
@@ -50,7 +67,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case CHAN_KEY_OPT:
              if(params->size() < 2){
-                //error
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
                 return;
             }
             params++;
@@ -58,7 +75,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case CHANOP_OPT:
             if(params->size() < 2){
-                //error
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
                 return;
             }
             params++;
@@ -69,29 +86,31 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case USER_LIMIT_OPT:
             if(params->size() < 2){
-                //error
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(std::string("MODE")));
                 return;
             }
             params++;
             channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
-            std::cerr << "UNKOWN OPTION\n";
+            sendMsg(client->getSocket(), ERR_UNKNOWNMODE(*params));
             break;
     }
     
 }
 
 void kick(Client *client, Channel *chan, Client *target){
-    if(!chan)
+    if(!chan){
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(chan->getName()));
         return ;
+    }
     if(!chan->isChanOp(client)){
-        // err;
+        sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(chan->getName()));
         std::cerr << client->getNickName() << " is not with chanops\n";
         return;
     }
     if(!chan->isOnChan(*target)){
-        // err;
+        sendMsg(client->getSocket(), ERR_USERNOTINCHANNEL(chan->getName(), target->getNickName()));
         std::cerr << target->getNickName() << "is not in in the " << chan->getName() << '\n';
         return;
     }
@@ -105,12 +124,15 @@ void sendInvite(Client *client, Client *target, Channel *chan){
 
 void invite(Channel *chan, Client *client, Client *target){
     if(!chan || !chan->isChanOp(client)){
-        std::cerr << "Not permitted\n";
+        if(!chan)
+            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(chan->getName()));
+        else
+            sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(chan->getName()));
         return;
     }
     if(chan->getMode().invite_only){
         if(chan->isOnChan(*target)){
-            std::cerr << target->getNickName() << " is already in the channel\n";
+            sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
             return;
         }
         sendInvite(client, target, chan);
@@ -120,15 +142,23 @@ void invite(Channel *chan, Client *client, Client *target){
 
 void topic(Channel *chan, Client *client, std::string topic, int _do){
     if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
-        std::cerr << "Not permitted\n";
+        sendMsg(client->getSocket(), "ERR_CHANOPRIVSNEEDED\n");
         return;
     }
     if(_do){
+        if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
+            sendMsg(client->getSocket(), "ERR_CHANOPRIVSNEEDED\n");
+            return;
+        }
         chan->setTopic(topic);
-        std::cout << "Topic changed to " << topic << '\n';
     }
     else{
-        std::cout << chan->getTopic() << '\n';
+        string topic = chan->getTopic();
+        if(topic.empty()){
+            sendMsg(client->getSocket(), RPL_NOTOPIC(chan->getName()));
+            return;
+        }
+        sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
     }
 
 }
