@@ -29,8 +29,8 @@ class Command
         bool                        duplicateExist(std::vector<std::string> &toSend) const;
         Channel*                    getChannel(std::string name) const;
         std::vector<std::string>    getUsersAndChannels();
-        bool                        sendMsgToChannelClients(std::string &reciver, std::string &message) const;
-        bool                        sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const;
+        void                        sendMsgToChannelClients(std::string &reciver, std::string &message) const;
+        void                        sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const;
 
     public :
         Command(std::string &command, Client *client, s_server_data &serverData);

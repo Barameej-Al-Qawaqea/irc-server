@@ -26,48 +26,46 @@ Channel*    Command::getChannel(std::string name) const{
     return NULL;
 }
 
-bool    Command::sendMsgToChannelClients(std::string &receiver, std::string &message) const {
-    bool sendReturn = 1;
+void    Command::sendMsgToChannelClients(std::string &receiver, std::string &message) const {
     // check if channel exist : ERR_NOSUCHNICK 
     Channel *chan = getChannel(receiver.substr(1));
     if (!chan)
-        sendReturn &= sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver)) != -1;
+        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver));
     else {
         // check if client is on channel  : ERR_CANNOTSENDTOCHAN
         if (!chan->isOnChan(*client))
             //! ERR_CANNOTSENDTOCHAN
-            sendReturn &= sendMsg(client->getSocket(), ERR_CANNOTSENDTOCHAN(client->getNickName(), receiver)) != -1;
+            sendMsg(client->getSocket(), ERR_CANNOTSENDTOCHAN(client->getNickName(), receiver));
         else {
             std::vector<Client> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
                 if (ChanClien[i].getSocket() == client->getSocket()) continue;    
-                sendReturn &= sendMsg(ChanClien[i].getSocket(), "Message from " + client->getNickName() + ": " + message + "\n") != -1;
+                sendMsg(ChanClien[i].getSocket(), "Message from " + client->getNickName() + ": " + message + "\n");
             }
         }
     }
-    return sendReturn;
 }
 
-bool   Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const {
-    if (toSend.size() > 10 || !toSend.size() || message.empty()) return 1;
-    bool sendReturn = 1;
-    if (duplicateExist(toSend))
-        return sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 1)) != -1;
+void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const {
+    if (toSend.size() > 10 || !toSend.size() || message.empty()) return ;
+    if (duplicateExist(toSend)) {
+        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 1));
+        return ;
+    }
     for(size_t i = 0; i < toSend.size(); i++) {
         std::string receiver = toSend[i];
         if (isChannel(receiver))
-            sendReturn &= sendMsgToChannelClients(receiver, message);
+            sendMsgToChannelClients(receiver, message);
         else {
             // check if client is connected to the server
             if (clientExist(receiver)) {
                 int receiverFd = serverData.nameToClient[receiver]->getSocket();
-                sendReturn &= sendMsg(receiverFd, "Message from " + client->getNickName() + ": " + message + "\n") != -1;
+                sendMsg(receiverFd, "Message from " + client->getNickName() + ": " + message + "\n");
             }
             else
-                sendReturn &= sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver)) != -1;
+                sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver));
         }
     }
-    return sendReturn;
 }
 
 std::vector<std::string> Command::getUsersAndChannels() {
@@ -100,14 +98,11 @@ void    Command::executePrivmsg() {
     // for(size_t i = 0; i < toSend.size(); i++)
     //     std::cout << toSend[i] << ' ';
     // std::cout << '\n';
-    int sendReturn = 1;
     if (toSend.empty())
-        sendReturn &= sendMsg(client->getSocket(), ERR_NORECIPIENT(client->getNickName())) != -1;
+        sendMsg(client->getSocket(), ERR_NORECIPIENT(client->getNickName()));
     if (messageTosSend.empty())
-        sendReturn &= sendMsg(client->getSocket(), ERR_NOTEXTTOSEND(client->getNickName())) != -1;
+        sendMsg(client->getSocket(), ERR_NOTEXTTOSEND(client->getNickName()));
     if (toSend.size() > 10)
-        sendReturn &= sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 0)) != -1;
-    sendReturn &= sendPrivMessage(toSend, messageTosSend);
-    if (!sendReturn)
-        std::cerr << "Error occurs while sending message to the client\n";
+        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 0));
+    sendPrivMessage(toSend, messageTosSend);
 }

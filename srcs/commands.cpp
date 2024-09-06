@@ -24,11 +24,10 @@ void    Command::checkWhichCommand() {
     }
     else {
         if (cmdIdx >= 3) {
-            if (!client->isAlreadyRegistred()) {
-                if (sendMsg(client->getSocket(), ERR_NOTREGISTERED(((client->getNickName().empty()) ? "*" : client->getNickName()))) == -1)
-                    std::cerr << "Error occurs while sending message to the client\n";
-                return ;
-            }
+          if (!client->isAlreadyRegistred()) {
+            sendMsg(client->getSocket(), ERR_NOTREGISTERED(((client->getNickName().empty()) ? "*" : client->getNickName())));
+            return ;
+          }
         }
         (this->*possibleFunctions[cmdIdx])();
     }
@@ -107,10 +106,7 @@ void Command::executeKick() {
 }
 
 void    Command::executeBot() {
-    int sendReturn = 1;
     if (client->argumentsError(cmd))
-        sendReturn &= sendMsg(client->getSocket(), client->botUsage()) != -1;
-    else sendReturn &= sendMsg(client->getSocket(), client->play(cmd)) != -1;
-    if (!sendReturn)
-        std::cerr << "Error occurs while sending message to the client\n";
+      sendMsg(client->getSocket(), client->botUsage());
+    else  sendMsg(client->getSocket(), client->play(cmd));
 }

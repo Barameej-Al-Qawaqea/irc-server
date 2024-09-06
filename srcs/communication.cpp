@@ -1,9 +1,9 @@
 #include "header.hpp"
 
-int sendMsg(int clientFd, const std::string &msg)
+int	sendMsg(int clientFd, const std::string &msg)
 {
 	int sendStatus = send(clientFd, msg.c_str(), msg.size(), 0);
-	if (sendStatus < 0) return (-1);
+	if (sendStatus < 0) std::cerr << "Error occurs while sending message\n";
 	return (0);
 }
 
