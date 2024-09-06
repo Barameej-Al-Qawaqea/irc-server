@@ -9,6 +9,7 @@ Channel *findChan(std::string name, std::deque<Channel *> channels,
   }
   if(created){
     created = false;
+    std::cout << "channel already exist\n";
     return NULL;
   }
   Channel *chan = new Channel(name);
@@ -16,26 +17,55 @@ Channel *findChan(std::string name, std::deque<Channel *> channels,
   return chan;
 }
 
+void getChans(std::string cmd,std::vector<std::pair<std::string, std::string> > &chanName_chanKey) {
+  std::stringstream ss(cmd);
+  std::string token;
+ 
+  int i = 0;
+  while(getline(ss, token, ',')){
+    chanName_chanKey.push_back(std::make_pair(token, ""));
+  } 
+}
+
+void getKeys(std::string cmd, std::vector<std::pair<std::string, std::string> > &chanName_chanKey) {
+  std::stringstream ss(cmd);
+  std::string token;
+  int i = 0;
+  while(getline(ss, token, ',')){
+    chanName_chanKey[i].second = token;
+    i++;
+  } 
+}
+
+
 void Command::executeJoin() {
   std::string name = cmd[1];
   bool created = false;
-  if (cmd.size() < 2 || cmd[1].length() < 2 ||
-      (cmd[1][0] != '#' && cmd[1][0] != '&')) {
-    // ERR_NEEDMOREPARAMS
-    sendMsg(client->getSocket(), std::string("invalid join params\n"));
+  std::vector<std::pair<std::string, std::string> >chanName_chanKey ;
+
+  if (cmd.size() != 2 && cmd.size() != 3) {
+    sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "JOIN"));
     return;
   }
   // todo: skip # in the first name of the channel
-  name = std::string(cmd[1].c_str() + 1);
-  Channel *chan = findChan(name, this->serverData.channels, created);
-  std::string key;
-
+  getChans(cmd[1], chanName_chanKey);
   if (cmd.size() == 3) {
-    key = cmd[2];
+    getKeys(cmd[2]  , chanName_chanKey);
   }
-  if (join(this->client, chan, key) && created) {
-    serverData.channels.push_back(chan);
+  for (size_t i = 0; i < chanName_chanKey.size(); i++) {
+    if(chanName_chanKey[i].first[0] != '#' && chanName_chanKey[i].first[0] != '&'){
+      sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName_chanKey[i].first));
+      continue;
+    }
+    Channel *chan = findChan(chanName_chanKey[i].first.substr(1), this->serverData.channels, created);
+    if (join(this->client, chan, chanName_chanKey[i].second) && created) {
+      serverData.channels.push_back(chan);
+    }
+    created = false;
   }
+  // if (join(this->client, chan, key) && created) {
+  //   serverData.channels.push_back(chan);
+  // }
 }
 
 void Command::executeInvite() {

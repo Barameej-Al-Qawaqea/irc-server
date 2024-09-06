@@ -20,6 +20,8 @@
 #include <random>
 #include <sstream>
 #include <csignal>
+#include <utility>
+#include <sstream>
 /* sockets includes */
 #include <sys/types.h>
 #include <sys/socket.h>

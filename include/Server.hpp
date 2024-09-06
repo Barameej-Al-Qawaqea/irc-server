@@ -53,8 +53,6 @@ struct s_server_data
 		clients = std::vector<pollfd>();
 		buff = new char[MAX_BUFF_SIZE + 1];
 	}
-
-
 	~s_server_data()
 	{
 		delete [] buff;

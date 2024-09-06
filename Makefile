@@ -23,6 +23,7 @@ HEADERS = include/Bot.hpp \
 		include/Client.hpp \
 		include/Commands.hpp \
 		include/header.hpp \
+		include/Replies.hpp \
 		include/Server.hpp
 
 
