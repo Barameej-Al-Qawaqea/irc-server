@@ -12,6 +12,7 @@
 #define ERR_BADCHANNELKEY(client, chan) "475 " + client + " " + chan + " :Cannot join channel (+k)\r\n"
 #define ERR_CHANOPRIVSNEEDED(nick, chan) "482 " + nick + " " + chan + " :You're not channel operator\r\n"
 #define ERR_CHANNELISFULL(nick, chan) "471 " + nick + " " + chan + " :Cannot join channel (+l)\r\n"
+
 #define ERR_USERONCHANNEL(chan,nick) "443 " + nick + " " + chan + " :is already on channel\r\n"
 #define ERR_NOTONCHANNEL(nick, chan) "442 " + nick + " " + chan + " :You're not on that channel\r\n"
 #define ERR_USERNOTINCHANNEL(chan,nick) "441 " + nick + " " + chan + " :They aren't on that channel\r\n"

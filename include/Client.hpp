@@ -5,6 +5,7 @@
 #define NICKMAXLEN 9
 
 class Channel;
+class Bot;
 class Client {
 private :
     Channel *currChan;
@@ -16,63 +17,24 @@ private :
     int fd; // client socket
     Bot bot;
 public :
-    Client(sockaddr_in &clientAddr, int clientSocket) {
-        this->isAuthenticated = 0;
-        this->isRegistred = 0;
-        this->Addr = clientAddr;
-        this->fd = clientSocket;
-        this->currChan = NULL;
-    }
-    // getters
-    void setcurrChan(Channel *chan){
-        currChan = chan;
-    }
-    Channel *getcurrChan(){
-        return this->currChan;
-    }
-    int getSocket() {
-        return this->fd;
-    }
-    bool isAlreadyRegistred() {
-        return this->isRegistred;
-    }
-    bool getAuthenticated() {
-        return this->isAuthenticated;
-    }
-    std::string getNickName() {
-        return this->nickName;
-    }
+    Client(sockaddr_in &clientAddr, int clientSocket);
+    Channel*    getcurrChan() const; 
+    int         getSocket() const;
+    bool        isAlreadyRegistred() const;
+    bool        getAuthenticated() const;
+    std::string getNickName() const;
 
-    //setters
-    // client made succesfull PASS cmd
-    void    setAuthenticated() {
-        this->isAuthenticated = 1;
-    }
-    void    unsetAuthenticated() {
-        this->isAuthenticated = 0;
-    }
-    // client made successfull PASS,NICK,USER
-    void    setRegistred() {
-        this->isRegistred = 1;
-    }
-    void    setNickName(std::string &name) {
-        this->nickName = name;
-    }
-    //copy assginment operator
+    void        setAuthenticated();
+    void        unsetAuthenticated();
+    void        setcurrChan(Channel *chan);
+    void        setRegistred();
+    void        setNickName(std::string &name);
 
-    bool operator==(Client _client){
-        return (_client.fd == this->fd);
-    }
-    std::string play(std::vector<std::string> cmd){
-        return bot.play(cmd);
-    }
-    std::string botUsage(){
-        return bot.botUsage();
-    }
-    bool argumentsError(std::vector<std::string> _cmd){
-        return bot.argumentsError(_cmd);
-    }
-    ~Client() {}
+    bool        operator==(Client _client);
+    std::string play(std::vector<std::string> cmd);
+    std::string botUsage();
+    bool        argumentsError(std::vector<std::string> _cmd);
+    ~Client();
 };
 
 #endif

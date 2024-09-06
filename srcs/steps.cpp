@@ -43,9 +43,16 @@ void	checkNewClientAttempt(s_server_data &serverData)
 void removeClient(s_server_data &serverData, int clientIdx)
 {
 	closeSocket(serverData.clients[clientIdx].fd);
+	Client *client = serverData.fdToClient[serverData.clients[clientIdx].fd];
+	if (!client) std::cout << "yes, isNULL\n";
+	if (serverData.clientsNicknames.count(client->getNickName()))
+		serverData.clientsNicknames.erase(client->getNickName());
+	if (serverData.nameToClient.count(client->getNickName()))
+		serverData.nameToClient.erase(client->getNickName());
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
 	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();
+	delete client;
 }
 
 void	checkClientsRequests(s_server_data &serverData)
