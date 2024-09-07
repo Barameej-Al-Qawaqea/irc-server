@@ -36,7 +36,8 @@ bool join(Client *client, Channel *chan, std::string key){
     }
     chan->AddToChan(*client);
     client->setcurrChan(chan);
-    sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
+        // sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
+    sendMsg(client->getSocket(), RPL_JOIN(client->getNickName(), chan->getName()));
     sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
     return true;
 }
@@ -105,17 +106,19 @@ void kick(Client *client, Channel *chan, Client *target){
         sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
         return ;
     }
+    if(!target){
+        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), target->getNickName()));
+        return;
+    }
     if(!chan->isChanOp(client)){
         sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
-        std::cerr << client->getNickName() << " is not with chanops\n";
         return;
     }
     if(!chan->isOnChan(*target)){
         sendMsg(client->getSocket(), ERR_USERNOTINCHANNEL(chan->getName(), target->getNickName()));
-        std::cerr << target->getNickName() << "is not in in the " << chan->getName() << '\n';
         return;
     }
-    chan->removeClient(*client);
+    chan->removeClient(*target);
 }
 
 void sendInvite(Client *client, Client *target, Channel *chan){

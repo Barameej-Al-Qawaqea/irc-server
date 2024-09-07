@@ -2,6 +2,7 @@
 #include "header.hpp"
 // replies
 #define RPL_TOPIC(chan,topic) chan+ " :" + topic + "\r\n"
+#define RPL_JOIN(nick, chan) ":" + nick + "!~ @ JOIN " + chan + "\r\n"
 #define RPL_NOTOPIC(chan) chan + " :No topic is set\r\n"
 #define RPL_INVITING(chan,nick) chan + " " + nick + "\r\n"
 #define RPL_NAMREPLY(chan,clients) "353 " + chan + " :" + clients + "\r\n"

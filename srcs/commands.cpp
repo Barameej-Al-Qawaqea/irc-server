@@ -79,13 +79,12 @@ void Command::executeJoin() {
     sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "JOIN"));
     return;
   }
-  // todo: skip # in the first name of the channel
   getChans(cmd[1], chanName_chanKey);
   if (cmd.size() == 3) {
     getKeys(cmd[2]  , chanName_chanKey);
   }
   for (size_t i = 0; i < chanName_chanKey.size(); i++) {
-    if(chanName_chanKey[i].first[0] != '#' && chanName_chanKey[i].first[0] != '&'){
+    if((chanName_chanKey[i].first[0] != '#' && chanName_chanKey[i].first[0] != '&' )|| chanName_chanKey[i].first.length() < 2){
       sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName_chanKey[i].first));
       continue;
     }
@@ -95,9 +94,6 @@ void Command::executeJoin() {
     }
     created = false;
   }
-  // if (join(this->client, chan, key) && created) {
-  //   serverData.channels.push_back(chan);
-  // }
 }
 
 void Command::executeInvite() {
