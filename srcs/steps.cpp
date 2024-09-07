@@ -24,11 +24,11 @@ void	checkNewClientAttempt(s_server_data &serverData)
 				return ;
 			}
 
-			if (sendMsg(newClient.first, "Welcome to ft_irc server.\r\n1337@2024 createad by [asettar, yrhiba, dexter].\r\n") < 0)
-			{
-				// std::cout << "failed sending message to " << serverData.clients.back().fd << std::endl;
-				return ;
-			}
+			// if (sendMsg(newClient.first, ":server :Welcome to ft_irc server createad by [asettar, yrhiba, dexter].\r\n") < 0)
+			// {
+			// 	// std::cout << "failed sending message to " << serverData.clients.back().fd << std::endl;
+			// 	return ;
+			// }
 
 			serverData.clients.push_back(newPollFd(newClient.first));
 			serverData.fdToClient[newClient.first] = newClient.second;
@@ -73,12 +73,23 @@ void	checkClientsRequests(s_server_data &serverData)
 				if (r > 0)
 				{
 					int clientIdx = serverData.clients[i].fd;
-					std::string cmnd = serverData.requestsBuff[clientIdx];
-					serverData.requestsBuff.erase(clientIdx);
-					while (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r'))
-						cmnd.pop_back(); // remove the '\n'
-					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], cmnd, serverData);
+					std::string &cmnd = serverData.requestsBuff[clientIdx];
+					// serverData.requestsBuff.erase(clientIdx);
+					// while (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r'))
+					// 	cmnd.pop_back(); // remove the '\n'
+					//p\n
+					// p\r\n
+					int idx = cmnd.find("\n");
+					bool isLimeChat = 0;
+					if (idx > 0 && cmnd[idx - 1] == '\r') isLimeChat = 1;
+					std::string toSend = cmnd.substr(0, idx - isLimeChat);
+					// std::cerr << "command: " << cmnd << std::endl;
+					cmnd.erase(cmnd.begin(), cmnd.begin() + idx + 1);
+					// std::cerr << "command: " << cmnd << std::endl;
+					// std::cerr << "::: " << toSend << " ||| " << cmnd << std::endl;
+					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], toSend, serverData);
 				}
+				// b\n
 				else if (r < 0)
 				{
 					// response to big!.

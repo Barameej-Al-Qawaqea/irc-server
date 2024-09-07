@@ -40,7 +40,7 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
             std::vector<Client> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
                 if (ChanClien[i].getSocket() == client->getSocket()) continue;    
-                sendMsg(ChanClien[i].getSocket(), "Message from " + client->getNickName() + ": " + message + "\n");
+                sendMsg(ChanClien[i].getSocket(), ":server 669 " + client->getNickName() + " :Message from " + client->getNickName() + ": " + message + "\r\n");
             }
         }
     }
@@ -60,7 +60,7 @@ void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &
             // check if client is connected to the server
             if (clientExist(receiver)) {
                 int receiverFd = serverData.nameToClient[receiver]->getSocket();
-                sendMsg(receiverFd, "Message from " + client->getNickName() + ": " + message + "\n");
+                sendMsg(receiverFd, "Message from " + client->getNickName() + ": " + message + "\r\n");
             }
             else
                 sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver));

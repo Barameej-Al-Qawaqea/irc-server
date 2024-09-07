@@ -34,6 +34,21 @@ public :
     std::string play(std::vector<std::string> cmd);
     std::string botUsage();
     bool        argumentsError(std::vector<std::string> _cmd);
+    std::string getuserName(){
+        return userName;
+    }
+    std::string getHostName(){
+        char hostname[1024];
+        hostname[1023] = '\0';
+        gethostname(hostname, 1023);
+
+        // return std::string(hostname);
+        return std::string("127.0.0.1");
+    }
+
+    void    setUserName(std::string &name) {
+        userName = name;
+    }
     ~Client();
 };
 

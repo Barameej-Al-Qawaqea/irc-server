@@ -11,6 +11,16 @@
 // INVITE  - Invite a client to an invite-only channel (mode +i)
 // TOPIC   - Change the channel topic in a mode +t channel
 
+std::string getClientNames(std::vector<Client> clients){
+    std::string names;
+    for(size_t i = 0; i < clients.size(); i++){
+        names += clients[i].getNickName();
+        if (i != clients.size() - 1)
+            names += " ";
+    }
+    return names;
+}
+
 bool join(Client *client, Channel *chan, std::string key){
     if(chan->isOnChan(*client)){
         sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
@@ -32,13 +42,18 @@ bool join(Client *client, Channel *chan, std::string key){
     // (chan->getMode().ChanReqPass && (chan->getPassword() != key))
     vector<Client> clients = chan->getChanClients();
     for(size_t i = 0; i < clients.size(); i++){
-        sendMsg(clients[i].getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
+        // sendMsg(clients[i].getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName(), getClientNames(chan->getChanClients())));
+        sendMsg(clients[i].getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
     }
     chan->AddToChan(*client);
     client->setcurrChan(chan);
         // sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
-    sendMsg(client->getSocket(), RPL_JOIN(client->getNickName(), chan->getName()));
-    sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
+    sendMsg(client->getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
+    if(!chan->getTopic().empty())
+        sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
+    // sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));
+    sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName(),getClientNames(chan->getChanClients())));
+    sendMsg(client->getSocket(), RPL_ENDOFNAMEST(chan->getName(), client->getNickName()));
     return true;
 }
 
@@ -167,7 +182,7 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
     else{
         string topic = chan->getTopic();
         if(topic.empty()){
-            sendMsg(client->getSocket(), RPL_NOTOPIC(chan->getName()));
+            sendMsg(client->getSocket(), RPL_NOTOPIC(chan->getName(), client->getNickName()));
             return;
         }
         sendMsg(client->getSocket(), RPL_TOPIC(chan->getName(), chan->getTopic()));

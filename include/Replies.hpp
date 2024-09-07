@@ -2,11 +2,13 @@
 #include "header.hpp"
 // replies
 #define RPL_TOPIC(chan,topic) chan+ " :" + topic + "\r\n"
-#define RPL_JOIN(nick, chan) ":" + nick + "!~ @ JOIN " + chan + "\r\n"
-#define RPL_NOTOPIC(chan) chan + " :No topic is set\r\n"
+#define RPL_JOIN(nick, user, ipaddress, chan) ":" + nick + "!~" + user + "@" + ipaddress + " JOIN #" + chan + "\r\n"
+#define RPL_NOTOPIC(chan, nick) "331 " + nick + " " + chan + " :No topic is set\r\n"
 #define RPL_INVITING(chan,nick) chan + " " + nick + "\r\n"
-#define RPL_NAMREPLY(chan,clients) "353 " + chan + " :" + clients + "\r\n"
+// #define RPL_NAMREPLY(chan,clients) "353 " + chan + " :" + clients + "\r\n"
 #define ERR_CHANNELISFULL(nick, chan) "471 " + nick + " " + chan + " :Cannot join channel (+l)\r\n"
+#define RPL_NAMREPLY(chan, nick,clients) "353 " + nick + " = #" + chan + " :@" + nick + "\r\n"
+#define RPL_ENDOFNAMEST(chan, nick) "366 " + nick + " #" + chan + " :End of /NAMES list.\r\n"
 // errors
 #define ERR_INVITEONLYCHAN(nick ,chan) "473 " + nick + " " + chan + " :Cannot join channel (+i)\r\n"
 #define ERR_NOSUCHCHANNEL(nick, chan) "403 " + nick + " " + chan + " :No such channel\r\n"
@@ -28,7 +30,7 @@
 #define ERR_NONICKNAMEGIVEN(nick) ":server 431 " + nick + " :No nickname given\r\n"
 #define ERR_ERRONEUSNICKNAME(nick) ":server 432 " + nick + " :Erroneus nickname\r\n"
 #define ERR_NICKNAMEINUSE(nick) ":server 433 " + nick + " :Nickname is already in use\r\n"
-#define RPL_NICKCHANGE(nick, oldNick) ":server " + oldNick + " NICK " + nick + "\r\n"
+#define RPL_NICKCHANGE(nick, oldNick) "667 " + oldNick + " :successfully set a new nickname " + nick + "\r\n"
 
 // PRIVMSG : tocheck
 #define ERR_NOSUCHNICK(nick, badNick) ":server 401 " + nick + " " + badNick + " :No such nick/channel\r\n"
@@ -36,3 +38,14 @@
 #define ERR_NORECIPIENT(nick) ":server 411 " + nick + " :No recipient given (PRIVMSG)\r\n"
 #define ERR_NOTEXTTOSEND(nick) ":server 412 " + nick + " :No text to send\r\n"
 #define ERR_CANNOTSENDTOCHAN(nick, channel) ":server 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
+
+
+/*
+:reda!~f@127.0.0.1 JOIN #d
+353 reda = #d :@reda
+366 reda #d :End of /NAMES list.
+----
+:adm!~f@127.0.0.1 JOIN #d
+353 adm = #d :@reda adm 
+366 adm #d :End of /NAMES list.
+*/

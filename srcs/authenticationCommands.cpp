@@ -2,10 +2,13 @@
 #include "Client.hpp"
 
 bool Command::validNickName(std::string &name) const {
-    std::string validCharacters = "-{}[]^`\\";
+    std::string validCharacters = "_-{}[]^`\\";
     bool validName = 1;
-    for(size_t i = 0; i < name.size(); i++)
+    std::cout << (int)name.find('\n') << ' ';
+    std::cout << (int)name.find('\r') << '\n'; 
+    for(size_t i = 0; i < name.size(); i++) {
         validName &= (std::isalpha(name[i]) || validCharacters.find(name[i]) != std::string::npos);
+    }
     return validName;
 
 }
@@ -28,6 +31,7 @@ void    Command::executePass() {
 
 void    Command::executeNick() {
     std::string target = client->getNickName().empty() ? "*" : client->getNickName();   // target should be '*' if user doenst have a nickname yet
+    // std::cout << " coomand: " << originCmd << ' ' << cmd.size() << std::endl;
     if (cmd.size() == 1)
         sendMsg(client->getSocket(), ERR_NONICKNAMEGIVEN(target));
     else if (cmd.size() > 2 || !validNickName(cmd[1]))
@@ -45,8 +49,8 @@ void    Command::executeNick() {
             serverData.nameToClient.erase(client->getNickName());
             serverData.nameToClient[cmd[1]] = client;
         }
+        sendMsg(client->getSocket(), RPL_NICKCHANGE(cmd[1], (client->getNickName().size() ? client->getNickName() : "*")));
         client->setNickName(cmd[1]);
-        sendMsg(client->getSocket(), cmd[1] + " successfully set a new nickname\n");
     }
 }
 
@@ -61,7 +65,8 @@ void    Command::executeUser() {
     else {
         // all good
         client->setRegistred();
-        sendMsg(client->getSocket(),  "Welcome " + client->getNickName() + " to ft_irc server\n");
+        sendMsg(client->getSocket(),  "001 " + client->getNickName() + " :Welcome to ft_irc server\r\n");
         serverData.nameToClient[client->getNickName()] = client;
+        client->setUserName(cmd[1]);
     }   
 }
