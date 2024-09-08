@@ -25,7 +25,7 @@
 #define ERR_NEEDMOREPARAMS(nick, command) ":server 461 " + nick + " " + command + " :Not enough parameters\r\n"
 #define ERR_PASSWDMISMATCH(nick) ":server 464 " + nick + " :Password incorrect\r\n"
 #define ERR_NOTREGISTERED(nick) ":server 451 " + nick + " :You have not registered\r\n"
-
+#define ERR_UNKNOWNCOMMAND(nick, command) ":server 421 " + nick + " " + command + " :Unknown command\r\n"
 // NICK
 #define ERR_NONICKNAMEGIVEN(nick) ":server 431 " + nick + " :No nickname given\r\n"
 #define ERR_ERRONEUSNICKNAME(nick) ":server 432 " + nick + " :Erroneus nickname\r\n"

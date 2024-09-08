@@ -39,9 +39,8 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
         else {
             std::vector<Client> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
-                if (ChanClien[i].getSocket() == client->getSocket()) continue;    
-                    sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
-                     + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
+                sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
+                    + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
             }
         }
     }
@@ -71,15 +70,8 @@ void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &
 
 std::vector<std::string> Command::getUsersAndChannels() {
     std::vector<std::string> toSend;
-    size_t i = 0;
-    while (isspace(originCmd[i])) i++;
-    while (i < originCmd.size() && !isspace(originCmd[i])) i++;
-    while (i < originCmd.size() && isspace(originCmd[i])) i++;
-    originCmd.erase(originCmd.begin(), originCmd.begin() + i);
-    while (originCmd.size() && isspace(originCmd.back())) originCmd.pop_back();
-
-    if (originCmd.empty()) return toSend;
-    std::stringstream ss(originCmd);
+    
+    std::stringstream ss(cmd[1]);
     std::string newUser;
     while (getline(ss, newUser, ','))
         toSend.push_back(newUser);
@@ -88,17 +80,23 @@ std::vector<std::string> Command::getUsersAndChannels() {
 
 void    Command::executePrivmsg() {
     std::string messageTosSend = "";
-    size_t msgIdx = originCmd.find(':');
-    if (msgIdx != std::string::npos) {
+    if (cmd.size() >= 3 && cmd[2][0] == ':') {
+        size_t msgIdx = originCmd.find(':');
         messageTosSend = originCmd.substr(msgIdx + 1);
         originCmd.erase(originCmd.begin() + msgIdx, originCmd.end());
     }
+    else if (cmd.size() == 3)
+        messageTosSend = cmd[2];
+    else {
+        sendMsg(client->getSocket(), ERR_UNKNOWNCOMMAND(client->getNickName(), originCmd));
+        return ;
+    }
     std::vector<std::string> toSend = getUsersAndChannels();
 
-    // std::cout << messageTosSend << '\n';
-    // for(size_t i = 0; i < toSend.size(); i++)
-    //     std::cout << toSend[i] << ' ';
-    // std::cout << '\n';
+    std::cout << messageTosSend << '\n';
+    for(size_t i = 0; i < toSend.size(); i++)
+        std::cout << toSend[i] << ' ';
+    std::cout << '\n';
     if (toSend.empty())
         sendMsg(client->getSocket(), ERR_NORECIPIENT(client->getNickName()));
     if (messageTosSend.empty())
