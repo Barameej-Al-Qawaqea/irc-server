@@ -125,9 +125,10 @@ void Command::executeMode() {
 }
 
 void Command::executeKick() {
-  if (cmd.size() == 3)
+  if (cmd.size() == 3 || cmd.size() == 4) {
     kick(this->client, this->client->getcurrChan(),
-         this->serverData.nameToClient[cmd[1]]);
+         this->serverData.nameToClient[cmd[2]], cmd[2], cmd.size() == 4 ? cmd[3] : "");
+  }
 }
 
 void    Command::executeBot() {

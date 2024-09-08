@@ -116,13 +116,13 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     
 }
 
-void kick(Client *client, Channel *chan, Client *target){
+void kick(Client *client, Channel *chan, Client *target, std::string targetName, std::string reason){
     if(!chan){
         sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
         return ;
     }
     if(!target){
-        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), target->getNickName()));
+        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), ));
         return;
     }
     if(!chan->isChanOp(client)){
@@ -134,10 +134,13 @@ void kick(Client *client, Channel *chan, Client *target){
         return;
     }
     chan->removeClient(*target);
+    sendMsg(client->getSocket(),\
+     ":" + client->getNickName()+ "!~" + client->getuserName() + "@" + client->getHostName() + \
+      " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
 }
 
 void sendInvite(Client *client, Client *target, Channel *chan){
-    std::string msg = "INVITE " + target->getNickName() + " " + chan->getName() + "\n";
+    std::string msg = RPL_INVITING(chan->getName(), client->getNickName());
     (void)client;
     sendMsg(target->getSocket(), msg);
 }

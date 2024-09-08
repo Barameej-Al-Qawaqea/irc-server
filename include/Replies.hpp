@@ -39,13 +39,4 @@
 #define ERR_NOTEXTTOSEND(nick) ":server 412 " + nick + " :No text to send\r\n"
 #define ERR_CANNOTSENDTOCHAN(nick, channel) ":server 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
 
-
-/*
-:reda!~f@127.0.0.1 JOIN #d
-353 reda = #d :@reda
-366 reda #d :End of /NAMES list.
-----
-:adm!~f@127.0.0.1 JOIN #d
-353 adm = #d :@reda adm 
-366 adm #d :End of /NAMES list.
-*/
+//
