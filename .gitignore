@@ -27,7 +27,14 @@
 *.lib
 #code studio
 *.vscode
-
+# macos
+.DS_Store
+# windows
+Thumbs.db
+# linux
+*.swp
+# python
+__pycache__
 
 # Executables
 *.exe
