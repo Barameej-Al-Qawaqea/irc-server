@@ -138,6 +138,7 @@ void kick(Client *client, Channel *chan, Client *target){
 
 void sendInvite(Client *client, Client *target, Channel *chan){
     std::string msg = "INVITE " + target->getNickName() + " " + chan->getName() + "\n";
+    (void)client;
     sendMsg(target->getSocket(), msg);
 }
 

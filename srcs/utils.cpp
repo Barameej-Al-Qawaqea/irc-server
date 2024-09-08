@@ -33,7 +33,8 @@ std::vector<std::string>SplitString(const std::string &string, char delim){
 }
 
 bool CorrectPass(const std::string &UserCmnd, const std::string &ServerPassword){
-
+	(void)UserCmnd;
+	(void)ServerPassword;
     return true;
 }
 

@@ -53,7 +53,6 @@ void getChans(std::string cmd,std::vector<std::pair<std::string, std::string> > 
   std::stringstream ss(cmd);
   std::string token;
  
-  int i = 0;
   while(getline(ss, token, ',')){
     chanName_chanKey.push_back(std::make_pair(token, ""));
   } 

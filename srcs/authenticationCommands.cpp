@@ -1,3 +1,4 @@
+
 #include "header.hpp"
 #include "Client.hpp"
 
@@ -22,7 +23,6 @@ void    Command::executePass() {
     }
     else if (cmd.size() > 2 || cmd[1] != serverData.password) {
         sendMsg(client->getSocket(), ERR_PASSWDMISMATCH((string)"*"));
-        // this is according to rfc1459, only last pass command is used for verification
         client->unsetAuthenticated(); 
     }
     else

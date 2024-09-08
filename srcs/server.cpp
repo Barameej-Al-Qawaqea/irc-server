@@ -5,6 +5,7 @@
 
 void newCmnd(int serverSocket, Client *client,\
  std::string &cmnd, s_server_data &serverData){
+	(void)serverSocket;
 	Command command(cmnd, client, serverData);
 	command.checkWhichCommand();
 }
