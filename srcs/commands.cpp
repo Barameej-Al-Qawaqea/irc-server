@@ -98,7 +98,7 @@ void Command::executeJoin() {
 void Command::executeInvite() {
   bool created = false;
   if (cmd.size() != 3) {
-    sendMsg(client->getSocket(), std::string("invalid invite params\n"));
+    sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "INVITE"));
     return;
   }
   if (this->serverData.nameToClient.find(cmd[1]) ==

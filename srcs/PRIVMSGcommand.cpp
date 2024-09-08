@@ -40,7 +40,8 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
             std::vector<Client> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
                 if (ChanClien[i].getSocket() == client->getSocket()) continue;    
-                    sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
+                    sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
+                     + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
             }
         }
     }

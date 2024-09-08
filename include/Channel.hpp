@@ -139,9 +139,16 @@ class Channel{
                     if(!isChanOp(target) && _do){
                         chan_operators.push_back(*target);
                     }
+                    else if(isChanOp(target) && !_do){
+                        // 
+                        std::vector<Client>::iterator it;
+                        it = std::find(chan_operators.begin(), chan_operators.end(), *target);
+                        if(it != chan_operators.end()){
+                            chan_operators.erase(it);
+                        }
+                    }
                     return ;
                 }
-                std::cerr << "Not permitted\n";
         }
 
         void limitUserToChan(Client *client,bool _do, int _limit){

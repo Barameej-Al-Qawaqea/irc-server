@@ -39,10 +39,8 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_BADCHANNELKEY(client->getNickName(), chan->getName()));
         return false;
     }
-    // (chan->getMode().ChanReqPass && (chan->getPassword() != key))
     vector<Client> clients = chan->getChanClients();
     for(size_t i = 0; i < clients.size(); i++){
-        // sendMsg(clients[i].getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName(), getClientNames(chan->getChanClients())));
         sendMsg(clients[i].getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
     }
     chan->AddToChan(*client);
@@ -70,7 +68,9 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), channel->getName()));
         return;
     }
+    std::cout << "params: " << *params << std::endl;
     params+=2;
+    std::cout << "params: " << *params << std::endl;
     switch(opt){
         case INVITE_ONLY_OPT:
             if(*params != "+i" && *params != "-i"){
@@ -91,23 +91,30 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
-            if(params->size() < 2){
+            std::cout << "size : " << params->size() << std::endl;  
+            if (params== extra_params.end() || params + 1 == extra_params.end() || params->size() != 2){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
+            std::cout << params->c_str() << std::endl;            
             params++;
+            std::cout << params->c_str() << std::endl;            
             if(name_to_client.find(*params) == name_to_client.end())
                 return ;
             clientTarget = name_to_client[*params];
+            // debug
+            std::cout << "clientTarget: " << clientTarget->getNickName() << std::endl;
+            std::cout << "client: " << client->getNickName() << std::endl;
+            std::cout << "do: " << _do << std::endl;   
             channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:
-            if(params->size() < 2){
+            if( ( _do && (params == extra_params.end() || params + 1 == extra_params.end()) ) ||params->size() < 2){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName() ,std::string("MODE")));
                 return;
             }
             params++;
-            channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
+            channel->limitUserToChan(client, _do, params != extra_params.end() ? std::atoi(params->c_str()) : 0);
             break;
         case UNKOWN:
             sendMsg(client->getSocket(), ERR_UNKNOWNMODE(client->getNickName(), *params));
