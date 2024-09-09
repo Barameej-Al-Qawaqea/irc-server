@@ -56,7 +56,7 @@ bool join(Client *client, Channel *chan, std::string key){
 }
 
 void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::string> extra_params, \
-                int _do, std::map<std::string, Client*>name_to_client) {
+                int _do, std::map<std::string, Client*>name_to_client, size_t size) {
     
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
@@ -70,9 +70,11 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), channel->getName()));
         return;
     }
-    std::cout << "params: " << *params << std::endl;
-    params+=2;
-    std::cout << "params: " << *params << std::endl;
+    std::cout << "params.size() : " << params->size() << std::endl;
+    if(size == 2){
+        sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), channel->getModeString()));
+        return;
+    }
     switch(opt){
         case INVITE_ONLY_OPT:
             if(*params != "+i" && *params != "-i"){
@@ -98,16 +100,11 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
-            std::cout << params->c_str() << std::endl;            
             params++;
-            std::cout << params->c_str() << std::endl;            
             if(name_to_client.find(*params) == name_to_client.end())
                 return ;
             clientTarget = name_to_client[*params];
             // debug
-            std::cout << "clientTarget: " << clientTarget->getNickName() << std::endl;
-            std::cout << "client: " << client->getNickName() << std::endl;
-            std::cout << "do: " << _do << std::endl;   
             channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:

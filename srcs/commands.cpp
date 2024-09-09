@@ -119,9 +119,10 @@ void Command::executeTopic() {
 
 void Command::executeMode() {
   int plus;
+  std::cout << "cmd.size() : " << cmd.size() << '\n';
   mode(this->client->getcurrChan(), this->client,
-       get_which_opt(cmd, ((cmd.size() < 3) * -1), plus), cmd, plus,
-       this->serverData.nameToClient);
+       get_which_opt(cmd, ((cmd.size() < 2) * -1), plus), cmd, plus,
+       this->serverData.nameToClient, cmd.size() );
 }
 
 void Command::executeKick() {

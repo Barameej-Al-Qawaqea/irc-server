@@ -5,6 +5,7 @@
 #define RPL_JOIN(nick, user, ipaddress, chan) ":" + nick + "!~" + user + "@" + ipaddress + " JOIN #" + chan + "\r\n"
 #define RPL_NOTOPIC(chan, nick) "331 " + nick + " " + chan + " :No topic is set\r\n"
 #define RPL_INVITING(chan,nick) chan + " " + nick + "\r\n"
+#define RPL_CHANNELMODEIS(chan, _mode) "324 " + chan + " " + _mode + "\r\n"
 // #define RPL_NAMREPLY(chan,clients) "353 " + chan + " :" + clients + "\r\n"
 #define ERR_CHANNELISFULL(nick, chan) "471 " + nick + " " + chan + " :Cannot join channel (+l)\r\n"
 #define RPL_NAMREPLY(chan, nick,clients) "353 " + nick + " = #" + chan + " :@" + nick + "\r\n"
