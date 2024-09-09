@@ -39,6 +39,7 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
         else {
             std::vector<Client> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
+                if (ChanClien[i].getSocket() == client->getSocket()) continue;
                 sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
                     + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
             }
@@ -47,7 +48,7 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
 }
 
 void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const {
-    if (toSend.size() > 10 || !toSend.size() || message.empty()) return ;
+    if (toSend.size() > MAX_TARGETS || !toSend.size() || message.empty()) return ;
     if (duplicateExist(toSend)) {
         sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 1));
         return ;
@@ -80,6 +81,10 @@ std::vector<std::string> Command::getUsersAndChannels() {
 
 void    Command::executePrivmsg() {
     std::string messageTosSend = "";
+    if (cmd.size() < 2) {
+        sendMsg(client->getSocket(), ERR_NORECIPIENT(client->getNickName()));
+        return ;
+    }
     if (cmd.size() >= 3 && cmd[2][0] == ':') {
         size_t msgIdx = originCmd.find(':');
         messageTosSend = originCmd.substr(msgIdx + 1);
@@ -88,20 +93,15 @@ void    Command::executePrivmsg() {
     else if (cmd.size() == 3)
         messageTosSend = cmd[2];
     else {
-        sendMsg(client->getSocket(), ERR_UNKNOWNCOMMAND(client->getNickName(), originCmd));
+        sendMsg(client->getSocket(), ERR_NOTEXTTOSEND(client->getNickName()));
         return ;
     }
     std::vector<std::string> toSend = getUsersAndChannels();
-
-    std::cout << messageTosSend << '\n';
-    for(size_t i = 0; i < toSend.size(); i++)
-        std::cout << toSend[i] << ' ';
-    std::cout << '\n';
-    if (toSend.empty())
-        sendMsg(client->getSocket(), ERR_NORECIPIENT(client->getNickName()));
-    if (messageTosSend.empty())
-        sendMsg(client->getSocket(), ERR_NOTEXTTOSEND(client->getNickName()));
-    if (toSend.size() > 10)
+    // std::cout << messageTosSend << '\n';
+    // for(size_t i = 0; i < toSend.size(); i++)
+    //     std::cout << toSend[i] << ' ';
+    // std::cout << '\n';
+    if (toSend.size() > MAX_TARGETS)
         sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 0));
     sendPrivMessage(toSend, messageTosSend);
 }

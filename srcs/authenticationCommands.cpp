@@ -5,11 +5,9 @@
 bool Command::validNickName(std::string &name) const {
     std::string validCharacters = "_-{}[]^`\\";
     bool validName = 1;
-    std::cout << (int)name.find('\n') << ' ';
-    std::cout << (int)name.find('\r') << '\n'; 
-    for(size_t i = 0; i < name.size(); i++) {
+    for(size_t i = 0; i < name.size(); i++)
         validName &= (std::isalpha(name[i]) || validCharacters.find(name[i]) != std::string::npos);
-    }
+    validName &= (name.size() <= NICKMAXLEN);
     return validName;
 
 }
