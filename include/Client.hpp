@@ -31,7 +31,7 @@ public :
     void        setNickName(std::string &name);
     std::set<int>& getActiveChatsSockets() { return activeChatsSockets; }
     void        addActiveChat(int clientSocket) {activeChatsSockets.insert(clientSocket);}
-    void        deleteActiveChat(int clientSocket) {activeChatsSockets.erase(clientSocket) };
+    void        deleteActiveChat(int clientSocket) {activeChatsSockets.erase(clientSocket); };
     bool        operator==(Client _client);
     std::string play(std::vector<std::string> cmd);
     std::string botUsage();

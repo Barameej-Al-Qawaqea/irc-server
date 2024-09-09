@@ -33,7 +33,7 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
         sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver));
     else {
         // check if client is on channel  : ERR_CANNOTSENDTOCHAN
-        if (!chan->isOnChan(*client))
+        if (!chan->isOnChan(client))
             //! ERR_CANNOTSENDTOCHAN
             sendMsg(client->getSocket(), ERR_CANNOTSENDTOCHAN(client->getNickName(), receiver));
         else {
