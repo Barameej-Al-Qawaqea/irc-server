@@ -4,7 +4,7 @@
 #define RPL_TOPIC(chan,topic) chan+ " :" + topic + "\r\n"
 #define RPL_JOIN(nick, user, ipaddress, chan) ":" + nick + "!~" + user + "@" + ipaddress + " JOIN #" + chan + "\r\n"
 #define RPL_NOTOPIC(chan, nick) "331 " + nick + " " + chan + " :No topic is set\r\n"
-#define RPL_INVITING(chan,nick) chan + " " + nick + "\r\n"
+#define RPL_INVITING(chan,nick, target) "341 " + nick + " " + target + " #" + chan + "\r\n"
 #define RPL_CHANNELMODEIS(chan, _mode) "324 " + chan + " " + _mode + "\r\n"
 // #define RPL_NAMREPLY(chan,clients) "353 " + chan + " :" + clients + "\r\n"
 #define ERR_CHANNELISFULL(nick, chan) "471 " + nick + " " + chan + " :Cannot join channel (+l)\r\n"
@@ -21,6 +21,7 @@
 #define ERR_NOTONCHANNEL(nick, chan) "442 " + nick + " " + chan + " :You're not on that channel\r\n"
 #define ERR_USERNOTINCHANNEL(chan,nick) "441 " + nick + " " + chan + " :They aren't on that channel\r\n"
 #define ERR_UNKNOWNMODE(nick, mode) "472 " + nick + " " + mode + " :is unknown mode char to me\r\n"
+
 // PASS
 #define ERR_ALREADYREGISTRED(nick) ":server 462 " + nick + " :You You may not reregister\r\n"
 #define ERR_NEEDMOREPARAMS(nick, command) ":server 461 " + nick + " " + command + " :Not enough parameters\r\n"

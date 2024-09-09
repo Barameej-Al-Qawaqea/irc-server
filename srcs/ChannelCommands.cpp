@@ -35,6 +35,7 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_CHANNELISFULL(client->getNickName(), chan->getName()));
         return false;
     }
+    // std::
     if(chan->getMode().ChanReqPass && (chan->getPassword() != key)){
         sendMsg(client->getSocket(), ERR_BADCHANNELKEY(client->getNickName(), chan->getName()));
         return false;
@@ -72,7 +73,10 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     }
     std::cout << "params.size() : " << params->size() << std::endl;
     if(size == 2){
-        sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), channel->getModeString()));
+        std::string mode = channel->getModeString();
+        if(mode.empty())
+            return ;
+        sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), mode));
         return;
     }
     switch(opt){
@@ -87,11 +91,13 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             channel->set_remove_topic_restriction(client, _do);
             break;
         case CHAN_KEY_OPT:
-             if(params->size() < 2){
+             if(size < 3 || (_do && size < 4)){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
-            params++;
+            params += 3;
+            std::cout << "key : " << *params << std::endl;
+
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
@@ -104,7 +110,6 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             if(name_to_client.find(*params) == name_to_client.end())
                 return ;
             clientTarget = name_to_client[*params];
-            // debug
             channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:
@@ -147,32 +152,26 @@ void kick(Client *client, Channel *chan, Client *target, std::string targetName,
     sendMsg(client->getSocket(),\
      ":" + client->getNickName()+ "!~" + client->getuserName() + "@" + client->getHostName() + \
       " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
+    sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() + " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
 }
 
-void sendInvite(Client *client, Client *target, Channel *chan){
-    std::string msg = RPL_INVITING(chan->getName(), client->getNickName());
-    (void)client;
-    sendMsg(target->getSocket(), msg);
-}
 
 void invite(Channel *chan, Client *client, Client *target){
-    if(!chan || !chan->isOnChan(client) ||!chan->isChanOp(client)){
+    if(!chan || !chan->isOnChan(client) || chan->isOnChan(target) || (chan->getMode().invite_only && !chan->isChanOp(client))){
         if(!chan)
             sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
         else if(!chan->isOnChan(client))
             sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
+        else if (chan->isOnChan(target))
+            sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
         return;
     }
-    if(chan->getMode().invite_only){
-        if(chan->isOnChan(target)){
-            sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
-            return;
-        }
-        sendInvite(client, target, chan);
-        chan->addPendingClient(*target);
-    }
+    sendMsg(client->getSocket(), RPL_INVITING(chan->getName(), client->getNickName(), target->getNickName()));
+    sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() +\
+        " INVITE " + target->getNickName() + " :#" + chan->getName()); ;
+    chan->addPendingClient(*target);
 }
 
 void topic(Channel *chan, Client *client, std::vector<string>params){
