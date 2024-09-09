@@ -74,6 +74,15 @@ void removeClient(s_server_data &serverData, int clientIdx)
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
 	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();
+
+	// remove user from active chats
+    std::set<int> &activeChatsSockets = client->getActiveChatsSockets();
+    for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
+		int userFd = *it;
+		Client *otherClient = serverData.fdToClient[userFd];
+		otherClient->deleteActiveChat(client->getSocket());
+	}
+
 	clean_chan_data(serverData, client);
 	delete client;
 }
