@@ -61,9 +61,11 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
 
-    if(!channel|| !channel->isChanOp(client)){
+    if(!channel || !channel->isOnChan(client)  || !channel->isChanOp(client)){
         if(!channel)
             sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(),channel->getName()));
+        else if(!channel->isOnChan(client))
+            sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), channel->getName()));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), channel->getName()));
         return;
@@ -177,6 +179,8 @@ void invite(Channel *chan, Client *client, Client *target){
 }
 
 void topic(Channel *chan, Client *client, std::vector<string>params){
+    std::string topic;
+
     if(params.size() < 2){
         sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
         return;
@@ -198,7 +202,12 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
             sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
             return;
         }
-        chan->setTopic(params[2].substr(1));
+        int i = 2;
+        while(params[i][0] != ':' && i < (int)params.size()){
+            topic += params[i];
+            i++;
+        }
+        chan->setTopic(topic);
     }
     else{
         string topic = chan->getTopic();
