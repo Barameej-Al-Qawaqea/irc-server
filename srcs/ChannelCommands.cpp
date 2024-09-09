@@ -22,7 +22,7 @@ std::string getClientNames(std::vector<Client> clients){
 }
 
 bool join(Client *client, Channel *chan, std::string key){
-    if(chan->isOnChan(*client)){
+    if(chan->isOnChan(client)){
         sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
         return false;
     }
@@ -125,18 +125,22 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
 
 void kick(Client *client, Channel *chan, Client *target, std::string targetName, std::string reason){
     if(!chan){
-        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), ""));
         return ;
     }
     if(!target){
         sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), ));
         return;
     }
+    if (!chan->isOnChan(client)){
+        sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
+        return;
+    }
     if(!chan->isChanOp(client)){
         sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
         return;
     }
-    if(!chan->isOnChan(*target)){
+    if(!chan->isOnChan(target)){
         sendMsg(client->getSocket(), ERR_USERNOTINCHANNEL(chan->getName(), target->getNickName()));
         return;
     }
@@ -153,15 +157,17 @@ void sendInvite(Client *client, Client *target, Channel *chan){
 }
 
 void invite(Channel *chan, Client *client, Client *target){
-    if(!chan || !chan->isChanOp(client)){
+    if(!chan || !chan->isOnChan(client) ||!chan->isChanOp(client)){
         if(!chan)
             sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
+        else if(!chan->isOnChan(client))
+            sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
         return;
     }
     if(chan->getMode().invite_only){
-        if(chan->isOnChan(*target)){
+        if(chan->isOnChan(target)){
             sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
             return;
         }
@@ -177,6 +183,10 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
     }
     if(!chan){
         sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
+        return;
+    }
+    if(!chan->isOnChan(client)){
+        sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
     }
     if(chan->getMode().TopicRestricted && !chan->isChanOp(client) && params.size() == 3){

@@ -40,13 +40,14 @@ void	checkNewClientAttempt(s_server_data &serverData)
 	}
 }
 
+
 void clean_chan_data(s_server_data &serverData, Client *client)
 {
 	std::deque<Channel*> &channels = serverData.channels;
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		Channel *chan = channels[i];
-		if (chan->isOnChan(*client))
+		if (chan->isOnChan(client))
 		{
 			chan->removeClient(*client);
 			if (chan->getChanClients().empty())

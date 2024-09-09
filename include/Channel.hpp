@@ -72,7 +72,7 @@ class Channel{
         Channel(const std::string &name);
         bool operator==(const Channel &chan) const;
         bool isChanOp(Client *client);
-        bool isOnChan(const Client &client);
+        bool isOnChan(Client *client);
         void AddToChan(Client  client);
         void removeClient(Client client);
         void removeChanop(Client client);

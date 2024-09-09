@@ -26,10 +26,10 @@ bool Channel::isChanOp(Client *client){
     return (it != chan_operators.end());
 }
 
-bool Channel::isOnChan(const Client &client){
+bool Channel::isOnChan(Client *client){
     std::vector<Client>::iterator it;
 
-    it = std::find(clients.begin(), clients.end(), client);
+    it = std::find(clients.begin(), clients.end(), *client);
     return (it != clients.end());
 }
 
