@@ -17,11 +17,11 @@ std::deque<Client> &Channel::getPendingClients(){
             return invited_clients;
 }
 void Channel::removePendingClient(Client client){
-            std::deque<Client>::iterator it;
-            it = std::find(invited_clients.begin(), invited_clients.end(), client);
-            if(it != invited_clients.end()){
-                invited_clients.erase(it);
-            }
+        std::deque<Client>::iterator it;
+        it = std::find(invited_clients.begin(), invited_clients.end(), client);
+        if(it != invited_clients.end()){
+            invited_clients.erase(it);
+        }
 }
 
 bool Channel::isPendingClient(Client client){
@@ -150,10 +150,14 @@ void Channel::add_clientToChanops(Client *client, Client *target, bool _do){
 
 void Channel::limitUserToChan(Client *client,bool _do, int _limit){
                 if(isChanOp(client)){
-                    if(_do && limit >= (int)clients.size()){
+                    if(_do && _limit >= (int)clients.size()){
                         mode.UserLimit = _do;
                         mode.UserLimit = 1;
                         limit = _limit;
+                    }
+                    else if(!_do){
+                        mode.UserLimit = _do;
+                        limit = 0;
                     }
                     return ;
                 }

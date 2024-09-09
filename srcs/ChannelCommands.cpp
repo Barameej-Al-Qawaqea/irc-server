@@ -30,7 +30,6 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_INVITEONLYCHAN(client->getNickName(), chan->getName()));
         return false;
     }
-    
     if(chan->getMode().UserLimit && (int)chan->getChanClients().size() >= chan->getlimit()){
         sendMsg(client->getSocket(), ERR_CHANNELISFULL(client->getNickName(), chan->getName()));
         return false;
@@ -115,14 +114,15 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:
-            if( ( _do && (params == extra_params.end() || params + 1 == extra_params.end()) ) ||params->size() < 2){
+            if(size < 3 || (_do && size < 4)){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName() ,std::string("MODE")));
                 return;
             }
-            params++;
+            params+= 2;
+            params += _do;
             std::cout << "params : " << *params << std::endl;
             std::cout << "limit : " << std::atoi(params->c_str()) << std::endl;
-            channel->limitUserToChan(client, _do, params != extra_params.end() ? std::atoi(params->c_str()) : 0);
+            channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
             sendMsg(client->getSocket(), ERR_UNKNOWNMODE(client->getNickName(), *params));
