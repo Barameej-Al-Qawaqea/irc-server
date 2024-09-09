@@ -10,7 +10,7 @@ struct Node {
     double winScore;
     std::vector<Node*> children;
     std::vector<std::pair<int, int> > expandableMoves;
-    Node(const Game& state, Node* parent = nullptr, std::pair <int, int> mv = std::make_pair(-1, -1));
+    Node(const Game& state, Node* parent = NULL, std::pair <int, int> mv = std::make_pair(-1, -1));
     ~Node();
     bool    isFullyExpanded();
     Node*   selectPromisingNode();
