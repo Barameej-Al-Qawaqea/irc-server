@@ -80,6 +80,8 @@ void	checkClientsRequests(s_server_data &serverData)
 					//p\n
 					// p\r\n
 					int idx = cmnd.find("\n");
+					// std::cout << "all:" << cmnd << std::endl;
+					// std::cout << "commandsize: " << cmnd.size() << std::endl;
 					bool isLimeChat = 0;
 					if (idx > 0 && cmnd[idx - 1] == '\r') isLimeChat = 1;
 					std::string toSend = cmnd.substr(0, idx - isLimeChat);
@@ -87,6 +89,8 @@ void	checkClientsRequests(s_server_data &serverData)
 					cmnd.erase(cmnd.begin(), cmnd.begin() + idx + 1);
 					// std::cerr << "command: " << cmnd << std::endl;
 					// std::cerr << "::: " << toSend << " ||| " << cmnd << std::endl;
+					if (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r')) std::cout << "Yesis \\r\n";
+					// std::cout << "new size: " << cmnd.size() << '\n';
 					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], toSend, serverData);
 				}
 				// b\n

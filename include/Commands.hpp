@@ -3,7 +3,7 @@
 #include "header.hpp"
 #include "Client.hpp"
 #include "Replies.hpp"
-
+#define MAX_TARGETS 10
 class Command
 {
     private :
