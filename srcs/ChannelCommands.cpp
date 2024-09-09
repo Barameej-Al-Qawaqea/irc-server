@@ -103,11 +103,12 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             break;
         case CHANOP_OPT:
             std::cout << "size : " << params->size() << std::endl;  
-            if (params== extra_params.end() || params + 1 == extra_params.end() || params->size() != 2){
+            if (size != 4){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
-            params++;
+            params+= 3;
+            std::cout << "params : " << *params << std::endl;
             if(name_to_client.find(*params) == name_to_client.end())
                 return ;
             clientTarget = name_to_client[*params];
@@ -192,17 +193,17 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
         sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
     }
-    if(chan->getMode().TopicRestricted && !chan->isChanOp(client) && params.size() == 3){
-        sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
-        return;
-    }
     if(params.size() == 3){
+        if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
+            sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
+            return;
+        }
         if(params[2][0]!= ':'){
             sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
             return;
         }
         int i = 2;
-        while(params[i][0] != ':' && i < (int)params.size()){
+        while(i < (int)params.size()){
             topic += params[i];
             i++;
         }
