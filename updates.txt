@@ -1,0 +1,10 @@
+
+toadd :
+// map<string, channel*>  
+    --to check if achannel exist in effiecient way 
+    --also, to get the channel pointer from it's name
+// map<channel*, set<string>> map 
+    // to get from channel pointer, all the clients in it, and update them efficiently 
+
+
+//to remove : deque<channels *>

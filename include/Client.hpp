@@ -14,6 +14,7 @@ private :
     bool isRegistred;      // user made PASS, NICK, USER
     sockaddr_in Addr; // client info
     int fd; // client socket
+    std::set<int> activeChatsSockets; // use it to inform  NICK name changes to users who have chat with client
     Bot bot;
 public :
     Client(sockaddr_in &clientAddr, int clientSocket);
@@ -28,7 +29,9 @@ public :
     void        setcurrChan(Channel *chan);
     void        setRegistred();
     void        setNickName(std::string &name);
-
+    std::set<int>& getActiveChatsSockets() { return activeChatsSockets; }
+    void        addActiveChat(int clientSocket) {activeChatsSockets.insert(clientSocket);}
+    void        deleteActiveChat(int clientSocket) {activeChatsSockets.erase(clientSocket); };
     bool        operator==(Client _client);
     std::string play(std::vector<std::string> cmd);
     std::string botUsage();

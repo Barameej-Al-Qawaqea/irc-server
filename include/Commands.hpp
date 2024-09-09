@@ -31,7 +31,8 @@ class Command
         std::vector<std::string>    getUsersAndChannels();
         void                        sendMsgToChannelClients(std::string &reciver, std::string &message) const;
         void                        sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const;
-        void                        notifyNickChange();
+        void                        notifyNickChangeToChannels(const std::string &oldName, const std::string &name) const;
+        void                        notifyActiveChats(const std::string &oldname, const std::string &newName) const;
 
     public :
         Command(std::string &command, Client *client, s_server_data &serverData);

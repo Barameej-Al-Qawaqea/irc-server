@@ -60,8 +60,11 @@ void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &
         else {
             // check if client is connected to the server
             if (clientExist(receiver)) {
-                int receiverFd = serverData.nameToClient[receiver]->getSocket();
+                Client *otherClient = serverData.nameToClient[receiver];
+                int receiverFd = otherClient->getSocket();
                 sendMsg(receiverFd, ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
+                client->addActiveChat(receiverFd);
+                otherClient->addActiveChat(client->getSocket());
             }
             else
                 sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), receiver));
