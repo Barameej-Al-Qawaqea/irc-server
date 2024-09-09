@@ -40,6 +40,28 @@ void	checkNewClientAttempt(s_server_data &serverData)
 	}
 }
 
+void clean_chan_data(s_server_data &serverData, Client *client)
+{
+	std::deque<Channel*> &channels = serverData.channels;
+	for (size_t i = 0; i < channels.size(); i++)
+	{
+		Channel *chan = channels[i];
+		if (chan->isOnChan(*client))
+		{
+			chan->removeClient(*client);
+			if (chan->getChanClients().empty())
+			{
+				if(chan->isChanOp(client))
+					chan->removeChanop(*client);
+				delete chan;
+				std::swap(channels[i], channels[channels.size() - 1]);
+				channels.pop_back();
+				i -= 1;
+			}
+		}
+	}
+}
+
 void removeClient(s_server_data &serverData, int clientIdx)
 {
 	closeSocket(serverData.clients[clientIdx].fd);
@@ -52,6 +74,7 @@ void removeClient(s_server_data &serverData, int clientIdx)
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
 	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();
+	clean_chan_data(serverData, client);
 	delete client;
 }
 
