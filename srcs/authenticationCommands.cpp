@@ -27,6 +27,8 @@ void    Command::executePass() {
         client->setAuthenticated();
 }
 
+
+
 void    Command::executeNick() {
     std::string target = client->getNickName().empty() ? "*" : client->getNickName();   // target should be '*' if user doenst have a nickname yet
     // std::cout << " coomand: " << originCmd << ' ' << cmd.size() << std::endl;
@@ -48,6 +50,8 @@ void    Command::executeNick() {
             serverData.nameToClient[cmd[1]] = client;
         }
         sendMsg(client->getSocket(), RPL_NICKCHANGE(cmd[1], (client->getNickName().size() ? client->getNickName() : "*")));
+        // info
+        // notifyNickChange();    // to add
         client->setNickName(cmd[1]);
     }
 }

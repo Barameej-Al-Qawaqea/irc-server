@@ -98,26 +98,18 @@ void	checkClientsRequests(s_server_data &serverData)
 				{
 					int clientIdx = serverData.clients[i].fd;
 					std::string &cmnd = serverData.requestsBuff[clientIdx];
-					// serverData.requestsBuff.erase(clientIdx);
-					// while (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r'))
-					// 	cmnd.pop_back(); // remove the '\n'
-					//p\n
-					// p\r\n
-					int idx = cmnd.find("\n");
-					// std::cout << "all:" << cmnd << std::endl;
-					// std::cout << "commandsize: " << cmnd.size() << std::endl;
-					bool isLimeChat = 0;
-					if (idx > 0 && cmnd[idx - 1] == '\r') isLimeChat = 1;
-					std::string toSend = cmnd.substr(0, idx - isLimeChat);
-					// std::cerr << "command: " << cmnd << std::endl;
-					cmnd.erase(cmnd.begin(), cmnd.begin() + idx + 1);
-					// std::cerr << "command: " << cmnd << std::endl;
-					// std::cerr << "::: " << toSend << " ||| " << cmnd << std::endl;
-					if (cmnd.size() && (cmnd.back() == '\n' || cmnd.back() == '\r')) std::cout << "Yesis \\r\n";
-					// std::cout << "new size: " << cmnd.size() << '\n';
-					newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], toSend, serverData);
+				
+					std::stringstream ss(cmnd);
+					std::string sep = "\n";
+					if (cmnd.size() > 1 && cmnd[cmnd.size() - 2] == '\r') sep = "\r\n";   // not from terminal
+					size_t end, start = 0;
+					while ((end = cmnd.find(sep, start)) != std::string::npos) {
+						std::string toSend = cmnd.substr(start, end - start);
+						newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], toSend, serverData);
+						start = end + sep.size();
+					}
+					serverData.requestsBuff.erase(clientIdx);
 				}
-				// b\n
 				else if (r < 0)
 				{
 					// response to big!.

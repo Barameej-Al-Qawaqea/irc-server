@@ -30,7 +30,7 @@
 #define ERR_NONICKNAMEGIVEN(nick) ":server 431 " + nick + " :No nickname given\r\n"
 #define ERR_ERRONEUSNICKNAME(nick) ":server 432 " + nick + " :Erroneus nickname\r\n"
 #define ERR_NICKNAMEINUSE(nick) ":server 433 " + nick + " :Nickname is already in use\r\n"
-#define RPL_NICKCHANGE(nick, oldNick) "667 " + oldNick + " :successfully set a new nickname " + nick + "\r\n"
+#define RPL_NICKCHANGE(nick, oldNick) ":" + oldNick + " NICK " + nick + "\r\n"
 
 // PRIVMSG : tocheck
 #define ERR_NOSUCHNICK(nick, badNick) ":server 401 " + nick + " " + badNick + " :No such nick/channel\r\n"
