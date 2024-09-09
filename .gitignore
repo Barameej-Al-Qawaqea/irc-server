@@ -36,6 +36,11 @@ Thumbs.db
 # python
 __pycache__
 
+.vscode
+*.obj
+*.o
+ircserv
+
 # Executables
 *.exe
 *.out

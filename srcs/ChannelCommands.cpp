@@ -81,6 +81,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     }
     switch(opt){
         case INVITE_ONLY_OPT:
+            params += 2;
             if(*params != "+i" && *params != "-i"){
                 sendMsg(client->getSocket(), ERR_UNKNOWNMODE(client->getNickName(), *params));
                 return;
