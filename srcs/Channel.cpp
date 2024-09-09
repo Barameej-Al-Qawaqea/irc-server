@@ -150,8 +150,8 @@ void Channel::add_clientToChanops(Client *client, Client *target, bool _do){
 
 void Channel::limitUserToChan(Client *client,bool _do, int _limit){
                 if(isChanOp(client)){
-                    mode.UserLimit = _do;
                     if(_do && limit >= (int)clients.size()){
+                        mode.UserLimit = _do;
                         mode.UserLimit = 1;
                         limit = _limit;
                     }

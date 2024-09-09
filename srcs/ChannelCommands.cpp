@@ -35,7 +35,8 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_CHANNELISFULL(client->getNickName(), chan->getName()));
         return false;
     }
-    // std::
+    std::cout << "key : " << key << std::endl;
+    std::cout << "chan->getPassword() : " << chan->getPassword() << std::endl;
     if(chan->getMode().ChanReqPass && (chan->getPassword() != key)){
         sendMsg(client->getSocket(), ERR_BADCHANNELKEY(client->getNickName(), chan->getName()));
         return false;
@@ -118,6 +119,8 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
                 return;
             }
             params++;
+            std::cout << "params : " << *params << std::endl;
+            std::cout << "limit : " << std::atoi(params->c_str()) << std::endl;
             channel->limitUserToChan(client, _do, params != extra_params.end() ? std::atoi(params->c_str()) : 0);
             break;
         case UNKOWN:
