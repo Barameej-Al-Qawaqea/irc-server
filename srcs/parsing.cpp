@@ -20,14 +20,19 @@ void parsingAndSetup(s_server_data &serverData, int ac, char **av)
 void	serverSetup(s_server_data &serverData)
 {
 	createSocket(serverData);
+	int opt = 1;
+	if (setsockopt(serverData.sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+		perror("setsockopt failed");
+		close(serverData.sockfd);
+		exit(0);
+	}
 	if (setSocketAsNonBlocking(serverData.sockfd) < 0)
 	{
-		std::cout << "failed setting server socket to non-blocking.";
-		std::cout << std::endl;
+		perror("setsockopt failed");
+		close(serverData.sockfd);
 		exit(0);
 	}
 	setupServerSocket(serverData);
 	serverSocketListen(serverData);
 	serverData.clients.push_back(newPollFd(serverData.sockfd));
-	// serverData.clientsAddr.push_back(serverData.serverAddress);
 }

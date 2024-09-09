@@ -88,7 +88,7 @@ void	serverSetup(s_server_data &serverData);
 void socketsPolling(s_server_data &serverData);
 // 2
 void	checkNewClientAttempt(s_server_data &serverData);
-// 3
+// 3500
 void	checkClientsRequests(s_server_data &serverData);
 
 /* rghouzra task - undefined */

@@ -20,8 +20,8 @@ int main(int ac, char **av)
 
 	while (serverData.serverStatus == ON)
 	{
+		assert(serverData.clients.size() - 1 == serverData.fdToClient.size() && "yap!, code have bug");
 		/* for debugging + testing code bugs */
-		// assert(serverData.clients.size() - 1 == serverData.fdToClient.size() && "yap!, code have bug");
 		/* step 1 : polling */
 		socketsPolling(serverData);
 		/* step 2 : checking new connection attempt */
