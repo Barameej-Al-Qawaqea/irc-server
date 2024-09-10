@@ -49,11 +49,11 @@ void clean_chan_data(s_server_data &serverData, Client *client)
 		Channel *chan = channels[i];
 		if (chan->isOnChan(client))
 		{
-			chan->removeClient(*client);
+			chan->removeClient(client);
 			if (chan->getChanClients().empty() && chan->getName() != "general")
 			{
 				if(chan->isChanOp(client))
-					chan->removeChanop(*client);
+					chan->removeChanop(client);
 				std::swap(channels[i], channels[channels.size() - 1]);
 				channels.pop_back();
 				delete chan;

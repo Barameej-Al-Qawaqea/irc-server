@@ -62,7 +62,7 @@ void    Client::deleteActiveChat(int clientSocket) {
     activeChatsSockets.erase(clientSocket);
 };
 
-bool Client::operator==(Client _client){
+bool Client::operator==(Client &_client){
     return (_client.fd == this->fd);
 }
 

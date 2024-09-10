@@ -30,12 +30,12 @@ void part(Client *client, Channel *chan, std::deque<Channel *> *channels){
         sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
     }
-    vector<Client> clients = chan->getChanClients();
+    vector<Client *> clients = chan->getChanClients();
     for(size_t i = 0; i < clients.size(); i++){
-        sendMsg(clients[i].getSocket(), RPL_PART(client->getNickName(),client->getuserName(),\
+        sendMsg(clients[i]->getSocket(), RPL_PART(client->getNickName(),client->getuserName(),\
         client->getHostName(), chan->getName()));
     }
-    chan->removeClient(*client);
+    chan->removeClient(client);
     client->setcurrChan(NULL);
     int index = 0;
     if(chan->getChanClients().empty() && chan->getName()!= "general"){
@@ -56,7 +56,7 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
         return false;
     }
-    if(chan->getMode().invite_only && !chan->isPendingClient(*client)){
+    if(chan->getMode().invite_only && !chan->isPendingClient(client)){
         sendMsg(client->getSocket(), ERR_INVITEONLYCHAN(client->getNickName(), chan->getName()));
         return false;
     }
@@ -68,11 +68,11 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_BADCHANNELKEY(client->getNickName(), chan->getName()));
         return false;
     }
-    vector<Client> clients = chan->getChanClients();
+    vector<Client *> clients = chan->getChanClients();
     for(size_t i = 0; i < clients.size(); i++){
-        sendMsg(clients[i].getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
+        sendMsg(clients[i]->getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
     }
-    chan->AddToChan(*client);
+    chan->AddToChan(client);
     client->setcurrChan(chan);
         // sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
     sendMsg(client->getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
@@ -175,7 +175,7 @@ void kick(Client *client, Channel *chan, Client *target, std::string reason, std
         sendMsg(client->getSocket(), ERR_USERNOTINCHANNEL(chan->getName(), target->getNickName()));
         return;
     }
-    chan->removeClient(*target);
+    chan->removeClient(target);
     sendMsg(client->getSocket(),\
      ":" + client->getNickName()+ "!~" + client->getuserName() + "@" + client->getHostName() + \
       " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
@@ -202,7 +202,7 @@ void invite(Channel *chan, Client *client, Client *target){
     sendMsg(client->getSocket(), RPL_INVITING(chan->getName(), client->getNickName(), target->getNickName()));
     sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() +\
         " INVITE " + target->getNickName() + " :#" + chan->getName()); ;
-    chan->addPendingClient(*target);
+    chan->addPendingClient(target);
 }
 
 void topic(Channel *chan, Client *client, std::vector<string>params){

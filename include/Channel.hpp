@@ -28,13 +28,13 @@ typedef struct t_mode{
 class Channel{
     private :
         std::string name;
-        std::vector<Client>clients;
-        std::deque<Client>invited_clients;
+        std::vector<Client *>clients;
+        std::deque<Client*>invited_clients;
         // channel operators
         Mode mode; 
         std::string password;
         std::string topic;
-        std::vector<Client>chan_operators;
+        std::vector<Client *>chan_operators;
         int limit;
         Channel();
     public:
@@ -43,21 +43,21 @@ class Channel{
         std::string getModeString();
         const std::string &getName();
         std::string getPassword();
-        void addPendingClient(Client client);
-        void removePendingClient(Client client);
-        std::deque<Client> &getPendingClients();
-        bool isPendingClient(Client client);
+        void addPendingClient(Client *client);
+        void removePendingClient(Client *client);
+        std::deque<Client *> &getPendingClients();
+        bool isPendingClient(Client *client);
         int getlimit();
         Channel(const std::string &name);
-        bool operator==(const Channel &chan) const;
+        bool operator==(const Channel &chan);
         bool isChanOp(Client *client);
         bool isOnChan(Client *client);
-        void AddToChan(Client  client);
-        void removeClient(Client client);
-        void removeChanop(Client client);
-        const std::vector<Client> &getChanClients();
-        void AddToChanOPs( Client client);
-        void debug();
+        void AddToChan(Client  *client);
+        void removeClient(Client *client);
+        void removeChanop(Client *client);
+        std::vector<Client *> &getChanClients();
+        void AddToChanOPs( Client *client);
+
         Mode getMode();
         /*mode commands*/
         void set_remove_invite_only(Client *client, bool _do);
