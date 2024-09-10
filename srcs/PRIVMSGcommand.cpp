@@ -37,10 +37,10 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
             //! ERR_CANNOTSENDTOCHAN
             sendMsg(client->getSocket(), ERR_CANNOTSENDTOCHAN(client->getNickName(), receiver));
         else {
-            std::vector<Client> ChanClien = chan->getChanClients();
+            std::vector<Client *> ChanClien = chan->getChanClients();
             for (size_t i = 0; i < ChanClien.size(); i++) {
-                if (ChanClien[i].getSocket() == client->getSocket()) continue;
-                sendMsg(ChanClien[i].getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
+                if (ChanClien[i]->getSocket() == client->getSocket()) continue;
+                sendMsg(ChanClien[i]->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@"\
                     + client->getHostName() + " PRIVMSG " + receiver + " :" + message + "\r\n");
             }
         }

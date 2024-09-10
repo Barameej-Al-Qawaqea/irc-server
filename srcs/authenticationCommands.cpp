@@ -32,9 +32,9 @@ void    Command::notifyNickChangeToChannels(const std::string &oldName, const st
     std::deque<Channel *> &channels = serverData.channels;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->isOnChan(client)) {
-            vector<Client> ChannelClients = channels[i]->getChanClients();
+            vector<Client *> ChannelClients = channels[i]->getChanClients();
             for (size_t i = 0; i < ChannelClients.size(); i++) {
-                sendMsg(ChannelClients[i].getSocket(), RPL_NICKCHANGE(newName, oldName));
+                sendMsg(ChannelClients[i]->getSocket(), RPL_NICKCHANGE(newName, oldName));
             }
         }
     }
