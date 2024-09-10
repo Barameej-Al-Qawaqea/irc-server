@@ -133,7 +133,14 @@ void Command::executeKick() {
 }
 
 void    Command::executeBot() {
-    if (client->argumentsError(cmd))
-      sendMsg(client->getSocket(), client->botUsage());
-    else  sendMsg(client->getSocket(), client->play(cmd));
+	std::string message, line;
+    
+	if (client->argumentsError(cmd))
+		message = client->botUsage();
+	else
+		message = client->play(cmd);
+	std::stringstream ss(message);
+	while (std::getline(ss, line, '\n'))
+		sendMsg(client->getSocket(), "001 "+ client->getNickName() + " :" + line + "\r\n");
+	sendMsg(client->getSocket(), "001 "+ client->getNickName() + " :\r\n" );
 }

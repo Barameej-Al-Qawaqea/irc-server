@@ -67,9 +67,8 @@ void removeClient(s_server_data &serverData, int clientIdx)
 {
 	closeSocket(serverData.clients[clientIdx].fd);
 	Client *client = serverData.fdToClient[serverData.clients[clientIdx].fd];
-	if (!client) std::cout << "yes, isNULL\n";
 
-    std::set<int> activeChatsSockets = client->getActiveChatsSockets();
+    std::set<int> &activeChatsSockets = client->getActiveChatsSockets();
     for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
 		int userFd = *it;
 		if (userFd == client->getSocket()) continue;
