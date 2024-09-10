@@ -50,13 +50,13 @@ void clean_chan_data(s_server_data &serverData, Client *client)
 		if (chan->isOnChan(client))
 		{
 			chan->removeClient(*client);
-			if (chan->getChanClients().empty())
+			if (chan->getChanClients().empty() && chan->getName() != "general")
 			{
 				if(chan->isChanOp(client))
 					chan->removeChanop(*client);
-				delete chan;
 				std::swap(channels[i], channels[channels.size() - 1]);
 				channels.pop_back();
+				delete chan;
 				i -= 1;
 			}
 		}
@@ -107,9 +107,9 @@ void	checkClientsRequests(s_server_data &serverData)
 				{
 					int clientIdx = serverData.clients[i].fd;
 					std::string &cmnd = serverData.requestsBuff[clientIdx];
-				
 					std::stringstream ss(cmnd);
 					std::string sep = "\n";
+
 					if (cmnd.size() > 1 && cmnd[cmnd.size() - 2] == '\r') sep = "\r\n";   // not from terminal
 					size_t end, start = 0;
 					while ((end = cmnd.find(sep, start)) != std::string::npos) {
