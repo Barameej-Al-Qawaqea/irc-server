@@ -4,8 +4,8 @@
 
 class Bot {
     private :
-        Game ticTacToe;
-        Game gomuko;
+        Game        ticTacToe;
+        Game        gomuko;
         std::string ticTacToeDifficulty;
         std::string gomukoDifficulty;
         std::string msgToSend;

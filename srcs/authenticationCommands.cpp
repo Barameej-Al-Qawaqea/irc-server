@@ -1,4 +1,3 @@
-
 #include "header.hpp"
 #include "Client.hpp"
 
@@ -44,13 +43,12 @@ void    Command::notifyNickChangeToChannels(const std::string &oldName, const st
 void    Command::notifyActiveChats(const std::string &oldName, const std::string &newName) const{
     std::set<int> &activeChatsSockets = client->getActiveChatsSockets();
     
-    for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++)
+    for(std::set<int>::iterator it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++)
         sendMsg(*it, RPL_NICKCHANGE(newName, oldName));
 }
 
 void    Command::executeNick() {
     std::string target = client->getNickName().empty() ? "*" : client->getNickName();   // target should be '*' if user doenst have a nickname yet
-    // std::cout << " coomand: " << originCmd << ' ' << cmd.size() << std::endl;
     if (cmd.size() == 1)
         sendMsg(client->getSocket(), ERR_NONICKNAMEGIVEN(target));
     else if (cmd.size() > 2 || !validNickName(cmd[1]))
@@ -68,8 +66,6 @@ void    Command::executeNick() {
             serverData.nameToClient.erase(client->getNickName());
             serverData.nameToClient[cmd[1]] = client;
         }
-        // sendMsg(client->getSocket(), RPL_NICKCHANGE(cmd[1], (client->getNickName().size() ? client->getNickName() : "*")));
-        // info
         notifyNickChangeToChannels(client->getNickName(), cmd[1]);
         notifyActiveChats(client->getNickName(), cmd[1]);
         client->setNickName(cmd[1]);

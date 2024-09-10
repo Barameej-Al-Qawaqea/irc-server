@@ -7,20 +7,23 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 #include <cmath>
 
 struct Game {
-    int SIZE;
-    std::string gameType;    // is it tictactoe or gomuko
-    char currentPlayer;
-    std::vector <std::string> board;
-    bool    gameEnd;
-    char winner;
-    int movesLeft;
-    std::vector<std::vector<int> > row;
-    std::vector<std::vector<int> > col;
-    std::vector<int> leftDiagonal;
-    std::vector<int> rightDiagonal;
+    int                             SIZE;
+    std::string                     gameType;    // is it tictactoe or gomuko
+    char                            currentPlayer;
+    std::vector <std::string>       board;
+    bool                            gameEnd;
+    char                            winner;
+    int                             movesLeft;
+    std::vector<std::vector<int> >  row;
+    std::vector<std::vector<int> >  col;
+    std::vector<int>                leftDiagonal;
+    std::vector<int>                rightDiagonal;
+
 public:
     Game();
     Game(int SIZE, std::string &gameType);

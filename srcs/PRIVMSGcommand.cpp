@@ -100,10 +100,6 @@ void    Command::executePrivmsg() {
         return ;
     }
     std::vector<std::string> toSend = getUsersAndChannels();
-    // std::cout << messageTosSend << '\n';
-    // for(size_t i = 0; i < toSend.size(); i++)
-    //     std::cout << toSend[i] << ' ';
-    // std::cout << '\n';
     if (toSend.size() > MAX_TARGETS)
         sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 0));
     sendPrivMessage(toSend, messageTosSend);

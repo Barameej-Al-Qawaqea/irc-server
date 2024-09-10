@@ -7,10 +7,10 @@
 class Command
 {
     private :
-        std::vector<std::string> cmd;
-        std::string originCmd;  // store original command, need it in privmsg
-        Client *client;
-        s_server_data &serverData;
+        std::vector<std::string>    cmd;
+        std::string                 originCmd;  // store original command, need it in privmsg
+        Client                      *client;
+        s_server_data               &serverData;
 
         void                        executePass();
         void                        executeNick();

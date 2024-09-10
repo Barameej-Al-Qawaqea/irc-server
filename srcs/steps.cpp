@@ -63,24 +63,28 @@ void clean_chan_data(s_server_data &serverData, Client *client)
 	}
 }
 
-void removeClient(s_server_data &serverData, int clientIdx)
-{
-	closeSocket(serverData.clients[clientIdx].fd);
-	Client *client = serverData.fdToClient[serverData.clients[clientIdx].fd];
-
+void	updateServerData(s_server_data &serverData, Client *client) {
+	if (serverData.clientsNicknames.count(client->getNickName()))
+		serverData.clientsNicknames.erase(client->getNickName());
+	if (serverData.nameToClient.count(client->getNickName()))
+		serverData.nameToClient.erase(client->getNickName());
     std::set<int> &activeChatsSockets = client->getActiveChatsSockets();
-    for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
+    for(std::set<int>::iterator it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
 		int userFd = *it;
 		if (userFd == client->getSocket()) continue;
 		Client *otherClient = serverData.fdToClient[userFd];
 		otherClient->deleteActiveChat(client->getSocket());
 	}
+}
+
+void removeClient(s_server_data &serverData, int clientIdx)
+{
+	closeSocket(serverData.clients[clientIdx].fd);
+	Client *client = serverData.fdToClient[serverData.clients[clientIdx].fd];
+
 
 	clean_chan_data(serverData, client);
-	if (serverData.clientsNicknames.count(client->getNickName()))
-		serverData.clientsNicknames.erase(client->getNickName());
-	if (serverData.nameToClient.count(client->getNickName()))
-		serverData.nameToClient.erase(client->getNickName());
+	updateServerData(serverData, client);
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
 	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();

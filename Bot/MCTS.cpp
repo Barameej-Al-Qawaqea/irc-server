@@ -62,7 +62,10 @@ char    Node::simulateMove() {
     return tmp.getWinner();
 }
 
-MCTS::MCTS(int iterations) : iterations(iterations) {}
+MCTS::MCTS(int iterations) : iterations(iterations) {
+    srand(time(0));
+}
+
 std::pair<int, int> MCTS::findNextMove(Game& game) {
     Node* root = new Node(game);
     for (int i = 0; i < iterations; i++) {

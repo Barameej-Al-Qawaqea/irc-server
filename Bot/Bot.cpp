@@ -84,8 +84,9 @@ void    Bot::playServerMove(std::string gameType) {
     }
     game.playMove(botMove);
     msgToSend += game.printBoard();
-    // sendMoveToClient(botMove, gameType);
-    msgToSend += "Bot Move : [" + std::to_string(botMove.first) + ' ' + std::to_string(botMove.second) + "]\n";
+    std::ostringstream oss;
+    oss << "Bot Move : [" << botMove.first << ' ' << botMove.second << "]\n";
+    msgToSend += oss.str();
     if (isGameFinished(game, 0))
         return ;
     else msgToSend += "Your turn to play, please chose an action : [x, y]\n";
@@ -106,7 +107,9 @@ void    Bot::playClientMove(std::string gameType, std::pair <int, int> clientMov
         return ;
     }
     game.playMove(clientMove);
-    msgToSend = "Client Move : [" + std::to_string(clientMove.first) + ' ' + std::to_string(clientMove.second) + "]\n";
+    std::ostringstream oss;
+    oss << "Client Move : [" << clientMove.first << ' ' << clientMove.second << "]\n";
+    msgToSend = oss.str();
 
     if (isGameFinished(game, 1)) return ;
     else playServerMove(gameType);
