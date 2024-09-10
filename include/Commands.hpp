@@ -17,6 +17,7 @@ class Command
         void                        executeUser();
         void                        executePrivmsg();
         void                        executeJoin();
+        void                        executePart();
         void                        executeInvite();
         void                        executeTopic();
         void                        executeMode();

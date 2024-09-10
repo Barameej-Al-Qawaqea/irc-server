@@ -8,14 +8,29 @@ Command::Command(std::string &command, Client *client, s_server_data &serverData
     while (ss >> word) this->cmd.push_back(word);
 }
 
+
+void Command::executePart() {
+    if (cmd.size() != 2) {
+        sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "PASS"));
+    }
+    std::deque<Channel *> &channels = this->serverData.channels;
+  for(size_t i = 0; i < channels.size(); i++) {
+    if (channels[i]->getName() == cmd[1].substr(1)) {
+      part(this->client, channels[i],& channels);
+      return;
+    }
+  }
+}
+
+
 void    Command::checkWhichCommand() {
     std::cout << originCmd << '\n';
-    std::string possibleCommands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN", "INVITE", "TOPIC", "MODE", "KICK", "BOT"};
+    std::string possibleCommands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN", "PART" ,"INVITE", "TOPIC", "MODE", "KICK", "BOT"};
         void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser, &Command::executePrivmsg,
-        &Command::executeJoin, &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
+        &Command::executeJoin, &Command::executePart , &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
 
     int cmdIdx = -1;
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 11; i++) {
         if (!cmd.empty() && cmd[0] == possibleCommands[i])
             cmdIdx = i;
     }
@@ -33,7 +48,7 @@ void    Command::checkWhichCommand() {
     }
 }
 
-Channel *findChan(std::string name, std::deque<Channel *> channels,
+Channel *findChan(std::string name, std::deque<Channel *> &channels,
                   bool &created) {
   for (size_t i = 0; i < channels.size(); i++) {
     if (channels[i]->getName() == name)
@@ -41,7 +56,6 @@ Channel *findChan(std::string name, std::deque<Channel *> channels,
   }
   if(created){
     created = false;
-    std::cout << "channel already exist\n";
     return NULL;
   }
   Channel *chan = new Channel(name);
@@ -119,7 +133,6 @@ void Command::executeTopic() {
 
 void Command::executeMode() {
   int plus;
-  std::cout << "cmd.size() : " << cmd.size() << '\n';
   mode(this->client->getcurrChan(), this->client,
        get_which_opt(cmd, ((cmd.size() < 2) * -1), plus), cmd, plus,
        this->serverData.nameToClient, cmd.size() );
@@ -128,7 +141,7 @@ void Command::executeMode() {
 void Command::executeKick() {
   if (cmd.size() == 3 || cmd.size() == 4) {
     kick(this->client, this->client->getcurrChan(),
-         this->serverData.nameToClient[cmd[2]], cmd[2], cmd.size() == 4 ? cmd[3] : "");
+         this->serverData.nameToClient[cmd[2]], cmd.size() == 4 ? cmd[3] : "", this->serverData.channels);
   }
 }
 

@@ -21,6 +21,36 @@ std::string getClientNames(std::vector<Client> clients){
     return names;
 }
 
+void part(Client *client, Channel *chan, std::deque<Channel *> *channels){
+    if(!chan){
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), ""));
+        return;
+    }
+    if(!chan->isOnChan(client)){
+        sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
+        return;
+    }
+    vector<Client> clients = chan->getChanClients();
+    for(size_t i = 0; i < clients.size(); i++){
+        sendMsg(clients[i].getSocket(), RPL_PART(client->getNickName(),client->getuserName(),\
+        client->getHostName(), chan->getName()));
+    }
+    chan->removeClient(*client);
+    client->setcurrChan(NULL);
+    int index = 0;
+    if(chan->getChanClients().empty() && chan->getName()!= "general"){
+        for(size_t i = 0; i < channels->size(); i++){
+            if(channels[0][i] == chan){
+                index = i;
+                break;
+            }
+        } 
+        std::swap(channels[0][index], channels[0][channels->size() - 1]);
+        channels->pop_back();
+        delete chan;
+    }
+}
+
 bool join(Client *client, Channel *chan, std::string key){
     if(chan->isOnChan(client)){
         sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
@@ -34,8 +64,6 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_CHANNELISFULL(client->getNickName(), chan->getName()));
         return false;
     }
-    std::cout << "key : " << key << std::endl;
-    std::cout << "chan->getPassword() : " << chan->getPassword() << std::endl;
     if(chan->getMode().ChanReqPass && (chan->getPassword() != key)){
         sendMsg(client->getSocket(), ERR_BADCHANNELKEY(client->getNickName(), chan->getName()));
         return false;
@@ -71,7 +99,6 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), channel->getName()));
         return;
     }
-    std::cout << "params.size() : " << params->size() << std::endl;
     if(size == 2){
         std::string mode = channel->getModeString();
         if(mode.empty())
@@ -97,18 +124,15 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
                 return;
             }
             params += 3;
-            std::cout << "key : " << *params << std::endl;
 
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
-            std::cout << "size : " << params->size() << std::endl;  
             if (size != 4){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
             params+= 3;
-            std::cout << "params : " << *params << std::endl;
             if(name_to_client.find(*params) == name_to_client.end())
                 return ;
             clientTarget = name_to_client[*params];
@@ -121,8 +145,6 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             }
             params+= 2;
             params += _do;
-            std::cout << "params : " << *params << std::endl;
-            std::cout << "limit : " << std::atoi(params->c_str()) << std::endl;
             channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
@@ -132,7 +154,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     
 }
 
-void kick(Client *client, Channel *chan, Client *target, std::string targetName, std::string reason){
+void kick(Client *client, Channel *chan, Client *target, std::string reason, std::deque<Channel *> &channels){
     if(!chan){
         sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), ""));
         return ;
@@ -158,6 +180,10 @@ void kick(Client *client, Channel *chan, Client *target, std::string targetName,
      ":" + client->getNickName()+ "!~" + client->getuserName() + "@" + client->getHostName() + \
       " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
     sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() + " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
+    if(chan->getChanClients().empty() && chan->getName() != "general"){
+        channels.erase(std::remove(channels.begin(), channels.end(), chan), channels.end());
+        delete chan;
+    }
 }
 
 
