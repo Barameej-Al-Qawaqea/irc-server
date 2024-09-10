@@ -32,25 +32,18 @@ public :
     std::set<int>& getActiveChatsSockets() { return activeChatsSockets; }
     void        addActiveChat(int clientSocket) {activeChatsSockets.insert(clientSocket);}
     void        deleteActiveChat(int clientSocket) {
-        assert((activeChatsSockets.empty() != false) && (activeChatsSockets.find(clientSocket) != activeChatsSockets.end()));
+        assert((activeChatsSockets.empty() == false) && (activeChatsSockets.find(clientSocket) != activeChatsSockets.end()));
         activeChatsSockets.erase(clientSocket);
     };
     bool        operator==(Client _client);
     std::string play(std::vector<std::string> cmd);
     std::string botUsage();
     bool        argumentsError(std::vector<std::string> _cmd);
-    std::string getuserName(){
+    std::string getuserName() {
         return userName;
     }
     std::string getHostName(){
-        char hostname[1024];
-        hostname[1023] = '\0';
-        gethostname(hostname, 1023);
-
         return  inet_ntoa(Addr.sin_addr);
-
-        // return std::string(hostname);
-        return std::string("127.0.0.1");
     }
 
     void    setUserName(std::string &name) {

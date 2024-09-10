@@ -68,6 +68,16 @@ void removeClient(s_server_data &serverData, int clientIdx)
 	closeSocket(serverData.clients[clientIdx].fd);
 	Client *client = serverData.fdToClient[serverData.clients[clientIdx].fd];
 	if (!client) std::cout << "yes, isNULL\n";
+
+    std::set<int> activeChatsSockets = client->getActiveChatsSockets();
+    for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
+		int userFd = *it;
+		if (userFd == client->getSocket()) continue;
+		Client *otherClient = serverData.fdToClient[userFd];
+		otherClient->deleteActiveChat(client->getSocket());
+	}
+
+	clean_chan_data(serverData, client);
 	if (serverData.clientsNicknames.count(client->getNickName()))
 		serverData.clientsNicknames.erase(client->getNickName());
 	if (serverData.nameToClient.count(client->getNickName()))
@@ -75,16 +85,6 @@ void removeClient(s_server_data &serverData, int clientIdx)
 	std::swap(serverData.clients[clientIdx], serverData.clients[serverData.clients.size() - 1]);
 	serverData.fdToClient.erase(serverData.fdToClient.find(serverData.clients.back().fd));
 	serverData.clients.pop_back();
-
-	// remove user from active chats
-    std::set<int> &activeChatsSockets = client->getActiveChatsSockets();
-    for(auto it = activeChatsSockets.begin(); it != activeChatsSockets.end(); it++) {
-		int userFd = *it;
-		Client *otherClient = serverData.fdToClient[userFd];
-		otherClient->deleteActiveChat(client->getSocket());
-	}
-
-	clean_chan_data(serverData, client);
 	delete client;
 }
 
