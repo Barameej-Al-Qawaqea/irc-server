@@ -141,8 +141,11 @@ void Command::executeMode() {
 void Command::executeKick() {
   if (cmd.size() == 3 || cmd.size() == 4) {
     kick(this->client, this->client->getcurrChan(),
-         this->serverData.nameToClient[cmd[2]], cmd.size() == 4 ? cmd[3] : "", this->serverData.channels);
+         this->serverData.nameToClient[cmd[2]], cmd.size() == 4 ? cmd[3] : "", this->serverData.channels \
+         , cmd[1], cmd[2]);
   }
+  else
+    sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "KICK"));
 }
 
 void    Command::executeBot() {

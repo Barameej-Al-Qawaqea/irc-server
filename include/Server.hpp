@@ -109,7 +109,7 @@ void mode(Channel *channel,  Client *client, modeopt opt, std::vector<std::strin
 bool join(Client *client, Channel *chan, std::string key);
 void topic(Channel *chan, Client *client, std::vector<string>params);
 void kick(Client *client, Channel *chan, Client *target, \
- std::string reason, std::deque<Channel *> &channels);
+ std::string reason, std::deque<Channel *> &channels, std::string chanName, std::string targetName);
 void invite(Channel *chan, Client *client, Client *target);
 void part(Client *client, Channel *chan, std::deque<Channel *> *channels);
 /*channel utils*/

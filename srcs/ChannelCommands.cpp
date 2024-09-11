@@ -154,13 +154,14 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     
 }
 
-void kick(Client *client, Channel *chan, Client *target, std::string reason, std::deque<Channel *> &channels){
+void kick(Client *client, Channel *chan, Client *target, std::string reason, std::deque<Channel *> &channels, \
+     std::string chanName, std::string targetName){
     if(!chan){
-        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), ""));
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName));
         return ;
     }
     if(!target){
-        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), ));
+        sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), targetName ));
         return;
     }
     if (!chan->isOnChan(client)){
