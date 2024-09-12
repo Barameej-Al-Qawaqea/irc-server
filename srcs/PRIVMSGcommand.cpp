@@ -89,9 +89,12 @@ void    Command::executePrivmsg() {
         return ;
     }
     if (cmd.size() >= 3 && cmd[2][0] == ':') {
-        size_t msgIdx = originCmd.find(':');
-        messageTosSend = originCmd.substr(msgIdx + 1);
-        originCmd.erase(originCmd.begin() + msgIdx, originCmd.end());
+        size_t msgIdx = 0;
+        std::stringstream ss(originCmd);
+        ss >> messageTosSend >> messageTosSend; ss.ignore();
+        std::getline(ss, messageTosSend);
+        msgIdx = messageTosSend.find(':') + 1;
+        messageTosSend = messageTosSend.substr(msgIdx);
     }
     else if (cmd.size() == 3)
         messageTosSend = cmd[2];
