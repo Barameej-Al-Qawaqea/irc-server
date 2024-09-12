@@ -33,8 +33,8 @@ public :
     void            setRegistred();
     void            setUserName(std::string &name);
     void            setNickName(std::string &name);
-    std::set<int>&  getActiveChatsSockets() { return activeChatsSockets; }
-    void            addActiveChat(int clientSocket) {activeChatsSockets.insert(clientSocket);}
+    std::set<int>&  getActiveChatsSockets();
+    void            addActiveChat(int clientSocket);
     void            deleteActiveChat(int clientSocket);
     bool            operator==(Client &_client);
     std::string     play(std::vector<std::string> cmd);

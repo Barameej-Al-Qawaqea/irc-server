@@ -25,7 +25,7 @@ class Bot {
         Bot();
         std::string play(std::vector<std::string> &cmd);
         std::string botUsage() const;
-        bool argumentsError(std::vector<std::string> &cmd) const;
+        bool        argumentsError(std::vector<std::string> &cmd) const;
         ~Bot();
 };
 

@@ -35,9 +35,9 @@ HEADERS = include/Channel.hpp \
 
 OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
 
-CC = g++
+CC = c++
 
-FLAGS = -Wall -Wextra -std=c++98 -fsanitize=address -g#-Werror
+FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
 
 all : $(NAME)
 

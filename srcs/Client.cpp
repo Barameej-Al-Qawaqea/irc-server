@@ -12,7 +12,7 @@ void    Client::setcurrChan(Channel *chan){
     currChan = chan;
 }
 
-Channel* Client::getcurrChan() const {
+Channel*    Client::getcurrChan() const {
     return this->currChan;
 }
 
@@ -62,7 +62,15 @@ void    Client::deleteActiveChat(int clientSocket) {
     activeChatsSockets.erase(clientSocket);
 };
 
-bool Client::operator==(Client &_client){
+std::set<int>&  Client::getActiveChatsSockets() {
+    return activeChatsSockets;
+}
+
+void    Client::addActiveChat(int clientSocket) {
+    activeChatsSockets.insert(clientSocket);
+}
+
+bool    Client::operator==(Client &_client){
     return (_client.fd == this->fd);
 }
 
@@ -76,5 +84,6 @@ std::string Client::botUsage() const {
 bool    Client::argumentsError(std::vector<std::string> &cmd) const {
     return bot.argumentsError(cmd);
 }
+
 
 Client::~Client() {}
