@@ -17,7 +17,6 @@ int main(int ac, char **av)
 	std::signal(SIGPIPE, sigpipeHandler);
 	parsingAndSetup(serverData, ac, av);
 	serverSetup(serverData);
-	serverData.channels.push_back(new Channel("general"));
 	while (serverData.serverStatus == ON)
 	{
 		assert(serverData.clients.size() - 1 == serverData.fdToClient.size() && "yap!, code have bug");

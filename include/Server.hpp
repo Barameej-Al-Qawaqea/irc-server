@@ -9,7 +9,7 @@
 # define LISTENBACKLOG 20
 # define MAX_BUFF_SIZE 64000 // 8kb
 # define MAX_COMMAND_LENGHT 32000 // 4kb
-# define MAX_CLIENTS 100
+# define MAX_CLIENTS 1000
 
 /* constants */
 # define ON 1

@@ -121,7 +121,7 @@ void Command::executeInvite() {
   if (cmd[2].length() > 1) {
     if (cmd[2][0] != '#')
       return;
-    std::string chanName = std::string(cmd[2].c_str() + 1);
+    std::string chanName = cmd[2].substr(1);
     Channel *chan = findChan(chanName, this->serverData.channels, created);
     invite(chan, this->client, this->serverData.nameToClient[cmd[1]]);
   }

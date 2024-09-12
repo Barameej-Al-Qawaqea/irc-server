@@ -9,6 +9,17 @@ void parsingAndSetup(s_server_data &serverData, int ac, char **av)
 	}
 	serverData.port = av[1];
 	serverData.password = av[2];
+	if(serverData.password.size() == 0)
+	{
+		std::cout << "err:: bad arguments'." << std::endl;
+		exit(0);
+	}
+	for(size_t i = 0; i < serverData.password.size(); i++){
+		if (serverData.password[i] == ' '){
+			std::cout << "err:: invalid password'." << std::endl;
+			exit(0);
+		}
+	}
 	serverData.port_number = isValidPort(serverData.port);
 	if (serverData.port_number < 0)
 	{
