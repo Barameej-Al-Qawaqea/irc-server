@@ -74,7 +74,7 @@ void    Command::executeNick() {
 
 void    Command::executeUser() {
     std::string target = client->getNickName().empty() ? "*" : client->getNickName();
-    if (cmd.size() != 5)
+    if (cmd.size() < 5)
         sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(target, "USER"));
     else if (client->isAlreadyRegistred()) 
         sendMsg(client->getSocket(), ERR_ALREADYREGISTRED(target));
@@ -86,5 +86,5 @@ void    Command::executeUser() {
         sendMsg(client->getSocket(),  "001 " + client->getNickName() + " :Welcome to ft_irc server\r\n");
         serverData.nameToClient[client->getNickName()] = client;
         client->setUserName(cmd[1]);
-    }   
+    }
 }

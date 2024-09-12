@@ -50,7 +50,7 @@ void    Command::sendMsgToChannelClients(std::string &receiver, std::string &mes
 void    Command::sendPrivMessage(std::vector<std::string> &toSend, std::string &message) const {
     if (toSend.size() > MAX_TARGETS || !toSend.size() || message.empty()) return ;
     if (duplicateExist(toSend)) {
-        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 1));
+        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), 1));
         return ;
     }
     for(size_t i = 0; i < toSend.size(); i++) {
@@ -101,6 +101,6 @@ void    Command::executePrivmsg() {
     }
     std::vector<std::string> toSend = getUsersAndChannels();
     if (toSend.size() > MAX_TARGETS)
-        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), originCmd, 0));
+        sendMsg(client->getSocket(), ERR_TOOMANYTARGETS(client->getNickName(), 0));
     sendPrivMessage(toSend, messageTosSend);
 }

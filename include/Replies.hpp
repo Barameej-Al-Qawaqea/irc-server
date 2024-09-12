@@ -37,7 +37,7 @@
 
 // PRIVMSG : tocheck
 #define ERR_NOSUCHNICK(nick, badNick) ":server 401 " + nick + " " + badNick + " :No such nick/channel\r\n"
-#define ERR_TOOMANYTARGETS(nick, target, duplicates) ":server 407 " + nick + " " + target + (duplicates == 1 ? " :Duplicate recipients. " : " :Too many recipients. ") + "No message delivered\r\n"
+#define ERR_TOOMANYTARGETS(nick, duplicates) ":server 407 " + nick + (duplicates == 1 ? " :Duplicate recipients. " : " :Too many recipients. ") + "No message delivered\r\n"
 #define ERR_NORECIPIENT(nick) ":server 411 " + nick + " :No recipient given (PRIVMSG)\r\n"
 #define ERR_NOTEXTTOSEND(nick) ":server 412 " + nick + " :No text to send\r\n"
 #define ERR_CANNOTSENDTOCHAN(nick, channel) ":server 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
