@@ -121,7 +121,7 @@ std::string Bot::play(std::vector<std::string> &cmd) {
     if (cmd[1] == "START")
         startNewGame(cmd[2], cmd[3], std::atoi(cmd[4].c_str()));
     else
-        playClientMove(cmd[2], std::make_pair(stoi(cmd[3]), std::atoi(cmd[4].c_str())));
+        playClientMove(cmd[2], std::make_pair(atoi(cmd[3].c_str()), std::atoi(cmd[4].c_str())));
     return msgToSend;
 }
 
