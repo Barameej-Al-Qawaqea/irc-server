@@ -123,7 +123,8 @@ void Command::executeInvite() {
       return;
     std::string chanName = cmd[2].substr(1);
     Channel *chan = findChan(chanName, this->serverData.channels, created);
-    invite(chan, this->client, this->serverData.nameToClient[cmd[1]]);
+    std::cout <<"[" <<cmd[1]  << "]"<< '\n';
+    invite(chan, this->client, this->serverData.nameToClient[cmd[1]], chanName, cmd[1]);
   }
 }
 

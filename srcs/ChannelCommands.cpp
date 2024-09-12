@@ -188,18 +188,22 @@ void kick(Client *client, Channel *chan, Client *target, std::string reason, std
 }
 
 
-void invite(Channel *chan, Client *client, Client *target){
-    if(!chan || !chan->isOnChan(client) || chan->isOnChan(target) || (chan->getMode().invite_only && !chan->isChanOp(client))){
+void invite(Channel *chan, Client *client, Client *target, std::string chanName, std::string targetName){
+    if(!chan || !chan->isOnChan(client) || chan->isOnChan(target) || (chan->getMode().invite_only && !chan->isChanOp(client)) || !target){
         if(!chan)
-            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
+            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName));
         else if(!chan->isOnChan(client))
             sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         else if (chan->isOnChan(target))
             sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
+        else if(!target)
+            sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), targetName));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
         return;
     }
+    std::cout << "client address" <<client << '\n';
+    std::cout << "target address" <<target << '\n';
     sendMsg(client->getSocket(), RPL_INVITING(chan->getName(), client->getNickName(), target->getNickName()));
     sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() +\
         " INVITE " + target->getNickName() + " :#" + chan->getName()); ;
