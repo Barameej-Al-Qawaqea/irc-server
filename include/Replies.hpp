@@ -11,7 +11,7 @@
 #define ERR_CHANNELISFULL(nick, chan) "471 " + nick + " " + chan + " :Cannot join channel (+l)\r\n"
 #define RPL_NAMREPLY(chan, nick,clients) "353 " + nick + " = #" + chan + " :@" + nick + "\r\n"
 #define RPL_ENDOFNAMEST(chan, nick) "366 " + nick + " #" + chan + " :End of /NAMES list.\r\n"
-#define ERR_CANTKICKYOURSELF(nick) "403 " + nick + " :You can't kick yourself\r\n"
+#define ERR_CANTKICKYOURSELF(nick) "2001 " + nick + " :You can't kick yourself\r\n"
 // errors
 #define ERR_INVITEONLYCHAN(nick ,chan) "473 " + nick + " " + chan + " :Cannot join channel (+i)\r\n"
 #define ERR_NOSUCHCHANNEL(nick, chan) "403 " + nick + " " + chan + " :No such channel\r\n"
