@@ -164,6 +164,10 @@ void kick(Client *client, Channel *chan, Client *target, std::string reason, std
         sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), targetName ));
         return;
     }
+    if(client == target){
+        sendMsg(client->getSocket(), ERR_CANTKICKYOURSELF(client->getNickName()));
+        return;
+    }
     if (!chan->isOnChan(client)){
         sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
