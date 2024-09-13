@@ -21,36 +21,6 @@ std::string getClientNames(std::vector<Client> clients){
     return names;
 }
 
-void part(Client *client, Channel *chan, std::deque<Channel *> *channels){
-    if(!chan){
-        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), ""));
-        return;
-    }
-    if(!chan->isOnChan(client)){
-        sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
-        return;
-    }
-    vector<Client *> clients = chan->getChanClients();
-    for(size_t i = 0; i < clients.size(); i++){
-        sendMsg(clients[i]->getSocket(), RPL_PART(client->getNickName(),client->getuserName(),\
-        client->getHostName(), chan->getName()));
-    }
-    chan->removeClient(client);
-    client->setcurrChan(NULL);
-    int index = 0;
-    if(chan->getChanClients().empty() && chan->getName()!= "general"){
-        for(size_t i = 0; i < channels->size(); i++){
-            if(channels[0][i] == chan){
-                index = i;
-                break;
-            }
-        } 
-        std::swap(channels[0][index], channels[0][channels->size() - 1]);
-        channels->pop_back();
-        delete chan;
-    }
-}
-
 bool join(Client *client, Channel *chan, std::string key){
     if(chan->isOnChan(client)){
         sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), client->getNickName()));
@@ -89,10 +59,9 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     
     std::vector<std::string>::iterator params = extra_params.begin();
     Client *clientTarget;
-
     if(!channel || !channel->isOnChan(client)  || !channel->isChanOp(client)){
         if(!channel)
-            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(),channel->getName()));
+            sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(),((extra_params.size() > 1 )? extra_params[1] : std::string(""))));
         else if(!channel->isOnChan(client))
             sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), channel->getName()));
         else
@@ -222,7 +191,8 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
         return;
     }
     if(!chan){
-        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chan->getName()));
+        std::string chanName =  (params[1][0] == '#' || params[1][0] == '&') ? params[1].substr(1) : params[1];
+        sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName));
         return;
     }
     if(!chan->isOnChan(client)){
