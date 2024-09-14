@@ -43,7 +43,6 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(clients[i]->getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
     }
     chan->AddToChan(client);
-    client->setcurrChan(chan);
         // sendMsg(client->getSocket(), RPL_NAMREPLY(chan->getName(), client->getNickName()));
     sendMsg(client->getSocket(), RPL_JOIN(client->getNickName(), client->getuserName(), client->getHostName(), chan->getName()));
     if(!chan->getTopic().empty())
@@ -167,19 +166,17 @@ void invite(Channel *chan, Client *client, Client *target, std::string chanName,
             sendMsg(client->getSocket(), ERR_NOSUCHCHANNEL(client->getNickName(), chanName));
         else if(!chan->isOnChan(client))
             sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
-        else if (chan->isOnChan(target))
-            sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
         else if(!target)
             sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), targetName));
+        else if (chan->isOnChan(target))
+            sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
         return;
     }
-    std::cout << "client address" <<client << '\n';
-    std::cout << "target address" <<target << '\n';
     sendMsg(client->getSocket(), RPL_INVITING(chan->getName(), client->getNickName(), target->getNickName()));
     sendMsg(target->getSocket(), ":" + client->getNickName() + "!~" + client->getuserName() + "@" + client->getHostName() +\
-        " INVITE " + target->getNickName() + " :#" + chan->getName()); ;
+        " INVITE " + target->getNickName() + " :#" + chan->getName()+"\r\n" );
     chan->addPendingClient(target);
 }
 
@@ -211,6 +208,8 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
         int i = 2;
         while(i < (int)params.size()){
             topic += params[i];
+            if(i != (int)params.size() - 1)
+                topic += " ";
             i++;
         }
         chan->setTopic(topic);

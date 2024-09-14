@@ -18,6 +18,8 @@ std::deque<Client *> &Channel::getPendingClients(){
 }
 void Channel::removePendingClient(Client *client){
         std::deque<Client *>::iterator it;
+        if(client == NULL)
+            return;
         it = std::find(invited_clients.begin(), invited_clients.end(), client);
         if(it != invited_clients.end()){
             invited_clients.erase(it);
@@ -25,9 +27,12 @@ void Channel::removePendingClient(Client *client){
 }
 
 bool Channel::isPendingClient(Client *client){
-            std::deque<Client *>::iterator it;
-            it = std::find(invited_clients.begin(), invited_clients.end(), client);
-            return (it != invited_clients.end());
+    std::deque<Client *>::iterator it;
+    
+    if(client == NULL)
+        return false;
+    it = std::find(invited_clients.begin(), invited_clients.end(), client);
+    return (it != invited_clients.end());
 }
 
 int Channel::getlimit(){
@@ -76,7 +81,9 @@ bool Channel::isChanOp(Client *client){
 
 bool Channel::isOnChan(Client *client){
     std::vector<Client *>::iterator it;
-
+    
+    if(client == NULL)
+        return false;
     it = std::find(clients.begin(), clients.end(), client);
     return (it != clients.end());
 }
@@ -107,6 +114,8 @@ std::vector<Client *> &Channel::getChanClients(){
 void Channel::removeClient(Client *client){
     std::vector<Client *>::iterator it;
 
+    if(client == NULL)
+        return;
     it = std::find(clients.begin(), clients.end(), client);
     if(it != clients.end()){
         clients.erase(it);
@@ -116,6 +125,8 @@ void Channel::removeClient(Client *client){
 void Channel::removeChanop(Client *client){
     std::vector<Client *>::iterator it;
 
+    if(client == NULL)
+        return;
     it = std::find(chan_operators.begin(), chan_operators.end(), client);
     if(it != chan_operators.end()){
         chan_operators.erase(it);

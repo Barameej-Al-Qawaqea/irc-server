@@ -4,17 +4,9 @@ Client::Client(sockaddr_in &clientAddr, int clientSocket) {
     this->isRegistred = 0;
     this->Addr = clientAddr;
     this->fd = clientSocket;
-    this->currChan = NULL;
 }
 
 
-void    Client::setcurrChan(Channel *chan){
-    currChan = chan;
-}
-
-Channel*    Client::getcurrChan() const {
-    return this->currChan;
-}
 
 int Client::getSocket() const {
     return this->fd;

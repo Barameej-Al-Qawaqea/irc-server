@@ -17,7 +17,6 @@ class Command
         void                        executeUser();
         void                        executePrivmsg();
         void                        executeJoin();
-        void                        executePart();
         void                        executeInvite();
         void                        executeTopic();
         void                        executeMode();
@@ -35,6 +34,10 @@ class Command
         void                        notifyNickChangeToChannels(const std::string &oldName, const std::string &name) const;
         void                        notifyActiveChats(const std::string &oldname, const std::string &newName) const;
 
+        // i want to create a function that take a string which have command and return a pointer to a class Command function to the same command
+        // i just want to use it for tests
+        
+        
     public :
         Command(std::string &command, Client *client, s_server_data &serverData);
         void    checkWhichCommand();
