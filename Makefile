@@ -48,6 +48,9 @@ $(ODIR)%.o : %.cpp $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(FLAGS) -c $< -o $@ -I$(INCS)
 
+test : all
+	c++ -I include -I Bot -I /opt/homebrew/opt/googletest/include -L /opt/homebrew/opt/googletest/lib -lgtest -lgtest_main -pthread -std=c++98 tests/*.cpp $(OBJS) -o test
+
 clean :
 	rm -rf $(ODIR)
 
