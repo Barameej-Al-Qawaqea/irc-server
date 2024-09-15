@@ -132,10 +132,6 @@ void kick(Client *client, Channel *chan, Client *target, std::string reason, std
         sendMsg(client->getSocket(), ERR_NOSUCHNICK(client->getNickName(), targetName ));
         return;
     }
-    if(client == target){
-        sendMsg(client->getSocket(), ERR_CANTKICKYOURSELF(client->getNickName()));
-        return;
-    }
     if (!chan->isOnChan(client)){
         sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
@@ -149,6 +145,8 @@ void kick(Client *client, Channel *chan, Client *target, std::string reason, std
         return;
     }
     chan->removeClient(target);
+    if(chan->isChanOp(target))
+        chan->removeChanop(target);
     sendMsg(client->getSocket(),\
      ":" + client->getNickName()+ "!~" + client->getuserName() + "@" + client->getHostName() + \
       " KICK #" + chan->getName() + " " + target->getNickName() + " :" + reason + "\n");
