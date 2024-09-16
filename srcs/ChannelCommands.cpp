@@ -30,7 +30,9 @@ bool join(Client *client, Channel *chan, std::string key){
         sendMsg(client->getSocket(), ERR_INVITEONLYCHAN(client->getNickName(), chan->getName()));
         return false;
     }
-    if(chan->getMode().UserLimit && (int)chan->getChanClients().size() >= chan->getlimit()){
+    std::cout << "chan->getlimit() = " << chan->getlimit() << std::endl;
+    std::cout << "chan->getChanClients().size() = " << chan->getChanClients().size() << std::endl;
+    if(chan->getMode().UserLimit && (int)chan->getChanClients().size() + 1 > chan->getlimit()){
         sendMsg(client->getSocket(), ERR_CHANNELISFULL(client->getNickName(), chan->getName()));
         return false;
     }
