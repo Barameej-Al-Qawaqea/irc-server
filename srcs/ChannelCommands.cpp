@@ -69,13 +69,19 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
     }
     if(size == 2){
         std::string mode = channel->getModeString();
-        if(mode.empty())
+        if(mode.empty()){
+            sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), mode));
             return ;
+        }
         sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), mode));
         return;
     }
     switch(opt){
         case INVITE_ONLY_OPT:
+            if(size != 3){
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
+                return;
+            }
             params += 2;
             if(*params != "+i" && *params != "-i"){
                 sendMsg(client->getSocket(), ERR_UNKNOWNMODE(client->getNickName(), *params));
@@ -84,15 +90,18 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             channel->set_remove_invite_only(client, _do);
             break;
         case TOPIC_RESTRICTION_OPT:
+            if(size != 3){
+                sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
+                return;
+            }
             channel->set_remove_topic_restriction(client, _do);
             break;
         case CHAN_KEY_OPT:
-             if(size < 3 || (_do && size < 4)){
+             if((_do && size != 4) || (!_do && size != 3)){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
                 return;
             }
             params += 3;
-
             channel->set_remove_channel_key(client, _do, *params);
             break;
         case CHANOP_OPT:
@@ -107,7 +116,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             channel->add_clientToChanops(client, clientTarget, _do);
             break;
         case USER_LIMIT_OPT:
-            if(size < 3 || (_do && size < 4)){
+            if((_do && size != 4) || (!_do && size != 3)){
                 sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName() ,std::string("MODE")));
                 return;
             }
@@ -178,7 +187,17 @@ void invite(Channel *chan, Client *client, Client *target, std::string chanName,
     chan->addPendingClient(target);
 }
 
-void topic(Channel *chan, Client *client, std::vector<string>params){
+
+void setTopicFromCmd(std::string cmd, std::string &topic, std::string originCmd){
+    int topic_index = 0;
+
+    topic_index = originCmd.find(cmd) + cmd.length();
+    while(originCmd[topic_index] && originCmd[topic_index] != ':')
+        topic_index++;
+    topic = originCmd.substr(topic_index + 1);
+}
+
+void topic(Channel *chan, Client *client, std::vector<string>params, std::string originCmd){
     std::string topic;
 
     if(params.size() < 2){
@@ -194,7 +213,7 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
         sendMsg(client->getSocket(), ERR_NOTONCHANNEL(client->getNickName(), chan->getName()));
         return;
     }
-    if(params.size() == 3){
+    if(params.size() >= 3){
         if(chan->getMode().TopicRestricted && !chan->isChanOp(client)){
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
             return;
@@ -203,13 +222,8 @@ void topic(Channel *chan, Client *client, std::vector<string>params){
             sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("TOPIC")));
             return;
         }
-        int i = 2;
-        while(i < (int)params.size()){
-            topic += params[i];
-            if(i != (int)params.size() - 1)
-                topic += " ";
-            i++;
-        }
+        std::string topic;
+        setTopicFromCmd(params[1], topic, originCmd);
         chan->setTopic(topic);
     }
     else{

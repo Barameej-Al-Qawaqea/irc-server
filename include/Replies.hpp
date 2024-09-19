@@ -1,4 +1,6 @@
-#pragma once
+#ifndef REPLIES_HPP
+# define REPLIES_HPP
+
 #include "header.hpp"
 // replies
 #define RPL_TOPIC(chan,topic) chan+ " :" + topic + "\r\n"
@@ -43,3 +45,4 @@
 #define ERR_CANNOTSENDTOCHAN(nick, channel) ":server 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
 
 //
+#endif

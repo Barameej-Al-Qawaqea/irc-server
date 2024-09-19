@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMMANDS_H
+# define COMMANDS_H
 
 #include "header.hpp"
 #include "Client.hpp"
@@ -42,3 +43,5 @@ class Command
         Command(std::string &command, Client *client, s_server_data &serverData);
         void    checkWhichCommand();
 };
+
+#endif

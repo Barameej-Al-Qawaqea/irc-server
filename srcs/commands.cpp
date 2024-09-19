@@ -69,7 +69,6 @@ void getKeys(std::string cmd, std::vector<std::pair<std::string, std::string> > 
 
 
 void Command::executeJoin() {
-  std::string name = cmd[1];
   bool created = false;
   std::vector<std::pair<std::string, std::string> >chanName_chanKey ;
 
@@ -77,6 +76,8 @@ void Command::executeJoin() {
     sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "JOIN"));
     return;
   }
+
+  std::string name = cmd[1];
   getChans(cmd[1], chanName_chanKey);
   if (cmd.size() == 3) {
     getKeys(cmd[2]  , chanName_chanKey);
@@ -125,9 +126,12 @@ Channel *getChanFromCmd(std::string cmd, std::deque<Channel *> &channels) {
 
 void Command::executeTopic() {
     Channel *chan = NULL;
-
+   if (cmd.size() < 2) {
+        sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "JOIN"));
+        return;
+   }
     chan = getChanFromCmd(cmd[1], this->serverData.channels);
-    topic(chan, this->client, cmd);
+    topic(chan, this->client, cmd, this->originCmd);
 }
 
 void Command::executeMode() {

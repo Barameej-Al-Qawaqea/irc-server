@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HEADER_HPP
+# define HEADER_HPP
 
 #include <iostream>
 #include <vector>
@@ -16,7 +17,6 @@
 #include <climits>
 #include <cstdlib>
 #include <fstream>
-#include <cassert>
 #include <sstream>
 #include <csignal>
 #include <utility>
@@ -37,3 +37,5 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 #include "Replies.hpp"
+
+#endif

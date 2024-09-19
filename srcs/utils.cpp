@@ -77,7 +77,7 @@ modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus){
 	opt = cmds[2];
 	plus = (opt[0] == '+' ? 1 : (opt[0] == '-' ? 0 : -1));
 	if(opt.size() < 2 || plus < 0)
-		return invalid_cmd("INVALID OPTION");
+		return UNKOWN;
 	for(size_t i = 0; i < available_opt.size(); i++){
 		if(available_opt[i] == opt[1])
 			return (modeopt)i;
