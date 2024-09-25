@@ -1,5 +1,5 @@
-#ifndef SERVRER_HPP
-# define SERVRER_HPP
+#ifndef SERVRER_H
+# define SERVRER_H
 /* standard includes */
 
 #include "header.hpp"

@@ -1,6 +1,5 @@
 NAME = ircserv
 
-
 SRCS =  srcs/server.cpp \
 		srcs/utils.cpp \
 		srcs/signals.cpp \
@@ -37,7 +36,7 @@ OBJS = $(addprefix $(ODIR), $(SRCS:.cpp=.o))
 
 CC = c++
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
 
 all : $(NAME)
 
@@ -47,9 +46,6 @@ $(NAME) : $(OBJS)
 $(ODIR)%.o : %.cpp $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(FLAGS) -c $< -o $@ -I$(INCS)
-
-test : all
-	c++ -I include -I Bot -I /opt/homebrew/opt/googletest/include -L /opt/homebrew/opt/googletest/lib -lgtest -lgtest_main -pthread -std=c++98 tests/*.cpp $(OBJS) -o test
 
 clean :
 	rm -rf $(ODIR)

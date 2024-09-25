@@ -76,6 +76,7 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
         sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), mode));
         return;
     }
+
     switch(opt){
         case INVITE_ONLY_OPT:
             if(size != 3){
@@ -122,13 +123,22 @@ void    mode(Channel *channel, Client *client, modeopt opt, std::vector<std::str
             }
             params+= 2;
             params += _do;
+            if(_do){
+                for(size_t i = 0; i < params->size(); i++){
+                    if(!isdigit(params->at(i))){
+                        sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), std::string("MODE")));
+                        return;
+                    }
+                }
+            }
             channel->limitUserToChan(client, _do, std::atoi(params->c_str()));
             break;
         case UNKOWN:
             sendMsg(client->getSocket(), ERR_UNKNOWNMODE(client->getNickName(), *params));
             break;
     }
-    
+
+    sendMsg(client->getSocket(), RPL_CHANNELMODEIS(channel->getName(), channel->getModeString()));
 }
 
 void kick(Client *client, Channel *chan, Client *target, std::string reason, std::deque<Channel *> &channels, \
@@ -179,6 +189,10 @@ void invite(Channel *chan, Client *client, Client *target, std::string chanName,
             sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
         else
             sendMsg(client->getSocket(), ERR_CHANOPRIVSNEEDED(client->getNickName(), chan->getName()));
+        return;
+    }
+    if(chan->isPendingClient(target)){
+        sendMsg(client->getSocket(), ERR_USERONCHANNEL(chan->getName(), target->getNickName()));
         return;
     }
     sendMsg(client->getSocket(), RPL_INVITING(chan->getName(), client->getNickName(), target->getNickName()));
