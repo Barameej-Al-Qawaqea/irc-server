@@ -66,16 +66,4 @@ bool    Client::operator==(Client &_client){
     return (_client.fd == this->fd);
 }
 
-std::string Client::play(std::vector<std::string> cmd){
-    return bot.play(cmd);
-}
-std::string Client::botUsage() const {
-    return bot.botUsage();
-}
-
-bool    Client::argumentsError(std::vector<std::string> &cmd) const {
-    return bot.argumentsError(cmd);
-}
-
-
 Client::~Client() {}

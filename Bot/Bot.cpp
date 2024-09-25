@@ -1,6 +1,6 @@
 #include "Bot.hpp"
 
-bool Bot::isInvalidBoardSize(std::string &num, std::string &gameType) const {
+bool Bot::isInvalidBoardSize(std::string &num, std::string &gameType) {
     bool invalid = (num.size() > 2);
     int boardSize = 0;
     for(size_t i = 0; i < num.size(); i++) {
@@ -12,7 +12,7 @@ bool Bot::isInvalidBoardSize(std::string &num, std::string &gameType) const {
     return invalid; 
 }
 
-bool    Bot::isInvalidCoordinates(std::string &X, std::string &Y) const {
+bool    Bot::isInvalidCoordinates(std::string &X, std::string &Y) {
     bool    invalid = (X.size() > 2 || Y.size() > 2);
     int x = 0, y = 0;
     for(size_t i = 0; i < X.size(); i++) {
@@ -27,12 +27,22 @@ bool    Bot::isInvalidCoordinates(std::string &X, std::string &Y) const {
     return invalid;
 }
 
-bool    Bot::isInvalidDifficulty(std::string &gameDifficulty) const {
+bool    Bot::isInvalidDifficulty(std::string &gameDifficulty) {
     return (gameDifficulty != "HARD" && gameDifficulty != "MEDIUM" && gameDifficulty != "EASY");
 }
 
-bool    Bot::isInvalidGameType(std::string &gameType) const {
+bool    Bot::isInvalidGameType(std::string &gameType) {
     return (gameType != "GOMUKO" && gameType != "TICTACTOE");
+}
+
+bool      Bot::isInvalidLogin(std::string &login) {
+    long long num = 0;
+    for (size_t i = 0; i < login.size(); i++) {
+        if (!std::isdigit(login[i])) return true;
+        num = num * 10 + login[i] - '0';
+        if (num > INT_MAX) return true;
+    }
+    return false;
 }
 
 bool    Bot::isValidMove(std::string gameType, std::pair<int, int> move) const {
@@ -118,31 +128,38 @@ void    Bot::playClientMove(std::string gameType, std::pair <int, int> clientMov
 Bot::Bot() {}
 
 std::string Bot::play(std::vector<std::string> &cmd) {
-    if (cmd[1] == "START")
-        startNewGame(cmd[2], cmd[3], std::atoi(cmd[4].c_str()));
+    if (cmd[0] == "START")
+        startNewGame(cmd[1], cmd[2], std::atoi(cmd[3].c_str()));
     else
-        playClientMove(cmd[2], std::make_pair(atoi(cmd[3].c_str()), std::atoi(cmd[4].c_str())));
+        playClientMove(cmd[1], std::make_pair(atoi(cmd[2].c_str()), std::atoi(cmd[3].c_str())));
     return msgToSend;
 }
 
-std::string Bot::botUsage() const {
+std::string Bot::botUsage()  {
     std::ostringstream oss;
     oss << "Invalid Command, please follow the command prototype below:\n";
     oss << "Bot Usage :\n";
-    oss << "    1. BOT START GAME DIFFICULTY SIZE\n";
+    oss << "    1. SETUP LOGIN\n";
+    oss << "        -LOGIN is a positive integer";
+    oss << "    2. START GAME DIFFICULTY SIZE LOGIN\n";
     oss << "        - GAME: 'GOMUKO' or 'TICTACTOE'\n";
     oss << "        - DIFFICULTY: 'HARD', 'MEDIUM', 'EASY'\n";
     oss << "        - SIZE: 3-10 for TICTACTOE, 5-10 for GOMUKO\n";
-    oss << "    2. BOT PLAY GAME X Y\n";
+    oss << "    3. BOT PLAY GAME X Y LOGIN\n";
     oss << "        - X, Y: Coordinates for the move (positive integers)\n";
     oss << "        - GAME: 'GOMUKO' or 'TICTACTOE'\n";
 
     return oss.str();
 }
 
-bool    Bot::argumentsError(std::vector<std::string> &cmd) const {
-    bool isError = (cmd.size() != 5) || (cmd[1] != "PLAY" && cmd[1] != "START") || isInvalidGameType(cmd[2]);
-    if (isError) return isError;
+
+bool    Bot::argumentsError(std::vector<std::string> &cmd)  {
+    bool isError = (cmd.size() != 5 && cmd.size() != 2);
+    if (cmd.size() == 5)
+        isError |= (cmd[0] != "PLAY" && cmd[0] != "START") || isInvalidGameType(cmd[1]) || isInvalidLogin(cmd.back());
+    if (cmd.size() == 2)
+        isError |= cmd[0] != "SETUP" || isInvalidLogin(cmd.back());
+    if (isError || cmd.size() == 2) return isError;
 
     if (cmd[1] == "START")
         isError = (isInvalidDifficulty(cmd[3]) || isInvalidBoardSize(cmd[4], cmd[2]));

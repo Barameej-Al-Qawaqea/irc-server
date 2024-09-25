@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <cstdlib>
+#include <sstream>
 
 #define MAX_BUFF_SIZE 64000
 
@@ -100,15 +101,113 @@ int establichServerConnection() {
     return serverSocket;
 }
 
-int main(int ac, char **av) {
+std::string recvMsg(int serverSocket, char *buff)
+{
+	int recvStatus = recv(serverSocket, buff, MAX_BUFF_SIZE, 0);
+	if (recvStatus <= 0) return std::string("");
+	buff[recvStatus] = '\0';
+	std::string rsp = std::string(buff);
+	return (rsp);
+}
+
+bool    isPrivmsgCommand(std::string &cmd) {
+    std::stringstream ss(cmd);
+    std::string word;
+    ss >> word >> word;
+    return (word == "PRIVMSG");
+}
+
+
+std::string getMessage(std::string &cmd) {
+    std::stringstream ss(cmd);
+    std::string msg;
+    ss >> msg >> msg >> msg; ss.ignore();
+    std::getline(ss, msg);
+    int msgIdx = msg.find(':') + 1;
+    msg = msg.substr(msgIdx);
+    return msg;
+}
+
+
+void    sendMessage(int serverSocket, std::string message, std::string &clientNickname) {
+    std::stringstream ss(message);
+    std::string line;
+	while (std::getline(ss, line, '\n')) {
+        std::string curMsg = "PRIVMSG "+ clientNickname + " :" + line + "\r\n";
+        int sendStatus = send(serverSocket, curMsg.c_str(), curMsg.size(), 0);
+	    if (sendStatus < 0) {
+            std::cerr << "Error occurs while sending message\n";
+            return ;
+        }
+    }
+}
+
+std::string setupNewLogin(int login, std::map<int, Bot*> &data) {
+    if (data.count(login))
+        return "this login is already used, please chose another one\n";
+    data[login] = new Bot();
+    return "you have succesfully setup a new login\n";
+}
+
+std::string    getResponce(std::vector<std::string> &cmds, std::map<int, Bot*> &data) {
+    if (Bot::argumentsError(cmds))
+        return Bot::botUsage();
+    int login = std::atoi(cmds.back().c_str());
+    if (cmds.size() == 2)
+        return setupNewLogin(login, data);
+    else {
+        if (!data.count(login))
+            return "No such login number found\n";
+        cmds.pop_back();
+        return data[login]->play(cmds);
+    }
+}
+
+void    newCmnd(int serverSocket, std::string &cmd, std::map<int, Bot*> &data) {
+    if (!isPrivmsgCommand(cmd)) return ;
+    std::string clientName = cmd.substr(1, cmd.find('!') - 1);
+    std::string msg = getMessage(cmd);
+    std::stringstream ss(msg);
+    std::vector<std::string> cmds;
+    std::string word;
+    while (ss >> word) {
+        cmds.push_back(word);
+    }
+
+    std::string toSend = getResponce(cmds, data);
+    sendMessage(serverSocket, toSend, clientName);
+    // either setup login
+    // or game command login
+}
+
+void    checkNewCommands(int serverSocket, std::string &cmnd, std::map<int, Bot*> &data) {
+    if (cmnd.empty()) return;
+    std::cout << cmnd << std::endl;
+    std::stringstream ss(cmnd);
+    std::string sep = "\n";
+
+    if (cmnd.size() > 1 && cmnd[cmnd.size() - 2] == '\r') sep = "\r\n";   // not from terminal
+    size_t end, start = 0;
+    while ((end = cmnd.find(sep, start)) != std::string::npos) {
+        std::string subCmd = cmnd.substr(start, end - start);
+        newCmnd(serverSocket, subCmd, data);
+        start = end + sep.size();
+    }
+}
+
+
+int main(void) {
     int serverSocket = establichServerConnection();
+    std::map<int, Bot*> data;
     char *buff = new char[MAX_BUFF_SIZE + 1];
     while (1) {
-        int bytesRead = recv(serverSocket, buff, MAX_BUFF_SIZE, 0);
-        if (bytesRead < 0) {
-            std::cout << "An error occurs while reading server replies\n";
-            exit(0);
-        }
-        // if (send)
+        int recvStatus = recv(serverSocket, buff, MAX_BUFF_SIZE, 0);
+	    if (recvStatus <= 0) continue;
+	    buff[recvStatus] = '\0';
+	    std::string response = std::string(buff);
+        checkNewCommands(serverSocket, response, data);
     }
-}  
+    for (std::map<int, Bot*>::iterator it = data.begin(); it != data.end(); it++) 
+        delete it->second;
+}
+

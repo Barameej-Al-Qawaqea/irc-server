@@ -10,12 +10,12 @@ Command::Command(std::string &command, Client *client, s_server_data &serverData
 
 void    Command::checkWhichCommand() {
     std::cout << originCmd << '\n';
-    std::string possibleCommands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN" ,"INVITE", "TOPIC", "MODE", "KICK", "BOT"};
+    std::string possibleCommands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN" ,"INVITE", "TOPIC", "MODE", "KICK"};
         void(Command::*possibleFunctions[])() = {&Command::executePass, &Command::executeNick, &Command::executeUser, &Command::executePrivmsg,
-        &Command::executeJoin , &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick, &Command::executeBot};
+        &Command::executeJoin , &Command::executeInvite, &Command::executeTopic,  &Command::executeMode, &Command::executeKick};
 
     int cmdIdx = -1;
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 9; i++) {
         if (!cmd.empty() && cmd[0] == possibleCommands[i])
             cmdIdx = i;
     }
@@ -157,17 +157,4 @@ void Command::executeKick() {
   }
   else
     sendMsg(client->getSocket(), ERR_NEEDMOREPARAMS(client->getNickName(), "KICK"));
-}
-
-void    Command::executeBot() {
-	std::string message, line;
-    
-	if (client->argumentsError(cmd))
-		message = client->botUsage();
-	else
-		message = client->play(cmd);
-	std::stringstream ss(message);
-	while (std::getline(ss, line, '\n'))
-		sendMsg(client->getSocket(), "001 "+ client->getNickName() + " :" + line + "\r\n");
-	sendMsg(client->getSocket(), "001 "+ client->getNickName() + " :\r\n" );
 }

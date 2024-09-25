@@ -13,10 +13,7 @@ SRCS =  srcs/server.cpp \
 		srcs/Client.cpp \
 		srcs/authenticationCommands.cpp \
 		srcs/PRIVMSGcommand.cpp \
-		Bot/Bot.cpp \
-		Bot/Game.cpp \
-		Bot/MCTS.cpp
-
+	
 INCS = include
 
 ODIR = .objs/

@@ -14,7 +14,6 @@ private :
     sockaddr_in     Addr; // client info
     int             fd; // client socket
     std::set<int>   activeChatsSockets; // use it to inform  NICK name changes to users who have chat with client
-    Bot             bot;
 
 public :
     Client(sockaddr_in &clientAddr, int clientSocket);
