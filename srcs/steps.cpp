@@ -103,15 +103,13 @@ void	checkClientsRequests(s_server_data &serverData)
 				{
 					int clientIdx = serverData.clients[i].fd;
 					std::string &cmnd = serverData.requestsBuff[clientIdx];
-					std::stringstream ss(cmnd);
-					std::string sep = "\n";
-
-					if (cmnd.size() > 1 && cmnd[cmnd.size() - 2] == '\r') sep = "\r\n";   // not from terminal
-					size_t end, start = 0;
-					while ((end = cmnd.find(sep, start)) != std::string::npos) {
-						std::string toSend = cmnd.substr(start, end - start);
-						newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], toSend, serverData);
-						start = end + sep.size();
+					std::stringstream S(cmnd);
+					std::string t;
+					while (getline(S, t, '\n'))
+					{
+						while (!t.empty() && (t.back() == '\n' || t.back() == '\r' || t.back() == '\0')) t.pop_back();
+						// std::cout <<"b::" << t << "::e"<<std::endl;
+						newCmnd(serverData.sockfd, serverData.fdToClient[clientIdx], t, serverData);
 					}
 					serverData.requestsBuff.erase(clientIdx);
 				}
