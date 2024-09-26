@@ -18,12 +18,6 @@ void	checkNewClientAttempt(s_server_data &serverData)
 
 		if (newClient.first >= 0 && serverData.clients.size() < MAX_CLIENTS)
 		{
-			if (setSocketAsNonBlocking(newClient.first) < 0)
-			{
-				// failed estabilsh connection : can't set socket to non-blocking i/o.
-				return ;
-			}
-
 			// if (sendMsg(newClient.first, ":server :Welcome to ft_irc server createad by [asettar, yrhiba, dexter].\r\n") < 0)
 			// {
 			// 	// std::cout << "failed sending message to " << serverData.clients.back().fd << std::endl;
@@ -39,7 +33,6 @@ void	checkNewClientAttempt(s_server_data &serverData)
 		}
 	}
 }
-
 
 void clean_chan_data(s_server_data &serverData, Client *client)
 {

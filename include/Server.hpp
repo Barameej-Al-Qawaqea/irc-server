@@ -112,7 +112,6 @@ void topic(Channel *chan, Client *client, std::vector<string>params, std::string
 void kick(Client *client, Channel *chan, Client *target, \
  std::string reason, std::deque<Channel *> &channels, std::string chanName, std::string targetName);
 void invite(Channel *chan, Client *client, Client *target, std::string chanName, std::string targetName);
-void part(Client *client, Channel *chan, std::deque<Channel *> *channels);
 /*channel utils*/
 modeopt get_which_opt(std::vector<string> &cmds, int32_t size, int &plus);
 

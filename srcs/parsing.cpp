@@ -12,12 +12,12 @@ void parsingAndSetup(s_server_data &serverData, int ac, char **av)
 	bool badPassword = (serverData.password.size() == 0);
 	for(size_t i = 0; i < serverData.password.size(); i++)
 		badPassword |= (serverData.password[i] == ' ');
-	if (badPassword) {
+	if (badPassword || serverData.password.empty()) {
 		std::cout << "Invalid Password\n";
 		exit(0);
 	}
 	serverData.port_number = isValidPort(serverData.port);
-	if (serverData.port_number < 0)
+	if (serverData.port_number < 0 || serverData.port.empty())
 	{
 		std::cout << "err:: invalid port'." << std::endl;
 		exit(0);
